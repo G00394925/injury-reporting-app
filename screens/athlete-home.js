@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
+import { CardTitle } from '@rneui/base/dist/Card/Card.Title';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -33,6 +34,24 @@ export default function AthleteDashScreen() {
                         <Image style={styles.light} source={require('../assets/GreenLightOn.png')}/>
                     </View>
                 </Card>
+                <View style={styles.info_cards_container}>
+                    <Card containerStyle={styles.info_card}>
+                        <CardTitle style={{ fontSize: 24, textAlign: 'left' }}>3</CardTitle>
+                        <Text>Injuries Reported</Text>
+                    </Card>
+                    <Card containerStyle={styles.info_card}>
+                        <CardTitle style={{ fontSize: 24, textAlign: 'left' }}>3</CardTitle>
+                        <Text>Injuries Reported</Text>
+                    </Card>
+                    <Card containerStyle={styles.info_card}>
+                        <CardTitle style={{ fontSize: 24, textAlign: 'left' }}>3</CardTitle>
+                        <Text>Injuries Reported</Text>
+                    </Card>
+                    <Card containerStyle={styles.info_card}>
+                        <CardTitle style={{ fontSize: 24, textAlign: 'left' }}>3</CardTitle>
+                        <Text>Injuries Reported</Text>
+                    </Card>
+                </View>
             </View>
         </SafeAreaView>
     );
@@ -70,5 +89,18 @@ const styles = StyleSheet.create({
     },
     light: {
         margin: 10,
+    },
+    info_cards_container: {
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: 5,
+        marginTop: 20
+    },
+    info_card: {
+        padding: 15,
+        backgroundColor: '#aceeffff',
+        borderRadius: 10,
+        margin: 0
     }
+
 });
