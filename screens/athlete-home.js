@@ -1,8 +1,27 @@
-import {StyleSheet, Text, View, Image} from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
 import { Card } from '@rneui/themed';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFonts } from 'expo-font';
+import { useEffect } from 'react';
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync();
 
 export default function AthleteDashScreen() {
+    const [fontsLoaded] = useFonts({
+        'Rubik': require('../fonts/Rubik-VariableFont_wght.ttf'),
+    });
+
+    useEffect(() => {
+        if (fontsLoaded) {
+            SplashScreen.hideAsync();
+        }
+    }, [fontsLoaded]);
+
+    if (!fontsLoaded) {
+        return null;
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <Text style={styles.greetings_text}>Hello Macdarach</Text>
@@ -21,6 +40,7 @@ export default function AthleteDashScreen() {
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         paddingTop: 20,
         margin: 10,
     },
@@ -31,6 +51,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         paddingLeft: 10,
         marginBottom: 20,
+        fontFamily: 'Rubik'
     },
     center_view: {
         flex: 1,
@@ -38,8 +59,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     card: {
-        padding: 20,
-        backgroundColor: '#383838ff',
+        padding: 15,
+        backgroundColor: '#292929ff',
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
