@@ -27,7 +27,8 @@ export default function AthleteDashScreen() {
         <SafeAreaView style={styles.container}>
             <Text style={styles.greetings_text}>Hello Macdarach</Text>
             <View style={styles.center_view}>
-                <Card containerStyle={styles.card}>
+                <Card containerStyle={styles.lights_card}>
+                    <CardTitle style={{ fontSize: 16, textAlign: 'left', color: '#d5d5d5ff', marginBottom: 5 }}>Your Status: Ready to play</CardTitle>
                     <View style={styles.lights_container}>
                         <Image style={styles.light} source={require('../assets/RedLightOff.png')}/>
                         <Image style={styles.light} source={require('../assets/AmberLightOff.png')}/>
@@ -35,21 +36,21 @@ export default function AthleteDashScreen() {
                     </View>
                 </Card>
                 <View style={styles.info_cards_container}>
-                    <Card containerStyle={styles.info_card}>
-                        <CardTitle style={{ fontSize: 24, textAlign: 'left' }}>3</CardTitle>
+                    <Card containerStyle={[styles.info_card, { backgroundColor: '#f1c7f2ff' }]}>
+                        <CardTitle style={{ fontSize: 24, textAlign: 'left' }}>6</CardTitle>
                         <Text>Injuries Reported</Text>
                     </Card>
-                    <Card containerStyle={styles.info_card}>
-                        <CardTitle style={{ fontSize: 24, textAlign: 'left' }}>3</CardTitle>
-                        <Text>Injuries Reported</Text>
+                    <Card containerStyle={[styles.info_card, { backgroundColor: '#faceceff' }]}>
+                        <CardTitle style={{ fontSize: 24, textAlign: 'left' }}>142</CardTitle>
+                        <Text>Days since your last injury</Text>
                     </Card>
-                    <Card containerStyle={styles.info_card}>
-                        <CardTitle style={{ fontSize: 24, textAlign: 'left' }}>3</CardTitle>
-                        <Text>Injuries Reported</Text>
+                    <Card containerStyle={[styles.info_card, { backgroundColor: '#b8f3a8ff' }]}>
+                        <CardTitle style={{ fontSize: 24, textAlign: 'left' }}>15</CardTitle>
+                        <Text>Consecutive Daily Reports</Text>
                     </Card>
-                    <Card containerStyle={styles.info_card}>
-                        <CardTitle style={{ fontSize: 24, textAlign: 'left' }}>3</CardTitle>
-                        <Text>Injuries Reported</Text>
+                    <Card containerStyle={[styles.info_card, { backgroundColor: '#f0f1b1ff' }]}>
+                        <CardTitle style={{ fontSize: 24, textAlign: 'left' }}>16</CardTitle>
+                        <Text>Available Athletes</Text>
                     </Card>
                 </View>
             </View>
@@ -75,17 +76,19 @@ const styles = StyleSheet.create({
     center_view: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
     },
-    card: {
+    lights_card: {
         padding: 15,
+        paddingTop: 5,
         backgroundColor: '#292929ff',
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
     },
     lights_container: {
-        flexDirection: 'row'
+        flexDirection: 'row',
+        backgroundColor: '#3d3d3dff',
+        borderRadius: 10,
     },
     light: {
         margin: 10,
@@ -94,13 +97,11 @@ const styles = StyleSheet.create({
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
         gap: 5,
-        marginTop: 20
+        margin: 15
     },
     info_card: {
-        padding: 15,
-        backgroundColor: '#aceeffff',
+        padding: 10,
         borderRadius: 10,
         margin: 0
     }
-
 });
