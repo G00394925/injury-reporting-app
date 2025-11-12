@@ -15,6 +15,8 @@ export default function App() {
       >
         <Tab.Screen name="Dashboard" component={AthleteDashScreen} />
         <Tab.Screen name="Report" component={ReportScreen} />
+        <Tab.Screen name="History" component={ReportScreen} />
+        <Tab.Screen name="Account" component={ReportScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );

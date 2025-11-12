@@ -2,9 +2,10 @@ import { StyleSheet, Text, View, Image } from 'react-native';
 import { Button, Card } from '@rneui/themed';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import { CardTitle } from '@rneui/base/dist/Card/Card.Title';
+import axios from 'axios';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -12,6 +13,17 @@ export default function AthleteDashScreen() {
     const [fontsLoaded] = useFonts({
         'Rubik': require('../fonts/Rubik-VariableFont_wght.ttf'),
     });
+    const [message, setMessage] = useState('');
+
+    useEffect(() => {
+        axios.get('http://localhost:5000/api/hello')
+            .then(response => {
+                setMessage(response.data.message);
+            })
+            .catch(error => {
+                console.error('There was an error!', error);
+            });
+    }, []);
 
     // Load fonts first, then hide splash screen
     useEffect(() => {
@@ -27,6 +39,7 @@ export default function AthleteDashScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <Text style={styles.greetings_text}>Hello Macdarach</Text>
+            {message ? <Text>{message}</Text> : null}
             <View style={styles.center_view}>
                 <Card containerStyle={styles.lights_card}>
                     <CardTitle style={{ fontSize: 16, textAlign: 'left', color: '#d5d5d5ff', marginBottom: 5 }}>Your Status: Ready to play</CardTitle>
