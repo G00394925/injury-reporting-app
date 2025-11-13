@@ -13,6 +13,7 @@ export default function AthleteDashScreen() {
     const [fontsLoaded] = useFonts({
         'Rubik': require('../fonts/Rubik-VariableFont_wght.ttf'),
     });
+
     const [message, setMessage] = useState('');
 
     useEffect(() => {
