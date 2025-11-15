@@ -8,9 +8,11 @@ import {
 import { Button } from "@rneui/themed";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 
 export default function RegisterScreen() {
   const [userType, setUserType] = useState("athlete");
+  const navigation = useNavigation();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -85,6 +87,14 @@ export default function RegisterScreen() {
           />
         </View>
       </View>
+
+      <Button 
+        title="Register" 
+        buttonStyle={styles.register_button} 
+        containerStyle={{ width: '90%', marginTop: 20 }} 
+        onPress={() => {
+          navigation.navigate('MainApp')
+        }}/>
     </SafeAreaView>
   );
 }
