@@ -14,6 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { KeyboardAvoidingView } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import { API_BASE_URL } from "../config/api_config";
 
 export default function RegisterScreen() {
   const [role, setRole] = useState("athlete");
@@ -98,7 +99,7 @@ export default function RegisterScreen() {
       )}`;
 
       const response = await axios.post(
-        "http://localhost:5000/api/register/athlete",
+        `${API_BASE_URL}/api/register/athlete`,
         {
           name: name,
           email: email,

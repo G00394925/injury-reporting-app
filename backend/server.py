@@ -50,7 +50,8 @@ def register_athlete():
         "dob": athlete.get('dob'),
         "user_type": athlete.get('user_type'),
         "assigned_coach": None,
-        "health_status": health_status.HealthStatus.HEALTHY.value
+        "health_status": health_status.HealthStatus.HEALTHY.value,
+        "previous_injuries": []
     }
 
     # Add athlete to the database
