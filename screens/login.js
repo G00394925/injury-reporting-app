@@ -20,6 +20,10 @@ export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const navigation = useNavigation();
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+
   // Validate login form
   const validateForm = () => {
     const issues = {};
@@ -36,6 +40,43 @@ export default function LoginScreen() {
     if (!password) {
       issues.password = "Password is required";
     }
+
+    setErrors(issues);
+    return Object.keys(issues).length === 0;
+  };
+
+  const handleSubmission = async () => {
+    if (!validateForm()) {
+      Alert.alert("Form Error", "Please correct the errors in the form.");
+      return;
+    }
+
+    setLoading(true);
+
+    // Login Submission
+    try {
+      const response = await axios.post(`${API_BASE_URL}/api/login`, {
+        email: email,
+        password: password,
+      });
+
+      console.log("Login Response:", response.data);
+
+      // Navigate to the dashboard
+      navigation.replace("MainApp", {
+        screen: "Dashboard",
+        params: { name: response.data.name },
+      });
+    } catch (error) {
+      console.error("Login Error:", error);
+      const errorMessage =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Login failed. Please try again.";
+      Alert.alert("Error", errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -45,6 +86,7 @@ export default function LoginScreen() {
         style={{ flex: 1, width: "100%", alignItems: "center" }}
       >
         <ScrollView
+          style={{ width: "100%" }}
           contentContainerStyle={{
             alignItems: "center",
             paddingBottom: 40,
@@ -93,6 +135,18 @@ export default function LoginScreen() {
             onPress={handleSubmission}
             disabled={loading}
           />
+
+          <Button
+            title="Don't have an account? Sign up"
+            titleStyle={{ color: "#ffffffff" }}
+            buttonStyle={{
+              ...styles.login_button,
+              backgroundColor: "rgba(107, 107, 107, 1)",
+              marginTop: 20,
+            }}
+            containerStyle={{ width: "90%" }}
+            onPress={() => navigation.navigate("Register")}
+          />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -119,7 +173,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     backgroundColor: "#ffffffff",
     width: "90%",
-    marginBottom: 5,
+    marginBottom: 15,
     borderColor: "#1d65ecff",
     borderWidth: 0.5,
     shadowColor: "#0d0d0edd",

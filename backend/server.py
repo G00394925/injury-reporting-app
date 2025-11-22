@@ -25,16 +25,41 @@ MONGO_URI = os.getenv("MONGO_URI")
 try:
     client = MongoClient(MONGO_URI)
     db = client['injury_reporting_app']
-    athletes_collection = db['athletes']
+    users = db['users']
     logging.info("Connected to MongoDB successfully.")
 except Exception as e:
     logging.error(f"Error connecting to MongoDB: {e}")
+    
 
+@app.route('/api/login', methods=['POST'])
+def login():
+    try:
+        credentials = request.get_json()
+        email = credentials.get('email')
+        password = credentials.get('password')
+        name = ""
 
-@app.route('/api/hello', methods=['GET'])
-def hello_world():
-    return jsonify(message="Hello, World!")
+        logging.info(f"Login attempt for: {email}")
 
+        # Check if user exists
+        user = users.find_one({"email": email})
+
+        if user:
+            # Check password
+            if user.get('password') == password:
+                logging.info(f"User {email} logged in successfully.")
+                name = user.get('name', '').split()[0]
+                return jsonify(message="Login successful", name=name), 200
+            else:
+                logging.warning(f"Invalid password for user {email}")
+                return jsonify(message="Invalid email or password"), 401
+        else:
+            logging.warning(f"User not found: {email}")
+            return jsonify(message="Invalid email or password"), 401
+    
+    except Exception as e:
+        logging.error(f"Error during login: {e}")
+        return jsonify(error=str(e)), 500
 
 # Register new athlete
 @app.route('/api/register/athlete', methods=['POST'])
@@ -49,14 +74,12 @@ def register_athlete():
         "password": athlete.get('password'),
         "dob": athlete.get('dob'),
         "user_type": athlete.get('user_type'),
-        "assigned_coach": None,
         "health_status": health_status.HealthStatus.HEALTHY.value,
-        "previous_injuries": []
     }
 
     # Add athlete to the database
     try:
-        athletes_collection.insert_one(athlete_data)
+        users.insert_one(athlete_data)
         logging.info("Athlete registered successfully.")
         return jsonify(message="Athlete registered successfully"), 201
     except Exception as e:

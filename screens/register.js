@@ -5,12 +5,13 @@ import {
   TextInput,
   TouchableOpacity,
   Platform,
+  Linking,
   Alert,
 } from "react-native";
 import { Button } from "@rneui/themed";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { Link, useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { KeyboardAvoidingView } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -25,10 +26,10 @@ export default function RegisterScreen() {
   const [dobDay, setDobDay] = useState("");
   const [dobMonth, setDobMonth] = useState("");
   const [dobYear, setDobYear] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
 
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   // Validate registration form
   const validateForm = () => {
@@ -98,6 +99,7 @@ export default function RegisterScreen() {
         "0"
       )}`;
 
+      // Send registration data to backend
       const response = await axios.post(
         `${API_BASE_URL}/api/register/athlete`,
         {
@@ -110,6 +112,8 @@ export default function RegisterScreen() {
       );
 
       console.log("Registration Response:", response.data);
+
+      // On successful registration, navigate to main app
       Alert.alert("Success", "Account created successfully!", [
         {
           text: "OK",
@@ -300,13 +304,24 @@ export default function RegisterScreen() {
             </View>
             {errors.dob && <Text style={styles.error_text}>{errors.dob}</Text>}
           </View>
-
           <Button
             title={loading ? "Creating Account..." : "Register"}
             buttonStyle={styles.register_button}
             containerStyle={{ width: "90%", marginTop: 20 }}
             onPress={handleSubmission}
             disabled={loading}
+          />
+
+          <Button
+            title="Already have an account? Log in"
+            titleStyle={{ color: "#ffffffff" }}
+            buttonStyle={{
+              ...styles.register_button,
+              backgroundColor: "rgba(107, 107, 107, 1)",
+              marginTop: 20,
+            }}
+            containerStyle={{ width: "90%" }}
+            onPress={() => navigation.navigate("Login")}
           />
         </ScrollView>
       </KeyboardAvoidingView>
@@ -334,7 +349,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     backgroundColor: "#ffffffff",
     width: "90%",
-    marginBottom: 5,
+    marginBottom: 15,
     borderColor: "#1d65ecff",
     borderWidth: 0.5,
     shadowColor: "#0d0d0edd",

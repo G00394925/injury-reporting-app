@@ -1,13 +1,21 @@
 import { Platform } from "react-native";
+import Constants from "expo-constants";
 
 const getBaseURL = () => {
   if (__DEV__) {
-    return "http://10.27.10.187:5000";
-    //Development
-    // if (Platform.OS === "android") {
-    //   return "http://10.0.2.2:5000"; // Android emulator localhost
-    // }
-    // return "http://localhost:5000"; // iOS simulator localhost
+    // Dynamically get the IP address of the machine running the Expo server
+    const debuggerHost = Constants.expoConfig?.hostUri;
+
+    if (debuggerHost) {
+      const localhost = debuggerHost.split(":")[0];
+      return `http://${localhost}:5000`;
+    }
+
+    // Fallback for simulators/emulators if hostUri isn't available
+    if (Platform.OS === "android") {
+      return "http://10.0.2.2:5000"; // Android emulator localhost
+    }
+    return "http://localhost:5000"; // iOS simulator localhost
   }
 };
 
