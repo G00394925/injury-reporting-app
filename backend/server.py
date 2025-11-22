@@ -7,6 +7,12 @@ import os
 import health_status
 import logging
 
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
@@ -16,8 +22,6 @@ CORS(app,
     methods=["GET", "PUT", "POST", "DELETE", "OPTIONS"],
     supports_credentials=True)
 
-logging.basicConfig(level=logging.INFO)
-
 load_dotenv()
 MONGO_URI = os.getenv("MONGO_URI")
 
@@ -26,20 +30,21 @@ try:
     client = MongoClient(MONGO_URI)
     db = client['injury_reporting_app']
     users = db['users']
-    logging.info("Connected to MongoDB successfully.")
+    logger.info("Connected to MongoDB successfully.")
 except Exception as e:
-    logging.error(f"Error connecting to MongoDB: {e}")
-    
+    logger.error(f"Error connecting to MongoDB: {e}")
+
 
 @app.route('/api/login', methods=['POST'])
 def login():
     try:
+        # Acquire submitted credentials from user
         credentials = request.get_json()
         email = credentials.get('email')
         password = credentials.get('password')
         name = ""
 
-        logging.info(f"Login attempt for: {email}")
+        logger.info(f"Login attempt for: {email}")
 
         # Check if user exists
         user = users.find_one({"email": email})
@@ -47,25 +52,26 @@ def login():
         if user:
             # Check password
             if user.get('password') == password:
-                logging.info(f"User {email} logged in successfully.")
+                logger.info(f"User {email} logged in successfully.")
                 name = user.get('name', '').split()[0]
                 return jsonify(message="Login successful", name=name), 200
             else:
-                logging.warning(f"Invalid password for user {email}")
+                logger.warning(f"Invalid password for user {email}")
                 return jsonify(message="Invalid email or password"), 401
         else:
-            logging.warning(f"User not found: {email}")
+            logger.warning(f"User not found: {email}")
             return jsonify(message="Invalid email or password"), 401
     
     except Exception as e:
-        logging.error(f"Error during login: {e}")
+        logger.error(f"Error during login: {e}")
         return jsonify(error=str(e)), 500
 
 # Register new athlete
 @app.route('/api/register/athlete', methods=['POST'])
 def register_athlete():
+    # Acquire submitted credentials from user
     athlete = request.get_json()
-    logging.info(f"Received athlete registration data: {athlete}")
+    logger.info(f"Received athlete registration data: {athlete}")
     
     athlete_data = {
         "athlete_id": str(uuid.uuid4()),
@@ -80,10 +86,10 @@ def register_athlete():
     # Add athlete to the database
     try:
         users.insert_one(athlete_data)
-        logging.info("Athlete registered successfully.")
+        logger.info("Athlete registered successfully.")
         return jsonify(message="Athlete registered successfully"), 201
     except Exception as e:
-        logging.error(f"Error registering athlete: {e}")
+        logger.error(f"Error registering athlete: {e}")
         return jsonify(error=str(e)), 500
 
 if __name__ == '__main__':

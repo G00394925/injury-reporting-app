@@ -14,9 +14,10 @@ export default function AthleteDashScreen({ route }) {
     Rubik: require("../fonts/Rubik-VariableFont_wght.ttf"),
   });
 
-  const [message, setMessage] = useState("");
+  // Name to appear on welcome text
   const [name, setName] = useState("");
 
+  // Acquire name from login parameters
   useEffect(() => {
     if (route.params?.name) {
       setName(route.params.name);
