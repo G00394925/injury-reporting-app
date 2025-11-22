@@ -38,7 +38,6 @@ export default function AthleteDashScreen({ route }) {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.greetings_text}>Hello {name}</Text>
-      {message ? <Text>{message}</Text> : null}
       <View style={styles.center_view}>
         <Card containerStyle={styles.lights_card}>
           <CardTitle
