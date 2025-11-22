@@ -5,6 +5,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import AthleteDashScreen from "./screens/athlete-home";
 import ReportScreen from "./screens/report";
 import RegisterScreen from "./screens/register";
+import LoginScreen from "./screens/login";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -42,6 +43,7 @@ export default function App() {
         }}
       >
         <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="MainApp" component={TabNavigator} />
       </Stack.Navigator>
     </NavigationContainer>
