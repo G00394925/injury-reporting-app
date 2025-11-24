@@ -18,7 +18,7 @@ export default function ReportScreen() {
           }}
         >
           <Image source={require("../assets/Smile.png")} />
-          <Text>Good!</Text>
+          <Text style={styles.button_text}>Good!</Text>
         </Pressable>
         <Pressable
           style={styles.mood_button}
@@ -27,7 +27,7 @@ export default function ReportScreen() {
           }}
         >
           <Image source={require("../assets/Frown.png")} />
-          <Text>Not great</Text>
+          <Text style={styles.button_text}>Not great</Text>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -50,8 +50,18 @@ const styles = StyleSheet.create({
   mood_button: {
     backgroundColor: "#cfcfcfff",
     padding: 10,
-    borderRadius: 50,
-    borderWidth: 2,
-    borderColor: "transparent",
+    borderRadius: 5,
+    borderWidth: 5,
+    borderBottomColor: "#a3a3a3",
+    borderRightColor: "#a3a3a3",
+    borderTopColor: "#e1e1e1",
+    borderLeftColor: "#e1e1e1",
+  },
+  button_text: {
+    fontSize: 16,
+    marginTop: 10,
+    alignSelf: "center",
+    fontFamily: "Rubik",
+    fontWeight: "bold",
   },
 });

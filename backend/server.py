@@ -42,7 +42,6 @@ def login():
         credentials = request.get_json()
         email = credentials.get('email')
         password = credentials.get('password')
-        name = ""
 
         logger.info(f"Login attempt for: {email}")
 
@@ -54,7 +53,16 @@ def login():
             if user.get('password') == password:
                 logger.info(f"User {email} logged in successfully.")
                 name = user.get('name', '').split()[0]
-                return jsonify(message="Login successful", name=name), 200
+                
+                return jsonify(
+                    message="Login successful", 
+                    uuid=user.get('athlete_id'),
+                    user={
+                        "name": name,
+                       "email": email,
+                        "user_type": user.get('user_type'),
+                       "dob": user.get('dob'),
+                    }), 200
             else:
                 logger.warning(f"Invalid password for user {email}")
                 return jsonify(message="Invalid email or password"), 401

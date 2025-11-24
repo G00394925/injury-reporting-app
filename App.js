@@ -8,7 +8,8 @@ import RegisterScreen from "./screens/register";
 import LoginScreen from "./screens/login";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -30,6 +31,29 @@ function TabNavigator() {
   );
 }
 
+function AppNavigator() {
+  const { isAuthenticated } = useAuth();
+
+  return (
+    <NavigationContainer fallback={<Text>Loading...</Text>}>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        {!isAuthenticated ? (
+          <>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+          </>
+        ) : (
+          <Stack.Screen name="MainApp" component={TabNavigator} />
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
 export default function App() {
   const [fontsLoaded] = useFonts({
     Rubik: require("./fonts/Rubik-VariableFont_wght.ttf"),
@@ -47,17 +71,8 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer fallback={<Text>Loading...</Text>}>
-      <Stack.Navigator
-        initialRouteName="Login"
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Stack.Screen name="Register" component={RegisterScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="MainApp" component={TabNavigator} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AuthProvider>
+      <AppNavigator />
+    </AuthProvider>
   );
 }

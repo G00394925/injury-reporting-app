@@ -15,14 +15,16 @@ import axios from "axios";
 import { KeyboardAvoidingView } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { API_BASE_URL } from "../config/api_config";
+import { useAuth } from "../context/AuthContext";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigation = useNavigation();
+  const { login } = useAuth();
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
 
   // Validate login form
   const validateForm = () => {
@@ -45,7 +47,7 @@ export default function LoginScreen() {
     return Object.keys(issues).length === 0;
   };
 
-  const handleSubmission = async () => {
+  const handleLogin = async () => {
     if (!validateForm()) {
       Alert.alert("Form Error", "Please correct the errors in the form.");
       return;
@@ -62,11 +64,7 @@ export default function LoginScreen() {
 
       console.log("Login Response:", response.data);
 
-      // Navigate to the dashboard
-      navigation.replace("MainApp", {
-        screen: "Dashboard",
-        params: { name: response.data.name },
-      });
+      login(response.data.uuid, response.data.user);
     } catch (error) {
       console.error("Login Error:", error);
       const errorMessage =
@@ -132,7 +130,7 @@ export default function LoginScreen() {
             title={loading ? "Logging in..." : "Log in"}
             buttonStyle={styles.login_button}
             containerStyle={{ width: "90%", marginTop: 20 }}
-            onPress={handleSubmission}
+            onPress={handleLogin}
             disabled={loading}
           />
 

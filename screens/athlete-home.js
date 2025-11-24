@@ -3,22 +3,16 @@ import { Button, Card } from "@rneui/themed";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useState } from "react";
 import { CardTitle } from "@rneui/base/dist/Card/Card.Title";
+import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
 export default function AthleteDashScreen({ route }) {
   // Name to appear on welcome text
-  const [name, setName] = useState("");
-
-  // Acquire name from login parameters
-  useEffect(() => {
-    if (route.params?.name) {
-      setName(route.params.name);
-    }
-  }, [route.params?.name]);
+  const { uuid, userData, logout } = useAuth();
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.greetings_text}>Hello {name}</Text>
+      <Text style={styles.greetings_text}>Hello {userData?.name}</Text>
       <View style={styles.center_view}>
         <Card containerStyle={styles.lights_card}>
           <CardTitle
