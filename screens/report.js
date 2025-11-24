@@ -3,9 +3,26 @@ import { Button } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { globalStyles } from "../styles/globalStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useState } from "react";
+import axios from "axios";
+import { API_BASE_URL } from "../config/api_config";
+import { useAuth } from "../context/AuthContext";
 
 export default function ReportScreen() {
   const navigation = useNavigation();
+  const { uuid } = useAuth();
+
+  const handleReportSubmission = async (mood) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/api/health-report`, {
+        athlete_id: uuid,
+        mood_response: mood,
+      });
+      console.log("Health Report Response:", response.data);
+    } catch (error) {
+      console.error("Error submitting health report:", error);
+    }
+  };
 
   return (
     <SafeAreaView style={globalStyles.container}>
@@ -14,7 +31,8 @@ export default function ReportScreen() {
         <Pressable
           style={styles.mood_button}
           onPress={() => {
-            navigation.navigate("NextScreen");
+            handleReportSubmission("Good!");
+            navigation.navigate("Dashboard");
           }}
         >
           <Image source={require("../assets/Smile.png")} />
@@ -23,7 +41,8 @@ export default function ReportScreen() {
         <Pressable
           style={styles.mood_button}
           onPress={() => {
-            navigation.navigate("NextScreen");
+            handleReportSubmission("Not great");
+            navigation.navigate("Dashboard");
           }}
         >
           <Image source={require("../assets/Frown.png")} />

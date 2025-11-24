@@ -6,7 +6,7 @@ import { CardTitle } from "@rneui/base/dist/Card/Card.Title";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
-export default function AthleteDashScreen({ route }) {
+export default function AthleteDashScreen() {
   // Name to appear on welcome text
   const { uuid, userData, logout } = useAuth();
 

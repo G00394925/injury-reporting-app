@@ -30,6 +30,7 @@ try:
     client = MongoClient(MONGO_URI)
     db = client['injury_reporting_app']
     users = db['users']
+    health_reports = db['health_reports']
     logger.info("Connected to MongoDB successfully.")
 except Exception as e:
     logger.error(f"Error connecting to MongoDB: {e}")
@@ -98,6 +99,27 @@ def register_athlete():
         return jsonify(message="Athlete registered successfully"), 201
     except Exception as e:
         logger.error(f"Error registering athlete: {e}")
+        return jsonify(error=str(e)), 500
+
+
+@app.route('/api/health-report', methods=['POST'])
+def health_report():
+    try:
+        report = request.get_json()
+        report_data = {
+            "user": report.get('athlete_id'),
+            "mood": report.get('mood_response'),
+        }
+
+        logger.info(f"Received new health report: {report_data}")
+
+        health_reports.insert_one(report_data)
+        
+        logger.info("Health report submitted successfully.")
+        
+        return jsonify(message="Health report submitted successfully"), 201
+    except Exception as e:
+        logger.error(f"Error submitting health report: {e}")
         return jsonify(error=str(e)), 500
 
 if __name__ == '__main__':
