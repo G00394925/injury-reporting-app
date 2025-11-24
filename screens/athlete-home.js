@@ -1,19 +1,11 @@
 import { StyleSheet, Text, View, Image } from "react-native";
 import { Button, Card } from "@rneui/themed";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useFonts } from "expo-font";
 import { useEffect, useState } from "react";
-import * as SplashScreen from "expo-splash-screen";
 import { CardTitle } from "@rneui/base/dist/Card/Card.Title";
 import axios from "axios";
 
-SplashScreen.preventAutoHideAsync();
-
 export default function AthleteDashScreen({ route }) {
-  const [fontsLoaded] = useFonts({
-    Rubik: require("../fonts/Rubik-VariableFont_wght.ttf"),
-  });
-
   // Name to appear on welcome text
   const [name, setName] = useState("");
 
@@ -23,17 +15,6 @@ export default function AthleteDashScreen({ route }) {
       setName(route.params.name);
     }
   }, [route.params?.name]);
-
-  // Load fonts first, then hide splash screen
-  useEffect(() => {
-    if (fontsLoaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded]);
-
-  if (!fontsLoaded) {
-    return null;
-  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -125,10 +106,13 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 20,
     margin: 15,
+    justifyContent: "flex-start",
+    alignItems: "center",
   },
   greetings_text: {
     alignItems: "flex-start",
     justifyContent: "flex-start",
+    alignSelf: "flex-start",
     fontSize: 20,
     fontWeight: "bold",
     paddingLeft: 10,

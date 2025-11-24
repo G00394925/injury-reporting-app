@@ -6,6 +6,11 @@ import AthleteDashScreen from "./screens/athlete-home";
 import ReportScreen from "./screens/report";
 import RegisterScreen from "./screens/register";
 import LoginScreen from "./screens/login";
+import * as SplashScreen from "expo-splash-screen";
+import { useFonts } from "expo-font";
+import { useEffect } from "react";
+
+SplashScreen.preventAutoHideAsync();
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -25,19 +30,26 @@ function TabNavigator() {
   );
 }
 
-function TestScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Test Screen</Text>
-    </View>
-  );
-}
-
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    Rubik: require("./fonts/Rubik-VariableFont_wght.ttf"),
+  });
+
+  // Load fonts first, then hide splash screen
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <NavigationContainer fallback={<Text>Loading...</Text>}>
       <Stack.Navigator
-        initialRouteName="MainApp"
+        initialRouteName="Login"
         screenOptions={{
           headerShown: false,
         }}
