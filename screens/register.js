@@ -16,6 +16,7 @@ import axios from "axios";
 import { KeyboardAvoidingView } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { API_BASE_URL } from "../config/api_config";
+import { useAuth } from "../context/AuthContext";
 
 export default function RegisterScreen() {
   const [role, setRole] = useState("athlete");
@@ -30,6 +31,8 @@ export default function RegisterScreen() {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+
+  const { login } = useAuth();
 
   // Validate registration form
   const validateForm = () => {
@@ -117,7 +120,7 @@ export default function RegisterScreen() {
       Alert.alert("Success", "Account created successfully!", [
         {
           text: "OK",
-          onPress: () => navigation.replace("MainApp"),
+          onPress: () => login(response.data.uuid, response.data.user),
         },
       ]);
     } catch (error) {

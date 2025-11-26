@@ -64,6 +64,7 @@ export default function LoginScreen() {
 
       console.log("Login Response:", response.data);
 
+      // Handle successful login using auth context
       login(response.data.uuid, response.data.user);
     } catch (error) {
       console.error("Login Error:", error);

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, Pressable } from "react-native";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { Button } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { globalStyles } from "../styles/globalStyles";
@@ -12,6 +12,7 @@ export default function ReportScreen() {
   const navigation = useNavigation();
   const { uuid } = useAuth();
 
+  // Submit health report to database
   const handleReportSubmission = async (mood) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/api/health-report`, {
@@ -25,35 +26,43 @@ export default function ReportScreen() {
   };
 
   return (
-    <SafeAreaView style={globalStyles.container}>
-      <Text style={styles.question_text}>How was your training today?</Text>
-      <View style={styles.buttons_container}>
-        <Pressable
-          style={styles.mood_button}
-          onPress={() => {
-            handleReportSubmission("Good!");
-            navigation.navigate("Dashboard");
-          }}
-        >
-          <Image source={require("../assets/Smile.png")} />
-          <Text style={styles.button_text}>Good!</Text>
-        </Pressable>
-        <Pressable
-          style={styles.mood_button}
-          onPress={() => {
-            handleReportSubmission("Not great");
-            navigation.navigate("Dashboard");
-          }}
-        >
-          <Image source={require("../assets/Frown.png")} />
-          <Text style={styles.button_text}>Not great</Text>
-        </Pressable>
+    <SafeAreaView style={[globalStyles.container, { margin: 0 }]}>
+      <View style={styles.header}>
+        <Text style={styles.header_text}>Daily Health Report</Text>
+      </View>
+      <View>
+        <Text style={styles.question_text}>How was your training today?</Text>
+        <View style={styles.buttons_container}>
+          <TouchableOpacity style={styles.choice} onPress={() => {}}>
+            <Image source={require("../assets/Smile.png")} />
+            <Text style={styles.choice_button_text}>Good!</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.choice} onPress={() => {}}>
+            <Image source={require("../assets/Frown.png")} />
+            <Text style={styles.choice_button_text}>Not great</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: "row",
+    borderBottomWidth: 2,
+    borderBottomColor: "#000",
+    paddingBottom: 10,
+    marginBottom: 20,
+    width: "100%",
+  },
+  header_text: {
+    margin: 5,
+    marginLeft: 10,
+    fontSize: 24,
+    fontFamily: "Rubik",
+    fontWeight: "bold",
+  },
   question_text: {
     fontSize: 20,
     marginBottom: 20,
@@ -61,26 +70,33 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   buttons_container: {
-    flexDirection: "row",
-    justifyContent: "space-around",
+    flexDirection: "column",
     width: "100%",
-    marginTop: 30,
+    marginBottom: 50,
   },
-  mood_button: {
-    backgroundColor: "#cfcfcfff",
+  choice: {
+    flex: 1,
+    alignItems: "center",
+    backgroundColor: "#ffffffff",
+    justifyContent: "center",
+    margin: 10,
     padding: 10,
-    borderRadius: 5,
-    borderWidth: 5,
-    borderBottomColor: "#a3a3a3",
-    borderRightColor: "#a3a3a3",
-    borderTopColor: "#e1e1e1",
-    borderLeftColor: "#e1e1e1",
+    borderRadius: 25,
+    borderColor: "#1d65ecff",
+    borderWidth: 1,
   },
-  button_text: {
+  choice_button_text: {
     fontSize: 16,
     marginTop: 10,
     alignSelf: "center",
     fontFamily: "Rubik",
+    fontWeight: "bold",
+  },
+  choice_active: {
+    backgroundColor: "#1d65ecff",
+  },
+  choice_text_active: {
+    color: "#ffffffff",
     fontWeight: "bold",
   },
 });
