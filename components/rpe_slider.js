@@ -11,10 +11,12 @@ export default function RpeSlider() {
   const [value, setValue] = useState(1);
 
   const getColor = () => {
+    // Calculate RGB value relative to slider value
     const interpolate = (start, end) => {
       let k = value / 10;
       return Math.ceil((1 - k) * start + k * end) % 256;
     };
+
     let r = interpolate(0, 255);
     let g = interpolate(200, 0);
     let b = 0;

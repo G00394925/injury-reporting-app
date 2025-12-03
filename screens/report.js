@@ -19,6 +19,23 @@ import RpeSlider from "../components/rpe_slider";
 export default function ReportScreen() {
   const navigation = useNavigation();
   const { uuid } = useAuth();
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+
+  // List of Questions for report
+  const questions = [
+    {
+      index: 0,
+      text: "How was training?",
+      subtext: "Rate your perceived exertion level below",
+      component: <RpeSlider />,
+    },
+    {
+      index: 1,
+      text: "Did you get injured today?",
+      subtext: null,
+      component: null,
+    },
+  ];
 
   // Submit health report to database
   const handleReportSubmission = async (mood) => {
@@ -39,17 +56,23 @@ export default function ReportScreen() {
         <Text style={styles.header_text}>Daily Health Report</Text>
       </View>
       <View style={{ flex: 1 }}>
-        <Text style={styles.question_text}>How was training?</Text>
-        <Text style={styles.question_subtext}>
-          Rate your percieved exertion level below
+        <Text style={styles.question_text}>
+          {questions[currentQuestionIndex].text}
         </Text>
-        <RpeSlider />
+        <Text style={styles.question_subtext}>
+          {questions[currentQuestionIndex].subtext}
+        </Text>
+        {questions[currentQuestionIndex].component}
       </View>
       <View style={styles.navigation_buttons}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          onPress={() => setCurrentQuestionIndex(currentQuestionIndex - 1)}
+        >
           <Text style={styles.nav_button_text}>Previous</Text>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setCurrentQuestionIndex(currentQuestionIndex + 1)}
+        >
           <Text style={styles.nav_button_text}>Next</Text>
         </TouchableOpacity>
       </View>
@@ -92,7 +115,6 @@ const styles = StyleSheet.create({
     marginBottom: 50,
   },
   navigation_buttons: {
-    flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
