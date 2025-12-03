@@ -4,10 +4,11 @@ import { useState } from "react";
 import { View, StyleSheet, Dimensions, Text } from "react-native";
 
 const { width: screenWidth } = Dimensions.get("window");
-const SLIDER_WIDTH = screenWidth - 60;
+const CONTAINER_WIDTH = screenWidth * 0.9;
+const SLIDER_WIDTH = CONTAINER_WIDTH - 60;
 
 export default function RpeSlider() {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(1);
 
   const getColor = () => {
     const interpolate = (start, end) => {
@@ -39,25 +40,27 @@ export default function RpeSlider() {
   return (
     <View style={styles.container}>
       <View style={styles.iconContainer}>
-        <MaterialIcons name={getIcon()} size={70} color={getColor()} />
+        <MaterialIcons name={getIcon()} size={120} color={getColor()} />
       </View>
-      <Slider
-        style={{ width: SLIDER_WIDTH, height: 40 }}
-        minimumValue={0}
-        maximumValue={10}
-        step={1}
-        value={value}
-        onValueChange={setValue}
-        minimumTrackTintColor={"black"}
-        maximumTrackTintColor="#afafafff"
-        thumbTintColor={getColor()}
-      />
-      <View style={styles.labelsContainer}>
-        <Text style={styles.labelText}>0</Text>
-        <Text style={styles.labelText}>5</Text>
-        <Text style={styles.labelText}>10</Text>
+      <View style={styles.sliderContainer}>
+        <Slider
+          style={{ width: SLIDER_WIDTH, height: 40 }}
+          minimumValue={1}
+          maximumValue={10}
+          step={1}
+          value={value}
+          onValueChange={setValue}
+          minimumTrackTintColor={"black"}
+          maximumTrackTintColor="#afafafff"
+          thumbTintColor={getColor()}
+        />
+        <View style={styles.labelsContainer}>
+          <Text style={styles.labelText}>1</Text>
+          <Text style={styles.labelText}>5</Text>
+          <Text style={styles.labelText}>10</Text>
+        </View>
+        <Text style={styles.rpe_label}>{getLabel()}</Text>
       </View>
-      <Text style={styles.rpe_label}>{getLabel()}</Text>
     </View>
   );
 }
@@ -69,7 +72,14 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   iconContainer: {
-    marginBottom: 15,
+    marginBottom: 45,
+  },
+  sliderContainer: {
+    padding: 30,
+    backgroundColor: "#dadadaff",
+    alignContent: "center",
+    width: CONTAINER_WIDTH,
+    borderRadius: 10,
   },
   valueText: {
     fontSize: 32,

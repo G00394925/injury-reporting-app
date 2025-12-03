@@ -32,7 +32,10 @@ export default function ReportScreen() {
         <Text style={styles.header_text}>Daily Health Report</Text>
       </View>
       <View>
-        <Text style={styles.question_text}>How was your training today?</Text>
+        <Text style={styles.question_text}>How was training?</Text>
+        <Text style={styles.question_subtext}>
+          Rate your percieved exertion level below
+        </Text>
         <RpeSlider />
 
         {/* <View style={styles.buttons_container}>
@@ -64,7 +67,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#00000063",
     paddingBottom: 10,
-    marginBottom: 20,
+    marginBottom: 40,
     width: "100%",
   },
   header_text: {
@@ -75,10 +78,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   question_text: {
-    fontSize: 20,
-    marginBottom: 20,
-    fontFamily: "Rubik",
+    fontSize: 26,
+    marginBottom: 5,
     fontWeight: "bold",
+    fontFamily: "Rubik",
+    alignSelf: "center",
+  },
+  question_subtext: {
+    fontSize: 16,
+    marginBottom: 25,
+    fontFamily: "Rubik",
     alignSelf: "center",
   },
   buttons_container: {
