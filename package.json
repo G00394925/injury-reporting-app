@@ -12,6 +12,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@expo/vector-icons": "^15.0.3",
     "@mui/icons-material": "^7.3.5",
     "@mui/material": "^7.3.5",
     "@react-native-community/datetimepicker": "8.4.4",

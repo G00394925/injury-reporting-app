@@ -35,6 +35,16 @@ try:
 except Exception as e:
     logger.error(f"Error connecting to MongoDB: {e}")
 
+@app.route('/api/test', methods=['GET'])
+def test_route():
+    try:
+        message = "Test route works"
+
+        return jsonify(
+            test_message = message
+        )
+    except Exception as e:
+        print(f"error: {e}")
 
 @app.route('/api/login', methods=['POST'])
 def login():

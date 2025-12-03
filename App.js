@@ -10,6 +10,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
 import { useEffect, useState } from "react";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { MaterialIcons } from "@expo/vector-icons";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -24,7 +25,13 @@ function TabNavigator() {
       }}
     >
       <Tab.Screen name="Dashboard" component={AthleteDashScreen} />
-      <Tab.Screen name="Report" component={ReportScreen} />
+      <Tab.Screen
+        name="Report"
+        component={ReportScreen}
+        options={{
+          tabBarStyle: { display: "none" },
+        }}
+      />
       <Tab.Screen name="History" component={ReportScreen} />
       <Tab.Screen name="Account" component={ReportScreen} />
     </Tab.Navigator>
@@ -47,7 +54,10 @@ function AppNavigator() {
             <Stack.Screen name="Register" component={RegisterScreen} />
           </>
         ) : (
-          <Stack.Screen name="MainApp" component={TabNavigator} />
+          <>
+            <Stack.Screen name="MainApp" component={TabNavigator} />
+            <Stack.Screen name="Report" component={ReportScreen} />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>
@@ -57,6 +67,7 @@ function AppNavigator() {
 export default function App() {
   const [fontsLoaded] = useFonts({
     Rubik: require("./fonts/Rubik-VariableFont_wght.ttf"),
+    ...MaterialIcons.font,
   });
 
   // Load fonts first, then hide splash screen

@@ -1,21 +1,11 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-  Platform,
-  Alert,
-} from "react-native";
+import { useState } from "react";
+import { View, Text, TextInput, Alert, StyleSheet } from "react-native";
 import { Button } from "@rneui/themed";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
-import { KeyboardAvoidingView } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
-import { API_BASE_URL } from "../config/api_config";
 import { useAuth } from "../context/AuthContext";
+import axios from "axios";
+import { API_BASE_URL } from "../config/api_config";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -24,130 +14,133 @@ export default function LoginScreen() {
 
   const navigation = useNavigation();
   const { login } = useAuth();
-  const [errors, setErrors] = useState({});
-
-  // Validate login form
-  const validateForm = () => {
-    const issues = {};
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email.trim()) {
-      issues.email = "Email is required";
-    } else if (!emailRegex.test(email)) {
-      issues.email = "Invalid email format";
-    }
-
-    // Password validation
-    if (!password) {
-      issues.password = "Password is required";
-    }
-
-    setErrors(issues);
-    return Object.keys(issues).length === 0;
-  };
 
   const handleLogin = async () => {
-    if (!validateForm()) {
-      Alert.alert("Form Error", "Please correct the errors in the form.");
+    console.log("=== LOGIN ATTEMPT START ===");
+    console.log("Email:", email);
+    console.log("API_BASE_URL:", API_BASE_URL);
+
+    if (!email || !password) {
+      console.log("ERROR: Missing email or password");
+      Alert.alert("Error", "Please enter email and password");
       return;
     }
 
     setLoading(true);
 
-    // Login Submission
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/login`, {
+      const url = `${API_BASE_URL}/api/login`;
+      console.log("Making request to:", url);
+
+      const payload = {
         email: email,
         password: password,
+      };
+      console.log("Payload:", payload);
+
+      const response = await axios.post(url, payload, {
+        timeout: 10000,
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
-      console.log("Login Response:", response.data);
+      console.log("=== LOGIN SUCCESS ===");
+      console.log("Response status:", response.status);
+      console.log("Response data:", response.data);
 
-      // Handle successful login using auth context
+      // Check if response has expected data
+      if (!response.data.uuid) {
+        console.error("ERROR: No UUID in response");
+        Alert.alert("Error", "Invalid response from server");
+        return;
+      }
+
+      if (!response.data.user) {
+        console.error("ERROR: No user data in response");
+        Alert.alert("Error", "Invalid response from server");
+        return;
+      }
+
+      console.log("Calling login() with:", {
+        uuid: response.data.uuid,
+        user: response.data.user,
+      });
+
+      // Save user data to context
       login(response.data.uuid, response.data.user);
+
+      console.log("Login context updated successfully");
+      Alert.alert("Success", "Logged in successfully!");
     } catch (error) {
-      console.error("Login Error:", error);
+      console.log("=== LOGIN ERROR ===");
+      console.error("Error type:", error.constructor.name);
+      console.error("Error message:", error.message);
+      console.error("Error code:", error.code);
+
+      if (error.response) {
+        // Server responded with error
+        console.error("Response status:", error.response.status);
+        console.error("Response data:", error.response.data);
+        console.error("Response headers:", error.response.headers);
+      } else if (error.request) {
+        // Request made but no response
+        console.error("Request made but no response received");
+        console.error("Request:", error.request);
+      } else {
+        // Something else happened
+        console.error("Error setting up request:", error.message);
+      }
+
       const errorMessage =
         error.response?.data?.error ||
         error.response?.data?.message ||
+        error.message ||
         "Login failed. Please try again.";
+
+      console.log("Showing error alert:", errorMessage);
       Alert.alert("Error", errorMessage);
     } finally {
       setLoading(false);
+      console.log("=== LOGIN ATTEMPT END ===");
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1, width: "100%", alignItems: "center" }}
-      >
-        <ScrollView
-          style={{ width: "100%" }}
-          contentContainerStyle={{
-            alignItems: "center",
-            paddingBottom: 40,
-          }}
-          showsVerticalScrollIndicator={false}
-        >
-          <Text style={{ fontSize: 42, fontWeight: "bold" }}>Log in</Text>
-          <View style={styles.text_box_container}>
-            <TextInput
-              style={[styles.text_box, errors.email && styles.text_box_error]}
-              placeholder="Email"
-              value={email}
-              onChangeText={(text) => {
-                setEmail(text);
-                if (errors.email) setErrors({ ...errors, email: null });
-              }}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-            />
-            {errors.email && (
-              <Text style={styles.error_text}>{errors.email}</Text>
-            )}
+      <Text style={styles.title}>Login</Text>
 
-            <TextInput
-              style={[
-                styles.text_box,
-                errors.password && styles.text_box_error,
-              ]}
-              placeholder="Password"
-              value={password}
-              onChangeText={(text) => {
-                setPassword(text);
-                if (errors.password) setErrors({ ...errors, password: null });
-              }}
-              secureTextEntry={true}
-            />
-            {errors.password && (
-              <Text style={styles.error_text}>{errors.password}</Text>
-            )}
-          </View>
-          <Button
-            title={loading ? "Logging in..." : "Log in"}
-            buttonStyle={styles.login_button}
-            containerStyle={{ width: "90%", marginTop: 20 }}
-            onPress={handleLogin}
-            disabled={loading}
-          />
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
 
-          <Button
-            title="Don't have an account? Sign up"
-            titleStyle={{ color: "#ffffffff" }}
-            buttonStyle={{
-              ...styles.login_button,
-              backgroundColor: "rgba(107, 107, 107, 1)",
-              marginTop: 20,
-            }}
-            containerStyle={{ width: "90%" }}
-            onPress={() => navigation.navigate("Register")}
-          />
-        </ScrollView>
-      </KeyboardAvoidingView>
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+      />
+
+      <Button
+        title={loading ? "Logging in..." : "Login"}
+        onPress={handleLogin}
+        disabled={loading}
+        buttonStyle={styles.button}
+        containerStyle={{ width: "90%", marginTop: 20 }}
+      />
+
+      <Button
+        title="Don't have an account? Register"
+        type="clear"
+        onPress={() => navigation.navigate("Register")}
+        containerStyle={{ marginTop: 15 }}
+      />
     </SafeAreaView>
   );
 }
@@ -155,46 +148,26 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 65,
-    marginBottom: 20,
-    justifyContent: "flex-start",
+    justifyContent: "center",
     alignItems: "center",
+    padding: 20,
   },
-  text_box_container: {
-    justifyContent: "flex-start",
-    alignItems: "center",
-    marginTop: 40,
-    width: "100%",
-    paddingHorizontal: 20,
+  title: {
+    fontSize: 32,
+    fontWeight: "bold",
+    marginBottom: 40,
   },
-  text_box: {
+  input: {
+    width: "90%",
     padding: 15,
     borderRadius: 30,
-    backgroundColor: "#ffffffff",
-    width: "90%",
+    backgroundColor: "#ffffff",
     marginBottom: 15,
-    borderColor: "#1d65ecff",
     borderWidth: 0.5,
-    shadowColor: "#0d0d0edd",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.25,
-    elevation: 5,
+    borderColor: "#1d65ecff",
     fontSize: 16,
   },
-  text_box_error: {
-    borderColor: "#ff0000",
-    borderWidth: 2,
-  },
-  error_text: {
-    color: "#ff0000",
-    fontSize: 12,
-    width: "90%",
-    marginBottom: 15,
-    marginTop: 2,
-    paddingLeft: 15,
-  },
-  login_button: {
+  button: {
     padding: 15,
     backgroundColor: "#1d65ecff",
     borderRadius: 30,

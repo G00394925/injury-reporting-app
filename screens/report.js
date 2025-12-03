@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import { Button } from "@rneui/themed";
+import { Slider } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { globalStyles } from "../styles/globalStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -7,6 +7,7 @@ import { useState } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "../config/api_config";
 import { useAuth } from "../context/AuthContext";
+import RpeSlider from "../components/rpe_slider";
 
 export default function ReportScreen() {
   const navigation = useNavigation();
@@ -32,16 +33,26 @@ export default function ReportScreen() {
       </View>
       <View>
         <Text style={styles.question_text}>How was your training today?</Text>
-        <View style={styles.buttons_container}>
+        <RpeSlider />
+
+        {/* <View style={styles.buttons_container}>
           <TouchableOpacity style={styles.choice} onPress={() => {}}>
-            <Image source={require("../assets/Smile.png")} />
+            <Image
+              source={require("../assets/Smile.png")}
+              style={styles.choice_image}
+              resizeMode="contain"
+            />
             <Text style={styles.choice_button_text}>Good!</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.choice} onPress={() => {}}>
-            <Image source={require("../assets/Frown.png")} />
+            <Image
+              source={require("../assets/Frown.png")}
+              style={styles.choice_image}
+              resizeMode="contain"
+            />
             <Text style={styles.choice_button_text}>Not great</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
     </SafeAreaView>
   );
@@ -50,8 +61,8 @@ export default function ReportScreen() {
 const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
-    borderBottomWidth: 2,
-    borderBottomColor: "#000",
+    borderBottomWidth: 1,
+    borderBottomColor: "#00000063",
     paddingBottom: 10,
     marginBottom: 20,
     width: "100%",
@@ -68,9 +79,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontFamily: "Rubik",
     fontWeight: "bold",
+    alignSelf: "center",
   },
   buttons_container: {
-    flexDirection: "column",
+    flexDirection: "row",
     width: "100%",
     marginBottom: 50,
   },
@@ -84,6 +96,8 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     borderColor: "#1d65ecff",
     borderWidth: 1,
+    minHeight: 150,
+    maxHeight: 200,
   },
   choice_button_text: {
     fontSize: 16,
@@ -91,6 +105,10 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     fontFamily: "Rubik",
     fontWeight: "bold",
+  },
+  choice_image: {
+    width: 100,
+    height: 100,
   },
   choice_active: {
     backgroundColor: "#1d65ecff",
