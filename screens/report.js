@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  Touchable,
+} from "react-native";
 import { Slider } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { globalStyles } from "../styles/globalStyles";
@@ -27,35 +34,24 @@ export default function ReportScreen() {
   };
 
   return (
-    <SafeAreaView style={[globalStyles.container, { margin: 0 }]}>
+    <SafeAreaView style={[globalStyles.container, { margin: 0, flex: 1 }]}>
       <View style={styles.header}>
         <Text style={styles.header_text}>Daily Health Report</Text>
       </View>
-      <View>
+      <View style={{ flex: 1 }}>
         <Text style={styles.question_text}>How was training?</Text>
         <Text style={styles.question_subtext}>
           Rate your percieved exertion level below
         </Text>
         <RpeSlider />
-
-        {/* <View style={styles.buttons_container}>
-          <TouchableOpacity style={styles.choice} onPress={() => {}}>
-            <Image
-              source={require("../assets/Smile.png")}
-              style={styles.choice_image}
-              resizeMode="contain"
-            />
-            <Text style={styles.choice_button_text}>Good!</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.choice} onPress={() => {}}>
-            <Image
-              source={require("../assets/Frown.png")}
-              style={styles.choice_image}
-              resizeMode="contain"
-            />
-            <Text style={styles.choice_button_text}>Not great</Text>
-          </TouchableOpacity>
-        </View> */}
+      </View>
+      <View style={styles.navigation_buttons}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={styles.nav_button_text}>Previous</Text>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Text style={styles.nav_button_text}>Next</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -94,6 +90,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     marginBottom: 50,
+  },
+  navigation_buttons: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderTopWidth: 1,
+    borderTopColor: "#00000020",
+  },
+  nav_button_text: {
+    color: "#3b3b3bff",
+    fontSize: 15,
+    fontWeight: "bold",
+    fontFamily: "Rubik",
   },
   choice: {
     flex: 1,
