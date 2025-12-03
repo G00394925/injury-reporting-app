@@ -1,7 +1,9 @@
 import { Icon } from "@rneui/base";
 import { Slider } from "@rneui/themed";
 import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Dimensions } from "react-native";
+
+const { width: screenWidth } = Dimensions.get("window");
 
 export default function RpeSlider() {
   const [value, setValue] = useState(0);
@@ -33,29 +35,36 @@ export default function RpeSlider() {
     return "sentiment-very-dissatisfied";
   };
 
+  const sliderWidth = screenWidth * 0.85;
+
   return (
     <View style={styles.container}>
-      <Slider
-        value={value}
-        onValueChange={setValue}
-        maximumValue={10}
-        minimumValue={0}
-        step={1}
-        allowTouchTrack={true}
-        trackStyle={styles.track}
-        thumbStyle={[styles.thumb, { backgroundColor: getColor() }]}
-        thumbProps={{
-          children: (
-            <Icon
-              style={styles.iconContainer}
-              name={getIcon()}
-              type="material"
-              size={20}
-              color="#ffffff"
-            />
-          ),
-        }}
-      />
+      <View style={[styles.sliderContainer, { width: sliderWidth }]}>
+        <Slider
+          style={{ width: sliderWidth }}
+          value={value}
+          onValueChange={setValue}
+          maximumValue={10}
+          minimumValue={0}
+          step={1}
+          allowTouchTrack={true}
+          minimumTrackTintColor={getColor()}
+          maximumTrackTintColor="#e1e1e1"
+          trackStyle={styles.track}
+          thumbStyle={[styles.thumb, { backgroundColor: getColor() }]}
+          thumbProps={{
+            children: (
+              <Icon
+                containerStyle={styles.iconContainer}
+                name={getIcon()}
+                type="material"
+                size={20}
+                color="#ffffff"
+              />
+            ),
+          }}
+        />
+      </View>
     </View>
   );
 }
@@ -63,13 +72,17 @@ export default function RpeSlider() {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    alignSelf: "center",
+    alignItems: "center",
     paddingVertical: 10,
+  },
+  sliderContainer: {
+    height: 50,
+    justifyContent: "center",
+    alignSelf: "center",
   },
   track: {
     height: 10,
     borderRadius: 5,
-    backgroundColor: "#e1e1e1",
   },
   thumb: {
     height: 30,
@@ -81,5 +94,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     justifyContent: "center",
     alignItems: "center",
+    height: 30,
+    width: 30,
   },
 });
