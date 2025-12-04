@@ -56,14 +56,18 @@ export default function ReportScreen() {
       <View style={styles.header}>
         <Text style={styles.header_text}>Daily Health Report</Text>
       </View>
-      <View style={{ flex: 1 }}>
-        <Text style={styles.question_text}>
-          {questions[currentQuestionIndex].text}
-        </Text>
-        <Text style={styles.question_subtext}>
-          {questions[currentQuestionIndex].subtext}
-        </Text>
-        {questions[currentQuestionIndex].component}
+      <View style={styles.content}>
+        <View style={styles.question_container}>
+          <Text style={styles.question_text}>
+            {questions[currentQuestionIndex].text}
+          </Text>
+          <Text style={styles.question_subtext}>
+            {questions[currentQuestionIndex].subtext}
+          </Text>
+        </View>
+        <View style={styles.componentContainer}>
+          {questions[currentQuestionIndex].component}
+        </View>
       </View>
       <View style={styles.navigation_buttons}>
         <TouchableOpacity
@@ -87,7 +91,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#00000063",
     paddingBottom: 10,
-    marginBottom: 40,
     width: "100%",
   },
   header_text: {
@@ -97,16 +100,28 @@ const styles = StyleSheet.create({
     fontFamily: "Rubik",
     fontWeight: "bold",
   },
+  content: {
+    flex: 1,
+    justifyContent: "center",
+    paddingBottom: 50,
+  },
+  question_container: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  componentContainer: {
+    width: "100%",
+    alignItems: "center",
+  },
   question_text: {
-    fontSize: 26,
-    marginBottom: 5,
+    fontSize: 28,
+    marginBottom: 10,
     fontWeight: "bold",
     fontFamily: "Rubik",
     alignSelf: "center",
   },
   question_subtext: {
     fontSize: 16,
-    marginBottom: 25,
     fontFamily: "Rubik",
     alignSelf: "center",
   },
@@ -119,14 +134,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
-    paddingVertical: 15,
+    paddingVertical: 20,
     paddingHorizontal: 20,
     borderTopWidth: 1,
     borderTopColor: "#00000020",
   },
   nav_button_text: {
     color: "#3b3b3bff",
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "bold",
     fontFamily: "Rubik",
   },

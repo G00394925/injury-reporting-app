@@ -24,8 +24,10 @@ export default function MultiChoice({ options }) {
           >
             {option}
           </Text>
-          {selectedOption === option && (
-            <MaterialIcons name="check-circle" size={24} color="#ffffff" />
+          {selectedOption === option ? (
+            <MaterialIcons name="check-circle" size={28} color="#ffffff" />
+          ) : (
+            <View style={styles.placeholder} />
           )}
         </TouchableOpacity>
       ))}
@@ -36,22 +38,29 @@ export default function MultiChoice({ options }) {
 const styles = StyleSheet.create({
   optionContainer: {
     width: "100%",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 25,
-    flex: 1,
+    paddingHorizontal: 20,
+    gap: 15,
   },
   optionButton: {
-    width: "90%",
-    padding: 15,
+    width: "100%",
+    paddingVertical: 20,
+    paddingHorizontal: 25,
     marginVertical: 10,
-    borderRadius: 30,
+    borderRadius: 15,
     backgroundColor: "#ffffff",
     borderColor: "#0000006c",
+    borderWidth: 2,
     justifyContent: "space-between",
     flexDirection: "row",
-    borderWidth: 1,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   optionActive: {
     borderColor: "#ffffffff",
@@ -62,8 +71,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginLeft: 5,
     fontWeight: "bold",
+    color: "#333",
   },
   optionTextActive: {
     color: "#ffffffff",
+  },
+  placeholder: {
+    width: 28,
+    height: 28,
   },
 });
