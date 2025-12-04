@@ -1,15 +1,16 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { useState } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 
-export default function MultiChoice({ options, value, onValueChange }) {
+export default function MultiChoice({ options, value, onValueChange, compact = false }) {
+  
   return (
-    <View style={styles.optionContainer}>
+    <View style={[styles.optionContainer, compact && styles.optionContainerCompact]}>
       {options.map((option, index) => (
         <TouchableOpacity
           style={[
             styles.optionButton,
-            value === option ? styles.optionActive : null,
+            compact && styles.optionButtonCompact,
+            value === option && styles.optionActive
           ]}
           key={index}
           onPress={() => onValueChange(option)}
@@ -17,16 +18,18 @@ export default function MultiChoice({ options, value, onValueChange }) {
           <Text
             style={[
               styles.optionText,
-              value === option ? styles.optionTextActive : null,
+              compact && styles.optionTextCompact,
+              value === option && styles.optionTextActive
             ]}
           >
             {option}
           </Text>
-          {value === option ? (
-            <MaterialIcons name="check-circle" size={28} color="#ffffff" />
-          ) : (
-            <View style={styles.placeholder} />
-          )}
+          {!compact &&
+            (value === option ? (
+              <MaterialIcons name="check-circle" size={28} color="#ffffff" />
+            ) : (
+              <View style={styles.placeholder} />
+            ))}
         </TouchableOpacity>
       ))}
     </View>
@@ -37,45 +40,57 @@ const styles = StyleSheet.create({
   optionContainer: {
     width: "100%",
     paddingHorizontal: 20,
-    gap: 15,
+    gap: 15
+  },
+  optionContainerCompact: {
+    paddingHorizontal: 20,
+    gap: 10,
+    flexDirection: "row",
+    justifyContent: "space-between"
   },
   optionButton: {
     width: "100%",
     paddingVertical: 20,
     paddingHorizontal: 25,
-    marginVertical: 10,
     borderRadius: 45,
     backgroundColor: "#ffffff",
     borderColor: "#0000006c",
     borderWidth: 2,
-    justifyContent: "space-between",
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 3
+  },
+  optionButtonCompact: {
+    paddingVertical: 25,
+    justifyContent: "center",
+    borderRadius: 45,
+    flex: 1
   },
   optionActive: {
     borderColor: "#ffffffff",
     borderWidth: 2,
-    backgroundColor: "#1d65ecff",
+    backgroundColor: "#1d65ecff"
   },
   optionText: {
     fontSize: 18,
-    marginLeft: 5,
     fontWeight: "bold",
     color: "#333",
+    fontFamily: "Rubik"
+  },
+  optionTextCompact: {
+    fontSize: 18,
+    textAlign: "center"
   },
   optionTextActive: {
-    color: "#ffffffff",
+    color: "#ffffff"
   },
   placeholder: {
     width: 28,
-    height: 28,
-  },
+    height: 28
+  }
 });

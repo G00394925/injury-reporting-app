@@ -1,6 +1,5 @@
 import Slider from "@react-native-community/slider";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useState } from "react";
 import { View, StyleSheet, Dimensions, Text } from "react-native";
 
 const { width: screenWidth } = Dimensions.get("window");

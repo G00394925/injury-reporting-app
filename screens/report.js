@@ -1,12 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TouchableOpacity,
-  Touchable,
-} from "react-native";
-import { Slider } from "@rneui/themed";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { globalStyles } from "../styles/globalStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -27,13 +19,13 @@ export default function ReportScreen() {
     rpe: 1,
     injured: null,
     feeling: null,
-    injuryLocation: null,
+    injuryLocation: null
   });
 
   const updateAnswer = (key, value) => {
     setAnswers((prev) => ({
       ...prev,
-      [key]: value,
+      [key]: value
     }));
   };
 
@@ -48,34 +40,37 @@ export default function ReportScreen() {
           value={answers.rpe}
           onValueChange={(value) => updateAnswer("rpe", value)}
         />
-      ),
+      )
     },
     {
       index: 1,
-      text: "Did you get injured today?",
+      text: null,
       subtext: null,
       component: (
-        <MultiChoice
-          options={["Yes", "No"]}
-          value={answers.injured}
-          onValueChange={(value) => updateAnswer("injured", value)}
-        />
-      ),
+        <View style={styles.compact_container}>
+          <View>
+            <Text style={styles.compact_question_text}>Did you get injured today?</Text>
+            <MultiChoice
+              options={["Yes", "No"]}
+              value={answers.injured}
+              compact={true}
+              onValueChange={(value) => updateAnswer("injured", value)}
+            />
+          </View>
+          <View>
+            <Text style={styles.compact_question_text}>Do you feel sick?</Text>
+            <MultiChoice
+              options={["Yes", "No"]}
+              value={answers.ill}
+              compact={true}
+              onValueChange={(value) => updateAnswer("ill", value)}
+            />
+          </View>
+        </View>
+      )
     },
     {
       index: 2,
-      text: "How are you feeling?",
-      subtext: null,
-      component: (
-        <MultiChoice
-          options={["Good", "Okay", "I feel sick/unwell"]}
-          value={answers.feeling}
-          onValueChange={(value) => updateAnswer("feeling", value)}
-        />
-      ),
-    },
-    {
-      index: 3,
       text: "Where did you get injured?",
       subtext: "Select the aproximate location of your injury.",
       component: (
@@ -89,13 +84,13 @@ export default function ReportScreen() {
             "Foot",
             "Leg",
             "Back",
-            "Other",
+            "Other"
           ]}
           value={answers.injuryLocation}
           onValueChange={(value) => updateAnswer("injuryLocation", value)}
         />
-      ),
-    },
+      )
+    }
   ];
 
   // Submit health report to database
@@ -103,7 +98,7 @@ export default function ReportScreen() {
     try {
       const response = await axios.post(`${API_BASE_URL}/api/health-report`, {
         athlete_id: uuid,
-        mood_response: mood,
+        mood_response: mood
       });
       console.log("Health Report Response:", response.data);
     } catch (error) {
@@ -122,9 +117,7 @@ export default function ReportScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.question_container}>
-          <Text style={styles.question_text}>
-            {questions[currentQuestionIndex].text}
-          </Text>
+          <Text style={styles.question_text}>{questions[currentQuestionIndex].text}</Text>
           <Text style={styles.question_subtext}>
             {questions[currentQuestionIndex].subtext}
           </Text>
@@ -155,47 +148,44 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#00000063",
     paddingBottom: 10,
-    width: "100%",
+    width: "100%"
   },
   header_text: {
     margin: 5,
     marginLeft: 10,
     fontSize: 24,
     fontFamily: "Rubik",
-    fontWeight: "bold",
+    fontWeight: "bold"
   },
   scroll_view: {
-    flex: 1,
+    flex: 1
   },
   content: {
     flexGrow: 1,
-    justifyContent: "center",
-    paddingVertical: 30,
+    paddingVertical: 30
   },
   question_container: {
     paddingHorizontal: 20,
-    marginBottom: 20,
+    marginBottom: 20
   },
   componentContainer: {
     width: "100%",
-    alignItems: "center",
+    alignItems: "center"
   },
   question_text: {
     fontSize: 28,
     marginBottom: 10,
     fontWeight: "bold",
     fontFamily: "Rubik",
-    alignSelf: "center",
   },
   question_subtext: {
     fontSize: 16,
-    fontFamily: "Rubik",
-    alignSelf: "center",
+    fontFamily: "Rubik"
   },
   buttons_container: {
     flexDirection: "row",
     width: "100%",
-    marginBottom: 50,
+    marginBottom: 50
   },
   navigation_buttons: {
     flexDirection: "row",
@@ -204,13 +194,13 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 20,
     borderTopWidth: 1,
-    borderTopColor: "#00000020",
+    borderTopColor: "#00000020"
   },
   nav_button_text: {
     color: "#3b3b3bff",
     fontSize: 16,
     fontWeight: "bold",
-    fontFamily: "Rubik",
+    fontFamily: "Rubik"
   },
   choice: {
     flex: 1,
@@ -223,24 +213,35 @@ const styles = StyleSheet.create({
     borderColor: "#1d65ecff",
     borderWidth: 1,
     minHeight: 150,
-    maxHeight: 200,
+    maxHeight: 200
   },
   choice_button_text: {
     fontSize: 16,
     marginTop: 10,
     alignSelf: "center",
     fontFamily: "Rubik",
-    fontWeight: "bold",
+    fontWeight: "bold"
   },
   choice_image: {
     width: 100,
-    height: 100,
+    height: 100
   },
   choice_active: {
-    backgroundColor: "#1d65ecff",
+    backgroundColor: "#1d65ecff"
   },
   choice_text_active: {
     color: "#ffffffff",
-    fontWeight: "bold",
+    fontWeight: "bold"
   },
+  compact_container: {
+    gap: 40,
+    width: "100%"
+  },
+  compact_question_text: {
+    fontSize: 22,
+    marginHorizontal: 20,
+    marginBottom: 20,
+    fontWeight: "bold",
+    fontFamily: "Rubik",
+  }
 });
