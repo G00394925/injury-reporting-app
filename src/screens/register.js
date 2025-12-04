@@ -95,7 +95,7 @@ export default function RegisterScreen() {
 
       // Send registration data to backend
       const response = await axios.post(
-        `${API_BASE_URL}/api/register/athlete`,
+        `${API_BASE_URL}/api/register`,
         {
           name: name,
           email: email,

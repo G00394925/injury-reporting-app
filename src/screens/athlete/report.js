@@ -18,7 +18,7 @@ export default function ReportScreen() {
   const [answers, setAnswers] = useState({
     rpe: 1,
     injured: null,
-    feeling: null,
+    ill: null,
     injuryLocation: null
   });
 
@@ -96,8 +96,15 @@ export default function ReportScreen() {
   // Submit health report to database
   const handleReportSubmission = async (answers) => {
     try {
+      console.log("Submitting health report for user:", uuid);
+
+      if (!uuid) {
+        console.error("No UUID exists for user");
+        return;
+      }
+
       const response = await axios.post(`${API_BASE_URL}/api/health-report`, {
-        athlete_id: uuid,
+        user_id: uuid,
         answers_list: answers
       });
 
@@ -108,7 +115,7 @@ export default function ReportScreen() {
       setAnswers({
         rpe: 1,
         injured: null,
-        feeling: null,
+        ill: null,
         injuryLocation: null
       });
 

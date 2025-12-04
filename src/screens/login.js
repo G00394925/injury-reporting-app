@@ -45,9 +45,6 @@ export default function LoginScreen() {
         },
       });
 
-      console.log("=== LOGIN SUCCESS ===");
-      console.log("Response status:", response.status);
-      console.log("Response data:", response.data);
 
       // Check if response has expected data
       if (!response.data.uuid) {
@@ -62,13 +59,9 @@ export default function LoginScreen() {
         return;
       }
 
-      console.log("Calling login() with:", {
-        uuid: response.data.uuid,
-        user: response.data.user,
-      });
-
       // Save user data to context
-      login(response.data.uuid, response.data.user);
+      const { uuid, user } = response.data;
+      login(uuid, user);
 
       console.log("Login context updated successfully");
       Alert.alert("Success", "Logged in successfully!");

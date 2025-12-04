@@ -67,13 +67,14 @@ def login():
                 
                 return jsonify(
                     message="Login successful", 
-                    uuid=user.get('athlete_id'),
+                    uuid=user.get('user_id'),
                     user={
                         "name": name,
-                       "email": email,
+                        "email": email,
                         "user_type": user.get('user_type'),
-                       "dob": user.get('dob'),
-                    }), 200
+                        "dob": user.get('dob'),
+                    }
+                  ), 200
             else:
                 logger.warning(f"Invalid password for user {email}")
                 return jsonify(message="Invalid email or password"), 401
@@ -85,30 +86,34 @@ def login():
         logger.error(f"Error during login: {e}")
         return jsonify(error=str(e)), 500
 
-# Register new athlete
-@app.route('/api/register/athlete', methods=['POST'])
-def register_athlete():
+# Register new user
+@app.route('/api/register', methods=['POST'])
+def register():
     # Acquire submitted credentials from user
-    athlete = request.get_json()
-    logger.info(f"Received athlete registration data: {athlete}")
+    user = request.get_json()
+    logger.info(f"Received user registration data: {user}")
     
-    athlete_data = {
-        "athlete_id": str(uuid.uuid4()),
-        "name": athlete.get('name'),
-        "email": athlete.get('email'),
-        "password": athlete.get('password'),
-        "dob": athlete.get('dob'),
-        "user_type": athlete.get('user_type'),
-        "health_status": health_status.HealthStatus.HEALTHY.value,
+    user_type = user.get('user_type')
+
+    user_data = {
+        "user_id": str(uuid.uuid4()),
+        "name": user.get('name'),
+        "email": user.get('email'),
+        "password": user.get('password'),
+        "dob": user.get('dob'),
+        "user_type": user_type,
     }
 
-    # Add athlete to the database
+    if user_type == 'athlete':
+      user_data["health_status"] = health_status.HealthStatus.HEALTHY.value
+
+    # Add user to the database
     try:
-        users.insert_one(athlete_data)
-        logger.info("Athlete registered successfully.")
-        return jsonify(message="Athlete registered successfully"), 201
+        users.insert_one(user_data)
+        logger.info("User registered successfully.")
+        return jsonify(message="User registered successfully"), 201
     except Exception as e:
-        logger.error(f"Error registering athlete: {e}")
+        logger.error(f"Error registering user: {e}")
         return jsonify(error=str(e)), 500
 
 
@@ -117,8 +122,8 @@ def health_report():
     try:
         report = request.get_json()
         report_data = {
-            "user": report.get('athlete_id'),
-            "mood": report.get('mood_response'),
+            "user": report.get('user_id'),
+            "answers": report.get('answers_list'),
         }
 
         logger.info(f"Received new health report: {report_data}")

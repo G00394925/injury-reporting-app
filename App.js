@@ -42,7 +42,7 @@ function CoachTabNavigator() {
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen name="Dashboard" component={CoachDashScreen} />
-      <Tab.Screen name="Athletes" component={ReportScreen} />
+      <Tab.Screen name="Athletes" component={CoachDashScreen} />
       <Tab.Screen name="Account" component={CoachAccountScreen} />
     </Tab.Navigator>
   );
@@ -50,7 +50,7 @@ function CoachTabNavigator() {
 
 function AppNavigator() {
   const { isAuthenticated, userData } = useAuth();
-  const userType = userData?.type; // 'Athlete' or 'Coach'
+  const userType = userData?.user_type; // 'Athlete' or 'Coach'
 
   return (
     <NavigationContainer fallback={<Text>Loading...</Text>}>
