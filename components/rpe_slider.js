@@ -7,9 +7,7 @@ const { width: screenWidth } = Dimensions.get("window");
 const CONTAINER_WIDTH = screenWidth * 0.9;
 const SLIDER_WIDTH = CONTAINER_WIDTH - 60;
 
-export default function RpeSlider() {
-  const [value, setValue] = useState(1);
-
+export default function RpeSlider({ value, onValueChange }) {
   const getColor = () => {
     // Calculate RGB value relative to slider value
     const interpolate = (start, end) => {
@@ -45,13 +43,16 @@ export default function RpeSlider() {
         <MaterialIcons name={getIcon()} size={120} color={getColor()} />
       </View>
       <View style={styles.sliderContainer}>
+        <Text style={styles.sliderHeading}>
+          Rate your perceived exertion level
+        </Text>
         <Slider
           style={{ width: SLIDER_WIDTH, height: 40 }}
           minimumValue={1}
           maximumValue={10}
           step={1}
           value={value}
-          onValueChange={setValue}
+          onValueChange={onValueChange}
           minimumTrackTintColor={"black"}
           maximumTrackTintColor="#afafafff"
           thumbTintColor={getColor()}
@@ -61,7 +62,9 @@ export default function RpeSlider() {
           <Text style={styles.labelText}>5</Text>
           <Text style={styles.labelText}>10</Text>
         </View>
-        <Text style={styles.rpe_label}>{getLabel()}</Text>
+        <Text style={[styles.rpe_label, { color: getColor() }]}>
+          {getLabel()}
+        </Text>
       </View>
     </View>
   );
@@ -82,6 +85,12 @@ const styles = StyleSheet.create({
     alignContent: "center",
     width: CONTAINER_WIDTH,
     borderRadius: 10,
+  },
+  sliderHeading: {
+    fontSize: 14,
+    fontWeight: "bold",
+    marginBottom: 10,
+    fontFamily: "Rubik",
   },
   valueText: {
     fontSize: 32,
@@ -105,5 +114,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 10,
     fontFamily: "Rubik",
+    textAlign: "center",
   },
 });

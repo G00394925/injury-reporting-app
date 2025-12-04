@@ -4,11 +4,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useState } from "react";
 import { CardTitle } from "@rneui/base/dist/Card/Card.Title";
 import { useAuth } from "../context/AuthContext";
+import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 
 export default function AthleteDashScreen() {
   // Name to appear on welcome text
   const { uuid, userData, logout } = useAuth();
+  const navigation = useNavigation();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -89,6 +91,7 @@ export default function AthleteDashScreen() {
           buttonStyle={styles.report_button}
           containerStyle={{ width: "75%" }}
           titleStyle={{ color: "#575757ff", fontWeight: "bold" }}
+          onPress={() => navigation.navigate("Report")}
         />
       </View>
     </SafeAreaView>

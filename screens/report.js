@@ -23,26 +23,55 @@ export default function ReportScreen() {
   const { uuid } = useAuth();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
+  const [answers, setAnswers] = useState({
+    rpe: 1,
+    injured: null,
+    feeling: null,
+    injuryLocation: null,
+  });
+
+  const updateAnswer = (key, value) => {
+    setAnswers((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
   // List of Questions for report
   const questions = [
     {
       index: 0,
       text: "How was training?",
-      subtext: "Rate your perceived exertion level below",
-      component: <RpeSlider />,
+      subtext: null,
+      component: (
+        <RpeSlider
+          value={answers.rpe}
+          onValueChange={(value) => updateAnswer("rpe", value)}
+        />
+      ),
     },
     {
       index: 1,
       text: "Did you get injured today?",
       subtext: null,
-      component: <MultiChoice options={["Yes", "No"]} />,
+      component: (
+        <MultiChoice
+          options={["Yes", "No"]}
+          value={answers.injured}
+          onValueChange={(value) => updateAnswer("injured", value)}
+        />
+      ),
     },
     {
       index: 2,
       text: "How are you feeling?",
-      subtext: "Let us know if you're feeling unwell.",
+      subtext: null,
       component: (
-        <MultiChoice options={["Good", "Okay", "I feel sick/unwell"]} />
+        <MultiChoice
+          options={["Good", "Okay", "I feel sick/unwell"]}
+          value={answers.feeling}
+          onValueChange={(value) => updateAnswer("feeling", value)}
+        />
       ),
     },
     {
@@ -62,6 +91,8 @@ export default function ReportScreen() {
             "Back",
             "Other",
           ]}
+          value={answers.injuryLocation}
+          onValueChange={(value) => updateAnswer("injuryLocation", value)}
         />
       ),
     },

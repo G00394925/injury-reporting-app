@@ -2,29 +2,27 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useState } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 
-export default function MultiChoice({ options }) {
-  const [selectedOption, setSelectedOption] = useState(null);
-
+export default function MultiChoice({ options, value, onValueChange }) {
   return (
     <View style={styles.optionContainer}>
       {options.map((option, index) => (
         <TouchableOpacity
           style={[
             styles.optionButton,
-            selectedOption === option ? styles.optionActive : null,
+            value === option ? styles.optionActive : null,
           ]}
           key={index}
-          onPress={() => setSelectedOption(option)}
+          onPress={() => onValueChange(option)}
         >
           <Text
             style={[
               styles.optionText,
-              selectedOption === option ? styles.optionTextActive : null,
+              value === option ? styles.optionTextActive : null,
             ]}
           >
             {option}
           </Text>
-          {selectedOption === option ? (
+          {value === option ? (
             <MaterialIcons name="check-circle" size={28} color="#ffffff" />
           ) : (
             <View style={styles.placeholder} />
@@ -46,7 +44,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 25,
     marginVertical: 10,
-    borderRadius: 15,
+    borderRadius: 45,
     backgroundColor: "#ffffff",
     borderColor: "#0000006c",
     borderWidth: 2,
