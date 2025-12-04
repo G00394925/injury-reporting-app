@@ -2,18 +2,19 @@ import "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
-import AthleteDashScreen from "./screens/athlete-home";
-import ReportScreen from "./screens/report";
-import RegisterScreen from "./screens/register";
-import LoginScreen from "./screens/login";
-import CoachDashScreen from "./screens/coach-home";
+import { Text } from "react-native";
+import AthleteDashScreen from "./src/screens/athlete/athlete_home";
+import ReportScreen from "./src/screens/athlete/report";
+import RegisterScreen from "./src/screens/register";
+import LoginScreen from "./src/screens/login";
+import CoachDashScreen from "./src/screens/coach/coach_home";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
-import { useEffect, useState } from "react";
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { useEffect } from "react";
+import { AuthProvider, useAuth } from "./src/context/AuthContext";
 import { MaterialIcons } from "@expo/vector-icons";
-import AthleteAccountScreen from "./screens/athlete-account";
-import CoachAccountScreen from "./screens/coach-account";
+import AthleteAccountScreen from "./src/screens/athlete/athlete_account";
+import CoachAccountScreen from "./src/screens/coach/coach_account";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -81,7 +82,7 @@ function AppNavigator() {
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    Rubik: require("./fonts/Rubik-VariableFont_wght.ttf"),
+    Rubik: require("./assets/fonts/Rubik-VariableFont_wght.ttf"),
     ...MaterialIcons.font,
   });
 

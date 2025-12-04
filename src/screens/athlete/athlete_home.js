@@ -3,7 +3,7 @@ import { Button, Card } from "@rneui/themed";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useState } from "react";
 import { CardTitle } from "@rneui/base/dist/Card/Card.Title";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 
@@ -30,15 +30,15 @@ export default function AthleteDashScreen() {
           <View style={styles.lights_container}>
             <Image
               style={styles.light}
-              source={require("../assets/RedLightOff.png")}
+              source={require("../../../assets/RedLightOff.png")}
             />
             <Image
               style={styles.light}
-              source={require("../assets/AmberLightOff.png")}
+              source={require("../../../assets/AmberLightOff.png")}
             />
             <Image
               style={styles.light}
-              source={require("../assets/GreenLightOn.png")}
+              source={require("../../../assets/GreenLightOn.png")}
             />
           </View>
         </Card>

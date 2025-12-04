@@ -1,17 +1,8 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-  Platform,
-  Linking,
-  Alert,
-} from "react-native";
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Platform, Alert } from "react-native";
 import { Button } from "@rneui/themed";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
-import { Link, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { KeyboardAvoidingView } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";

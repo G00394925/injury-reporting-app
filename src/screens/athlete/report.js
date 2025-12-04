@@ -1,13 +1,13 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { globalStyles } from "../styles/globalStyles";
+import { globalStyles } from "../../styles/globalStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { API_BASE_URL } from "../config/api_config";
-import { useAuth } from "../context/AuthContext";
-import RpeSlider from "../components/rpe_slider";
-import MultiChoice from "../components/multi_choice";
+import { API_BASE_URL } from "../../config/api_config";
+import { useAuth } from "../../context/AuthContext";
+import RpeSlider from "../../components/rpe_slider";
+import MultiChoice from "../../components/multi_choice";
 import { ScrollView } from "react-native-gesture-handler";
 
 export default function ReportScreen() {
