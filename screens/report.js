@@ -16,6 +16,7 @@ import { API_BASE_URL } from "../config/api_config";
 import { useAuth } from "../context/AuthContext";
 import RpeSlider from "../components/rpe_slider";
 import MultiChoice from "../components/multi_choice";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default function ReportScreen() {
   const navigation = useNavigation();
@@ -35,6 +36,34 @@ export default function ReportScreen() {
       text: "Did you get injured today?",
       subtext: null,
       component: <MultiChoice options={["Yes", "No"]} />,
+    },
+    {
+      index: 2,
+      text: "How are you feeling?",
+      subtext: "Let us know if you're feeling unwell.",
+      component: (
+        <MultiChoice options={["Good", "Okay", "I feel sick/unwell"]} />
+      ),
+    },
+    {
+      index: 3,
+      text: "Where did you get injured?",
+      subtext: "Select the aproximate location of your injury.",
+      component: (
+        <MultiChoice
+          options={[
+            "Head",
+            "Shoulder",
+            "Chest",
+            "Arm",
+            "Hand",
+            "Foot",
+            "Leg",
+            "Back",
+            "Other",
+          ]}
+        />
+      ),
     },
   ];
 
@@ -56,7 +85,11 @@ export default function ReportScreen() {
       <View style={styles.header}>
         <Text style={styles.header_text}>Daily Health Report</Text>
       </View>
-      <View style={styles.content}>
+      <ScrollView
+        style={styles.scroll_view}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.question_container}>
           <Text style={styles.question_text}>
             {questions[currentQuestionIndex].text}
@@ -68,7 +101,7 @@ export default function ReportScreen() {
         <View style={styles.componentContainer}>
           {questions[currentQuestionIndex].component}
         </View>
-      </View>
+      </ScrollView>
       <View style={styles.navigation_buttons}>
         <TouchableOpacity
           onPress={() => setCurrentQuestionIndex(currentQuestionIndex - 1)}
@@ -100,10 +133,13 @@ const styles = StyleSheet.create({
     fontFamily: "Rubik",
     fontWeight: "bold",
   },
-  content: {
+  scroll_view: {
     flex: 1,
+  },
+  content: {
+    flexGrow: 1,
     justifyContent: "center",
-    paddingBottom: 50,
+    paddingVertical: 30,
   },
   question_container: {
     paddingHorizontal: 20,
