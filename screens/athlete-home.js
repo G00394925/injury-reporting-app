@@ -46,7 +46,7 @@ export default function AthleteDashScreen() {
           <Card
             containerStyle={[
               styles.info_card,
-              { backgroundColor: "#f1c7f2ff" },
+              { backgroundColor: "#f199f2ff" },
             ]}
           >
             <CardTitle style={{ fontSize: 24, textAlign: "left" }}>6</CardTitle>
@@ -55,7 +55,7 @@ export default function AthleteDashScreen() {
           <Card
             containerStyle={[
               styles.info_card,
-              { backgroundColor: "#faceceff" },
+              { backgroundColor: "#f59c9cff" },
             ]}
           >
             <CardTitle style={{ fontSize: 24, textAlign: "left" }}>
@@ -66,7 +66,7 @@ export default function AthleteDashScreen() {
           <Card
             containerStyle={[
               styles.info_card,
-              { backgroundColor: "#b8f3a8ff" },
+              { backgroundColor: "#91ec78ff" },
             ]}
           >
             <CardTitle style={{ fontSize: 24, textAlign: "left" }}>
@@ -77,7 +77,7 @@ export default function AthleteDashScreen() {
           <Card
             containerStyle={[
               styles.info_card,
-              { backgroundColor: "#f0f1b1ff" },
+              { backgroundColor: "#eff086ff" },
             ]}
           >
             <CardTitle style={{ fontSize: 24, textAlign: "left" }}>
@@ -154,10 +154,11 @@ const styles = StyleSheet.create({
   report_button: {
     marginTop: 20,
     justifyContent: "center",
-    padding: 25,
+    paddingHorizontal: 40,
+    paddingVertical: 20,
     color: "black",
     backgroundColor: "#ffffffff",
-    borderRadius: 10,
+    borderRadius: 45,
     borderWidth: 3,
     borderBottomColor: "#00a0ccff",
     borderRightColor: "#00a0ccff",
