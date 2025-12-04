@@ -11,6 +11,7 @@ import { useFonts } from "expo-font";
 import { useEffect, useState } from "react";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { MaterialIcons } from "@expo/vector-icons";
+import AthleteAccountScreen from "./screens/athlete-account";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -33,7 +34,7 @@ function TabNavigator() {
         }}
       />
       <Tab.Screen name="History" component={ReportScreen} />
-      <Tab.Screen name="Account" component={ReportScreen} />
+      <Tab.Screen name="Account" component={AthleteAccountScreen} />
     </Tab.Navigator>
   );
 }

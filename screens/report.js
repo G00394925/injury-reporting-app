@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { globalStyles } from "../styles/globalStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "../config/api_config";
 import { useAuth } from "../context/AuthContext";
@@ -94,17 +94,32 @@ export default function ReportScreen() {
   ];
 
   // Submit health report to database
-  const handleReportSubmission = async (mood) => {
+  const handleReportSubmission = async (answers) => {
     try {
       const response = await axios.post(`${API_BASE_URL}/api/health-report`, {
         athlete_id: uuid,
-        mood_response: mood
+        answers_list: answers
       });
+
       console.log("Health Report Response:", response.data);
+
+      // Reset form after submission
+      setCurrentQuestionIndex(0);
+      setAnswers({
+        rpe: 1,
+        injured: null,
+        feeling: null,
+        injuryLocation: null
+      });
+
+      navigation.navigate("Dashboard");
     } catch (error) {
       console.error("Error submitting health report:", error);
     }
   };
+
+  // Check if last question in order to change button text from "Next" to "Submit"
+  const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
   return (
     <SafeAreaView style={[globalStyles.container, { margin: 0, flex: 1 }]}>
@@ -133,9 +148,10 @@ export default function ReportScreen() {
           <Text style={styles.nav_button_text}>Previous</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setCurrentQuestionIndex(currentQuestionIndex + 1)}
+          onPress={() =>
+            isLastQuestion ? handleReportSubmission(answers) : setCurrentQuestionIndex(currentQuestionIndex + 1)}
         >
-          <Text style={styles.nav_button_text}>Next</Text>
+          <Text style={styles.nav_button_text}>{isLastQuestion ? "Submit" : "Next"}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
