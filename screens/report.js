@@ -15,6 +15,7 @@ import axios from "axios";
 import { API_BASE_URL } from "../config/api_config";
 import { useAuth } from "../context/AuthContext";
 import RpeSlider from "../components/rpe_slider";
+import MultiChoice from "../components/multi_choice";
 
 export default function ReportScreen() {
   const navigation = useNavigation();
@@ -33,7 +34,7 @@ export default function ReportScreen() {
       index: 1,
       text: "Did you get injured today?",
       subtext: null,
-      component: null,
+      component: <MultiChoice options={["Yes", "No"]} />,
     },
   ];
 
