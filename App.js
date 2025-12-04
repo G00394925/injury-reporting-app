@@ -6,25 +6,23 @@ import AthleteDashScreen from "./screens/athlete-home";
 import ReportScreen from "./screens/report";
 import RegisterScreen from "./screens/register";
 import LoginScreen from "./screens/login";
+import CoachDashScreen from "./screens/coach-home";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
 import { useEffect, useState } from "react";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { MaterialIcons } from "@expo/vector-icons";
 import AthleteAccountScreen from "./screens/athlete-account";
+import CoachAccountScreen from "./screens/coach-account";
 
 SplashScreen.preventAutoHideAsync();
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-function TabNavigator() {
+function AthleteTabNavigator() {
   return (
-    <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen name="Dashboard" component={AthleteDashScreen} />
       <Tab.Screen
         name="Report"
@@ -39,8 +37,19 @@ function TabNavigator() {
   );
 }
 
+function CoachTabNavigator() {
+  return (
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
+      <Tab.Screen name="Dashboard" component={CoachDashScreen} />
+      <Tab.Screen name="Athletes" component={ReportScreen} />
+      <Tab.Screen name="Account" component={CoachAccountScreen} />
+    </Tab.Navigator>
+  );
+}
+
 function AppNavigator() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, userData } = useAuth();
+  const userType = userData?.type; // 'Athlete' or 'Coach'
 
   return (
     <NavigationContainer fallback={<Text>Loading...</Text>}>
@@ -54,10 +63,15 @@ function AppNavigator() {
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
           </>
+        ) : userType === "coach" ? (
+          <>
+            <Stack.Screen name="MainApp" component={CoachTabNavigator} />
+          </>
         ) : (
           <>
-            <Stack.Screen name="MainApp" component={TabNavigator} />
+            <Stack.Screen name="AthleteMain" component={AthleteTabNavigator} />
             <Stack.Screen name="Report" component={ReportScreen} />
+
           </>
         )}
       </Stack.Navigator>
