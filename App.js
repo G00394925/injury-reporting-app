@@ -16,6 +16,7 @@ import { AuthProvider, useAuth } from "./src/context/AuthContext";
 import { MaterialIcons } from "@expo/vector-icons";
 import AthleteAccountScreen from "./src/screens/athlete/athlete_account";
 import CoachAccountScreen from "./src/screens/coach/coach_account";
+import ClubSetup from "./src/screens/athlete/club_setup";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -73,6 +74,7 @@ function AppNavigator() {
                     <>
                         <Stack.Screen name="AthleteMain" component={AthleteTabNavigator} />
                         <Stack.Screen name="Report" component={ReportScreen} />
+                        <Stack.Screen name="ClubSetup" component={ClubSetup} />
 
                     </>
                 )}

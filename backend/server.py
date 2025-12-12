@@ -175,5 +175,43 @@ def get_status(user_id):
         return jsonify(error=str(e)), 500
 
 
+@app.route('/api/coaches', methods=['GET'])
+def get_coaches():
+    try:
+        coaches = users.find({"user_type": "coach"})
+
+        if coaches:
+            coaches_list = []
+            for coach in coaches:
+                coaches_list.append(coach.get('name'))
+
+            return jsonify(coaches=coaches_list), 200
+
+        else:
+            logger.error("No coaches found in database.")
+
+    except Exception as e:
+        logger.error(f"Error retrieving coaches: {e}")
+        return jsonify(error=str(e)), 500
+
+
+@app.route('/api/assign-coach/<user_id>', methods=['PUT'])
+def assign_coach(athlete_id):
+    try:
+        data = request.get_json()
+
+        athlete = users.get_one({"user_id": athlete_id})
+        coach = users.get(
+            {"name": data.get('coach_name'), "user_type": "coach"})
+
+        if athlete and coach:
+            # TODO: Implement coach assignment logic
+            pass
+
+    except Exception as e:
+        logger.error(f"Error assigning coach: {e}")
+        return jsonify(error=str(e)), 500
+
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
