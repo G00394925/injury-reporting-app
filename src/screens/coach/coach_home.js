@@ -1,4 +1,10 @@
+import { SafeAreaView } from "react-native-safe-area-context";
+import { View, Text } from "react-native-web";
 
 export default function CoachDashScreen() {
-  return null;
+    <SafeAreaView>
+        <View>
+            <Text>Coach Dashboard</Text>
+        </View>
+    </SafeAreaView>;
 }

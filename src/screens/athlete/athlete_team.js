@@ -10,8 +10,17 @@ export default function AthleteTeamScreen() {
             <View style={globalStyles.header}>
                 <Text style={globalStyles.header_text}>Team</Text>
             </View>
-            <Card containerStyle={styles.contentContainer}>
-                <Text>Your team:</Text>
+            <Card containerStyle={styles.card}>
+                <Card.Title style={styles.cardTitle}>Club</Card.Title>
+                <Text style={styles.cardText}>ATU FC</Text>
+            </Card>
+            <Card containerStyle={styles.card}>
+                <Card.Title style={styles.cardTitle}>Coach</Card.Title>
+                <Text style={styles.cardText}>John Doe</Text>
+            </Card>
+            <Card containerStyle={styles.card}>
+                <Card.Title style={styles.cardTitle}>Sport</Card.Title>
+                <Text style={styles.cardText}>Rugby</Text>
             </Card>
         </SafeAreaView>
     );
@@ -24,9 +33,25 @@ const styles = StyleSheet.create({
         alignItems: "center",
         margin: 15,
     },
-    contentContainer: {
-        marginTop: 20,
+    card: {
         width: "100%",
-        alignItems: "flex-start",
+        borderRadius: 10,
+        padding: 15,
+        backgroundColor: "#ffffffff",
+    },
+    cardTitle: {
+        fontSize: 16,
+        padding: 5,
+        borderRadius: 5,
+        color: '#ffffffff',
+        fontFamily: "Rubik",
+        backgroundColor: '#0ea3d9ff'
+    },
+    cardText: {
+        padding: 5,
+        fontSize: 18,
+        borderRadius: 5,
+        fontFamily: "Rubik",
+        alignSelf: "center"
     }
 });

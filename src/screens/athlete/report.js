@@ -150,7 +150,7 @@ export default function ReportScreen() {
             </ScrollView>
             <View style={styles.navigation_buttons}>
                 <TouchableOpacity
-                    onPress={() => setCurrentQuestionIndex(currentQuestionIndex - 1)}
+                    onPress={() => currentQuestionIndex === 0 ? navigation.navigate("Dashboard") : setCurrentQuestionIndex(currentQuestionIndex - 1)}
                 >
                     <Text style={styles.nav_button_text}>Previous</Text>
                 </TouchableOpacity>
