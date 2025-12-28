@@ -1,4 +1,3 @@
-import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Text } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import React, { useState, useEffect } from "react";
@@ -45,7 +44,7 @@ export default function ClubSetup() {
     };
 
     return (
-        <SafeAreaView>
+        <View>
             <View>
                 <Text>Choose coach:</Text>
                 <DropDownPicker
@@ -60,6 +59,6 @@ export default function ClubSetup() {
                 />
                 <Button title="Save" onPress={() => handleSave()} />
             </View>
-        </SafeAreaView>
+        </View>
     );
 }

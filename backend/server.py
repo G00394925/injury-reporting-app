@@ -87,9 +87,7 @@ def login():
     except Exception as e:
         logger.error(f"Error during login: {e}")
         return jsonify(error=str(e)), 500
-
-# Register new user
-
+    
 
 @app.route('/api/register', methods=['POST'])
 def register():

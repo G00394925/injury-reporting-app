@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Text, TextInput, Alert, StyleSheet } from "react-native";
+import { View, Text, TextInput, Alert, StyleSheet } from "react-native";
 import { Button } from "@rneui/themed";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
@@ -106,7 +105,7 @@ export default function LoginScreen() {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <Text style={styles.title}>Login</Text>
 
             <TextInput
@@ -140,7 +139,7 @@ export default function LoginScreen() {
                 onPress={() => navigation.navigate("Register")}
                 containerStyle={{ marginTop: 15 }}
             />
-        </SafeAreaView>
+        </View>
     );
 }
 

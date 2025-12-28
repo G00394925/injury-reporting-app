@@ -3,24 +3,25 @@ import { StyleSheet } from "react-native";
 export const globalStyles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 20,
         margin: 15,
         marginBottom: 20,
         justifyContent: "flex-start",
         alignItems: "center",
+        backgroundColor: "#ffffffff",
     },
     header: {
         flexDirection: "row",
-        borderBottomWidth: 1,
-        borderBottomColor: "#00000063",
-        paddingBottom: 10,
-        width: "100%"
+        backgroundColor: "#001a79",
+        width: "100%",   
+        justifyContent: "center",
+        padding: 20
     },
     header_text: {
         margin: 5,
         marginLeft: 10,
         fontSize: 24,
         fontFamily: "Rubik",
-        fontWeight: "bold"
+        fontWeight: "bold",
+        color: "#ffffffff",
     },
 });

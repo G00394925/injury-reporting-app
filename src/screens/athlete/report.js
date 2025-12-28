@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { globalStyles } from "../../styles/globalStyles";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "../../config/api_config";
@@ -129,7 +128,7 @@ export default function ReportScreen() {
     const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
     return (
-        <SafeAreaView style={[globalStyles.container, { margin: 0, flex: 1 }]}>
+        <View style={styles.container}>
             <View style={globalStyles.header}>
                 <Text style={globalStyles.header_text}>Daily Health Report</Text>
             </View>
@@ -161,17 +160,24 @@ export default function ReportScreen() {
                     <Text style={styles.nav_button_text}>{isLastQuestion ? "Submit" : "Next"}</Text>
                 </TouchableOpacity>
             </View>
-        </SafeAreaView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: "#ffffffff",
+    },
     scroll_view: {
-        flex: 1
+        flex: 1,
+        backgroundColor: "#ffffffff",
+        borderRadius: 10,
+        marginTop: -8
     },
     content: {
         flexGrow: 1,
-        paddingVertical: 30
+        paddingVertical: 30,
     },
     question_container: {
         paddingHorizontal: 20,

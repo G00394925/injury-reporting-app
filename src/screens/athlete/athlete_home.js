@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View, Image } from "react-native";
 import { Button, Card } from "@rneui/themed";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useState } from "react";
 import { CardTitle } from "@rneui/base/dist/Card/Card.Title";
 import { useAuth } from "../../context/AuthContext";
@@ -32,7 +31,7 @@ export default function AthleteDashScreen() {
     }, [uuid]);
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <Text style={styles.greetings_text}>Hello {userData?.name}</Text>
             <View style={styles.center_view}>
                 <Card containerStyle={styles.lights_card}>
@@ -117,7 +116,7 @@ export default function AthleteDashScreen() {
                     onPress={() => navigation.navigate("Report")}
                 />
             </View>
-        </SafeAreaView>
+        </View>
     );
 }
 
