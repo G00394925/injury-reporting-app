@@ -8,6 +8,7 @@ import { useAuth } from "../../context/AuthContext";
 import RpeSlider from "../../components/rpe_slider";
 import MultiChoice from "../../components/multi_choice";
 import { ScrollView } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ReportScreen() {
     const navigation = useNavigation();
@@ -128,7 +129,7 @@ export default function ReportScreen() {
     const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container} edges={['bottom']}>
             <View style={globalStyles.header}>
                 <Text style={globalStyles.header_text}>Daily Health Report</Text>
             </View>
@@ -160,7 +161,7 @@ export default function ReportScreen() {
                     <Text style={styles.nav_button_text}>{isLastQuestion ? "Submit" : "Next"}</Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 

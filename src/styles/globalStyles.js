@@ -14,7 +14,7 @@ export const globalStyles = StyleSheet.create({
         backgroundColor: "#001a79",
         width: "100%",   
         justifyContent: "center",
-        padding: 20
+        padding: 25
     },
     header_text: {
         margin: 5,
