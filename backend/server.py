@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from pymongo import MongoClient
 from dotenv import load_dotenv
+from supabase import create_client, Client
 import uuid
 import os
 import health_status
@@ -23,17 +24,16 @@ CORS(app,
      supports_credentials=True)
 
 load_dotenv()
-MONGO_URI = os.getenv("MONGO_URI")
 
-# Create MondoDB connection
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+# Create Supabase connection
 try:
-    client = MongoClient(MONGO_URI)
-    db = client['injury_reporting_app']
-    users = db['users']
-    health_reports = db['health_reports']
-    logger.info("Connected to MongoDB successfully.")
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+    logger.info("Connected to Supabase successfully.")
 except Exception as e:
-    logger.error(f"Error connecting to MongoDB: {e}")
+    logger.error(f"Error connecting to Supabase: {e}")
 
 
 @app.route('/api/test', methods=['GET'])
@@ -111,7 +111,14 @@ def register():
 
     # Add user to the database
     try:
-        users.insert_one(user_data)
+        # users.insert_one(user_data)
+        response = supabase.auth.sign_up({
+            "email": user_data["email"],
+            "password": user_data["password"]
+        })
+
+        # TODO: Complete Supabase setup and REMOVE MongoDB client.
+
         logger.info("User registered successfully.")
         return jsonify(message="User registered successfully"), 201
     except Exception as e:
