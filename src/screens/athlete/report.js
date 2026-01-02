@@ -129,7 +129,7 @@ export default function ReportScreen() {
     const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
     return (
-        <SafeAreaView style={styles.container} edges={['bottom']}>
+        <SafeAreaView style={styles.container}>
             <View style={globalStyles.header}>
                 <Text style={globalStyles.header_text}>Daily Health Report</Text>
             </View>

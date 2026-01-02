@@ -9,7 +9,7 @@ import { API_BASE_URL } from "../config/api_config";
 import { useAuth } from "../context/AuthContext";
 
 export default function RegisterScreen() {
-    const [role, setRole] = useState("athlete");
+    const [role, setRole] = useState("Athlete");
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -142,14 +142,14 @@ export default function RegisterScreen() {
                             <TouchableOpacity
                                 style={[
                                     styles.type_button,
-                                    role === "athlete" && styles.type_active,
+                                    role === "Athlete" && styles.type_active,
                                 ]}
-                                onPress={() => setRole("athlete")}
+                                onPress={() => setRole("Athlete")}
                             >
                                 <Text
                                     style={[
                                         styles.type_text,
-                                        role === "athlete" && styles.type_text_active,
+                                        role === "Athlete" && styles.type_text_active,
                                     ]}
                                 >
                                     Athlete
@@ -159,14 +159,14 @@ export default function RegisterScreen() {
                             <TouchableOpacity
                                 style={[
                                     styles.type_button,
-                                    role === "coach" && styles.type_active,
+                                    role === "Coach" && styles.type_active,
                                 ]}
-                                onPress={() => setRole("coach")}
+                                onPress={() => setRole("Coach")}
                             >
                                 <Text
                                     style={[
                                         styles.type_text,
-                                        role === "coach" && styles.type_text_active,
+                                        role === "Coach" && styles.type_text_active,
                                     ]}
                                 >
                                     Coach
