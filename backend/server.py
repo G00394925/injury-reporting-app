@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from dotenv import load_dotenv
+from psutil import users
 from supabase import create_client, Client
 import os
 import health_status
@@ -180,25 +181,31 @@ def register():
 #         return jsonify(error=str(e)), 500
 
 
-# @app.route('/api/health-status/<user_id>', methods=['GET'])
-# def get_status(user_id):
-#     try:
-#         user = users.find_one({"user_id": user_id})
+@app.route('/api/health-status/<user_id>', methods=['GET'])
+def get_status(user_id):
+    try:
+        user = (
+            supabase.table("athletes")
+            .select("*")
+            .execute()
+        )
 
-#         if user:
-#             health_status = user.get('health_status')
+        print(user)
 
-#             return jsonify(
-#                 user_id=user_id,
-#                 health_status=health_status
-#             ), 200
-#         else:
-#             logger.warning(f"User of ID {user_id} not found.")
-#             return jsonify(message="User not found"), 404
+        if user.data:
+            health_status_value = user.data[0].get('status')
 
-#     except Exception as e:
-#         logger.error(f"Error retrieving health status for user {user_id}: {e}")
-#         return jsonify(error=str(e)), 500
+            return jsonify(
+                user_id=user_id,
+                health_status=health_status_value
+            ), 200
+        else:
+            logger.warning(f"User of ID {user_id} not found.")
+            return jsonify(message="User not found"), 404
+        
+    except Exception as e:
+        logger.error(f"Error retrieving health status for user {user_id}: {e}")
+        return jsonify(error=str(e)), 500        
 
 
 # @app.route('/api/coaches', methods=['GET'])
