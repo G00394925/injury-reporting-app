@@ -1,9 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from pymongo import MongoClient
 from dotenv import load_dotenv
 from supabase import create_client, Client
-import uuid
 import os
 import health_status
 import logging
@@ -36,18 +34,43 @@ except Exception as e:
     logger.error(f"Error connecting to Supabase: {e}")
 
 
-# @app.route('/api/login', methods=['POST'])
-# def login():
-#     try:
-#         # Acquire submitted credentials from user
-#         credentials = request.get_json()
-#         email = credentials.get('email')
-#         password = credentials.get('password')
+@app.route('/api/login', methods=['POST'])
+def login():
+    try:
+        # Acquire submitted credentials from user
+        credentials = request.get_json()
+        email = credentials.get('email')
+        password = credentials.get('password')
 
-#         logger.info(f"Login attempt for: {email}")
+        logger.info(f"Login attempt for: {email}")
 
-#         # Check if user exists
-#         user = users.find_one({"email": email})
+        response = supabase.auth.sign_in_with_password({
+            "email": email,
+            "password": password
+        })
+
+        if response:
+            try:
+                # Fetch user data from database
+                user_data = supabase.table("users").select("*").eq("id", response.user.id).execute()
+
+                return jsonify(
+                    message="Login successful",
+                    uuid=response.user.id,
+                    user={
+                        "name": user_data.data[0].get('name', '').split()[0],
+                        "email": email,
+                        "user_type": user_data.data[0].get('role'),
+                        "dob": user_data.data[0].get('dob'),
+                    }
+                )
+            except Exception as e:
+                logger.error(f"Error retrieving user data from Supabase table: {e}")
+                return jsonify(error=str(e)), 401
+    
+    except Exception as e:
+        logger.error(f"Error during login: {e}")
+        return jsonify(error=str(e)), 500
 
 #         if user:
 #             # Check password
@@ -95,7 +118,6 @@ def register():
 
     # Add user to the database
     try:
-        # users.insert_one(user_data)
         response = supabase.auth.sign_up({
             "email": user_data["email"],
             "password": user_data["password"]

@@ -10,22 +10,38 @@ export default function LoginScreen() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [errors, setErrors] = useState({});
 
     const navigation = useNavigation();
     const { login } = useAuth();
+
+    const validateForm = () => {
+        const issues = {};
+
+        if (!email) {
+            issues.email = "Email is required";
+        }
+
+        if (!password) {
+            issues.password = "Password is required";
+        }
+
+        setErrors(issues);
+        return Object.keys(issues).length === 0;
+    };
 
     const handleLogin = async () => {
         console.log("=== LOGIN ATTEMPT START ===");
         console.log("Email:", email);
         console.log("API_BASE_URL:", API_BASE_URL);
 
-        if (!email || !password) {
+        if (!validateForm()) {
             console.log("ERROR: Missing email or password");
-            Alert.alert("Error", "Please enter email and password");
             return;
         }
 
         setLoading(true);
+        setErrors({});
 
         try {
             const url = `${API_BASE_URL}/api/login`;
@@ -35,7 +51,6 @@ export default function LoginScreen() {
                 email: email,
                 password: password,
             };
-            console.log("Payload:", payload);
 
             const response = await axios.post(url, payload, {
                 timeout: 10000,
@@ -43,20 +58,6 @@ export default function LoginScreen() {
                     "Content-Type": "application/json",
                 },
             });
-
-
-            // Check if response has expected data
-            if (!response.data.uuid) {
-                console.error("ERROR: No UUID in response");
-                Alert.alert("Error", "Invalid response from server");
-                return;
-            }
-
-            if (!response.data.user) {
-                console.error("ERROR: No user data in response");
-                Alert.alert("Error", "Invalid response from server");
-                return;
-            }
 
             // Save user data to context
             const { uuid, user } = response.data;
@@ -77,14 +78,17 @@ export default function LoginScreen() {
                 console.error("Response data:", error.response.data);
                 console.error("Response headers:", error.response.headers);
 
-            } else if (error.request) {
+                if (error.response.data.error == "Invalid login credentials") {
+                    console.log("ERROR: Invalid login credentials");
+                    setErrors({ general: "Incorrect email or password" });
+                }
 
+            } else if (error.request) {
                 // Request made but no response
                 console.error("Request made but no response received");
                 console.error("Request:", error.request);
 
             } else {
-
                 // Something else happened
                 console.error("Error setting up request:", error.message);
             }
@@ -108,22 +112,34 @@ export default function LoginScreen() {
         <View style={styles.container}>
             <Text style={styles.title}>Login</Text>
 
+            {errors.general && (
+                <Text style={{ color: "red", marginBottom: 10 }}>
+                    {errors.general}
+                </Text>
+            )}
+
             <TextInput
-                style={styles.input}
+                style={[styles.input, errors.email && styles.text_box_error]}
                 placeholder="Email"
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
             />
+            {errors.confirmPassword && (
+                <Text style={styles.error_text}>{errors.confirmPassword}</Text>
+            )}
 
             <TextInput
-                style={styles.input}
+                style={[styles.input, errors.password && styles.text_box_error]}
                 placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
             />
+            {errors.confirmPassword && (
+                <Text style={styles.error_text}>{errors.confirmPassword}</Text>
+            )}
 
             <Button
                 title={loading ? "Logging in..." : "Login"}
@@ -169,5 +185,17 @@ const styles = StyleSheet.create({
         padding: 15,
         backgroundColor: "#1d65ecff",
         borderRadius: 30,
+    },
+    text_box_error: {
+        borderColor: "#ff0000",
+        borderWidth: 2,
+    },
+    error_text: {
+        color: "#ff0000",
+        fontSize: 12,
+        width: "90%",
+        marginBottom: 15,
+        marginTop: 2,
+        paddingLeft: 15,
     },
 });
