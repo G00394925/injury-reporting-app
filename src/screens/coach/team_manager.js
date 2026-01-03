@@ -19,9 +19,18 @@ export default function TeamManagerScreen() {
                 const response = await axios.get(`${API_BASE_URL}/api/coach-teams/${uuid}`);
                 const teams = response.data.teams.map((team) => {
                     return (
-                        <View style={styles.teamSlot}>
-                            <Text style={styles.teamText}>{team.team_name}</Text>
-                        </View>
+                        <TouchableOpacity 
+                            key={team.team_id}
+                            style={styles.teamSlot}
+                            onPress={() => {navigation.navigate("MainApp")}}
+                        >
+                            <View style={styles.teamHeader}>
+                                <Text style={styles.teamText}>{team.team_name}</Text>
+                                <Text style={styles.sportText}>{team.sport}</Text>
+                            </View>
+                            <Text style={styles.playerCountText}>20 Players</Text>
+                            <Text style={styles.injuryStatusText}>3 Injured</Text>
+                        </TouchableOpacity>
                     )
                 })
             
@@ -69,12 +78,39 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#1d3adfff",
         borderRadius: 10,
-        marginBottom: 15
+        marginBottom: 15,
+        justifyContent: "flex-start"
     },
     teamText: {
         fontSize: 18,
         fontFamily: "Rubik",
-        padding: 5
+        alignSelf: "flex-start",
+        verticalAlign: "top"
+    },
+    playerCountText: {
+        fontSize: 14,
+        marginTop: 15,
+        fontFamily: "Rubik",
+        alignSelf: "flex-start",
+        verticalAlign: "bottom"
+    },
+    teamHeader: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 10
+    },
+    sportText: {
+        fontSize: 14,
+        fontFamily: "Rubik",
+        color: "#1d3adfff",
+        fontWeight: "500"
+    },
+    injuryStatusText: {
+        fontSize: 12,
+        fontFamily: "Rubik",
+        color: "#666",
+        marginTop: 5
     },
     newTeamButton: {
         padding: 15,

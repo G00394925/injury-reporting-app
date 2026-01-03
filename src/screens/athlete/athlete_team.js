@@ -32,6 +32,7 @@ export default function AthleteTeamScreen() {
                     </View>
                 </View>
             </View>
+            <Button title="Choose team" onPress={() => {navigation.navigate("ClubSetup")}} />
         </View>
 
     );

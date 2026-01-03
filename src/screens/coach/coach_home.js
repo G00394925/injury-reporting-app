@@ -1,11 +1,14 @@
 import { Card } from "@rneui/base";
 import { View, Text, StyleSheet } from "react-native";
+import { globalStyles } from "../../styles/globalStyles";
 
 export default function CoachDashScreen() {
     return (
         <View style={styles.container}>
-            <View>
-                <Text style={styles.greetings_text}>Hello Macdarach</Text>
+            <View style={[globalStyles.header, {paddingBottom: 100}]}>
+                <Text style={[globalStyles.header_text, {alignContent: "flex-start"}]}>Hello Macdarach</Text>
+            </View>
+            <View style={styles.contentContainer}>
                 <Card containerStyle={styles.overview_card}>
                     <Card.Title style={styles.stats_card_title}>Team Overview</Card.Title>
                     <Text style={styles.overview_text}>Athletes require your attention</Text>
@@ -42,8 +45,13 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "flex-start",
         alignItems: "center",
-        paddingTop: 20,
-        margin: 15,
+    },
+    contentContainer: {
+        flex: 1,
+        borderRadius: 10,
+        backgroundColor: "#ffffff",
+        padding: 20,
+        marginTop: -8
     },
     greetings_text: {
         alignItems: "flex-start",
@@ -57,8 +65,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         flexWrap: "wrap",
         justifyContent: "space-between",
-        marginTop: 20,
-        marginHorizontal: 10,
+        marginTop: 60,
+        marginHorizontal: 0,
     },
     stats_card: {
         padding: 10,
@@ -83,7 +91,11 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: "#ffffffff",
         borderRadius: 10,
-        margin: 10
+        margin: 10,
+        position: "fixed",
+        top: 92,
+        alignSelf: "center",
+        shadowOffset: { width: 0, height: 5 },
     },
     overview_text: {
         fontSize: 20,

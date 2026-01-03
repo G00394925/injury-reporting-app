@@ -203,7 +203,7 @@ def create_team():
 
 
 @app.route('/api/coach-teams/<coach_id>', methods=['GET'])
-def fetch_teams(coach_id):
+def fetch_coach_teams(coach_id):
     try:
         response = supabase.table("teams").select("*").eq("coach_id", coach_id).execute()
 
@@ -221,6 +221,30 @@ def fetch_teams(coach_id):
     except Exception as e:
         logger.error(f"Error fetching teams for coach {coach_id}: {e}")
         return jsonify(error=str(e)), 500
+    
+
+@app.route('/api/athlete/teams', methods=['GET'])
+def fetch_teams():
+    try:
+        response = supabase.table("teams").select("*").execute()
+
+        if response:
+            teams = []
+            for team in response.data:
+                teams.append({
+                    "team_id": team.get("team_id"),
+                    "team_name": team.get("team_name"),
+                    "sport": team.get("sport"),
+                    "coach_name": supabase.table("users").select("name").eq("id", team.get("coach_id")).execute().data[0].get("name")
+                })
+
+            return jsonify(teams=teams), 200
+        
+    except Exception as e:
+        logger.error(f"Error fetching teams: {e}")
+        return jsonify(error=str(e)), 500
+
+
 # @app.route('/api/coaches', methods=['GET'])
 # def get_coaches():
 #     try:

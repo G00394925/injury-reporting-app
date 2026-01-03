@@ -13,8 +13,8 @@ export const globalStyles = StyleSheet.create({
         flexDirection: "row",
         backgroundColor: "#001a79",
         width: "100%",   
-        justifyContent: "center",
-        padding: 25
+        padding: 25,
+        paddingTop: 35,
     },
     header_text: {
         margin: 5,
