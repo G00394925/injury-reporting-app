@@ -73,33 +73,6 @@ def login():
         logger.error(f"Error during login: {e}")
         return jsonify(error=str(e)), 500
 
-#         if user:
-#             # Check password
-#             if user.get('password') == password:
-#                 logger.info(f"User {email} logged in successfully.")
-#                 name = user.get('name', '').split()[0]
-
-#                 return jsonify(
-#                     message="Login successful",
-#                     uuid=user.get('user_id'),
-#                     user={
-#                         "name": name,
-#                         "email": email,
-#                         "user_type": user.get('user_type'),
-#                         "dob": user.get('dob'),
-#                     }
-#                 ), 200
-#             else:
-#                 logger.warning(f"Invalid password for user {email}")
-#                 return jsonify(message="Invalid email or password"), 401
-#         else:
-#             logger.warning(f"User not found: {email}")
-#             return jsonify(message="Invalid email or password"), 401
-
-#     except Exception as e:
-#         logger.error(f"Error during login: {e}")
-#         return jsonify(error=str(e)), 500
-
 
 @app.route('/api/register', methods=['POST'])
 def register():
@@ -208,6 +181,46 @@ def get_status(user_id):
         return jsonify(error=str(e)), 500        
 
 
+@app.route('/api/create-team', methods=['POST'])
+def create_team():
+    new_team = request.get_json()
+
+    try:
+        response = supabase.table("teams").insert({
+            "team_name": new_team.get("team_name"),
+            "sport": new_team.get("sport"),
+            "coach_id": new_team.get("coach_id"),
+        }).execute()
+
+        if response:
+            logger.info("New team added to supabase database successfully")
+
+            return jsonify(message="Team created successfully"), 201
+    
+    except Exception as e:
+        logger.error(f"Error creating new team: {e}")
+        return jsonify(error=str(e)), 500
+
+
+@app.route('/api/coach-teams/<coach_id>', methods=['GET'])
+def fetch_teams(coach_id):
+    try:
+        response = supabase.table("teams").select("*").eq("coach_id", coach_id).execute()
+
+        if response:
+            teams = []
+            for team in response.data:
+                teams.append({
+                    "team_id": team.get("team_id"),
+                    "team_name": team.get("team_name"),
+                    "sport": team.get("sport"),
+                })
+
+            return jsonify(teams=teams), 200
+
+    except Exception as e:
+        logger.error(f"Error fetching teams for coach {coach_id}: {e}")
+        return jsonify(error=str(e)), 500
 # @app.route('/api/coaches', methods=['GET'])
 # def get_coaches():
 #     try:

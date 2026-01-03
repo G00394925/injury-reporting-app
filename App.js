@@ -17,6 +17,8 @@ import { MaterialIcons } from "@expo/vector-icons";
 import AthleteAccountScreen from "./src/screens/athlete/athlete_account";
 import CoachAccountScreen from "./src/screens/coach/coach_account";
 import ClubSetup from "./src/screens/athlete/club_setup";
+import TeamManagerScreen from "./src/screens/coach/team_manager";
+import TeamCreatorScreen from "./src/screens/coach/team_creator";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -44,7 +46,7 @@ function CoachTabNavigator() {
     return (
         <Tab.Navigator screenOptions={{ headerShown: false }}>
             <Tab.Screen name="Dashboard" component={CoachDashScreen} />
-            <Tab.Screen name="Athletes" component={CoachDashScreen} />
+            <Tab.Screen name="Team" component={TeamManagerScreen} />
             <Tab.Screen name="Account" component={CoachAccountScreen} />
         </Tab.Navigator>
     );
@@ -66,9 +68,10 @@ function AppNavigator() {
                         <Stack.Screen name="Login" component={LoginScreen} />
                         <Stack.Screen name="Register" component={RegisterScreen} />
                     </>
-                ) : userType === "coach" ? (
+                ) : userType === "Coach" ? (
                     <>
                         <Stack.Screen name="MainApp" component={CoachTabNavigator} />
+                        <Stack.Screen name="TeamCreator" component={TeamCreatorScreen} />
                     </>
                 ) : (
                     <>
