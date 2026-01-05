@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
@@ -17,24 +17,10 @@ export default function ClubSetup() {
         const fetchTeams = async () => {
             try {
                 const response = await axios.get(`${API_BASE_URL}/api/athlete/teams`);
-                const teamOptions = response.data.teams.map((team) => {
-                    return (
-                        <TouchableOpacity 
-                            key={team.team_id}
-                            style={styles.teamSlot}
-                            onPress={() => {navigation.navigate("MainApp")}}
-                        >
-                                <View style={styles.teamHeader}>
-                                    <Text style={styles.teamText}>{team.team_name}</Text>
-                                    <Text style={styles.sportText}>{team.sport}</Text>
-                                    <Text style={styles.coachText}>Coach: {team.coach_name}</Text>
-                                </View>
-                            </TouchableOpacity>
-                    )
-                });
-
-                // TODO: Fix mapping to dropdown items
-                    
+                const teamOptions = response.data.teams.map((team) => ({
+                    label: `${team.team_name} (${team.sport}) - Coach: ${team.coach_name}`,
+                    value: team.team_id, 
+                }));
                 setItems(teamOptions);
             } catch (error) {
                 console.error("Error fetching coaches:", error);

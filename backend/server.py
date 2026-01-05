@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from dotenv import load_dotenv
-from psutil import users
 from supabase import create_client, Client
 import os
 import health_status
