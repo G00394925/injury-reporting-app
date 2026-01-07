@@ -3,10 +3,27 @@ import { globalStyles } from "../../styles/globalStyles";
 import { Card } from "@rneui/base";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
+import { useAuth } from "../../context/AuthContext";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { API_BASE_URL } from "../../config/api_config";
 
 export default function AthleteTeamScreen() {
     const navigation = useNavigation();
+    const {userData, uuid} = useAuth();
+    const [teamDetails, setTeamDetails] = useState(null);
+
+    useEffect(() => {
+        const fetchTeamDetails = async () => {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/api/athlete/team/${uuid}`);
+                setTeamDetails(response.data.team_details);
+            } catch (error) {
+                console.error("Error fetching team details:", error);
+            }
+        }
+        fetchTeamDetails();
+    }, [uuid])
 
     return (
         <SafeAreaView style={styles.container} edges={["top"]}>
@@ -16,20 +33,20 @@ export default function AthleteTeamScreen() {
             <View style={globalStyles.content_container}>
                 <View>
                     <Text style={styles.clubTitle}>Club</Text>
-                    <Text style={styles.clubText}>ATU FC</Text>
+                    <Text style={styles.clubText}>{teamDetails?.team_name}</Text>
                 </View>
                 <View style={styles.detailContainer}>
                     <View style={styles.detail}>
                         <Text style={styles.detailTitle}>Name: </Text>
-                        <Text style={styles.detailText}>Macdarach Carty Joyce</Text>
+                        <Text style={styles.detailText}>{userData.name}</Text>
                     </View>
                      <View style={styles.detail}>
                         <Text style={styles.detailTitle}>Coach: </Text>
-                        <Text style={styles.detailText}>John Coach</Text>
+                        <Text style={styles.detailText}>{teamDetails?.coach}</Text>
                     </View>
                     <View style={styles.detail}>
                         <Text style={styles.detailTitle}>Sport: </Text>
-                        <Text style={styles.detailText}>Soccer</Text>
+                        <Text style={styles.detailText}>{teamDetails?.sport}</Text>
                     </View>
                 </View>
             </View>

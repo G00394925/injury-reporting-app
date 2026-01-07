@@ -244,43 +244,54 @@ def fetch_teams():
         return jsonify(error=str(e)), 500
 
 
-# @app.route('/api/coaches', methods=['GET'])
-# def get_coaches():
-#     try:
-#         coaches = users.find({"user_type": "coach"})
+@app.route('/api/athlete/team/<athlete_id>', methods=['GET'])
+def fetch_team_details(athlete_id):
 
-#         if coaches:
-#             coaches_list = []
-#             for coach in coaches:
-#                 coaches_list.append(coach.get('name'))
+    team_details = {}
 
-#             return jsonify(coaches=coaches_list), 200
+    try:
+        response = (
+            supabase.table("teams")
+            .select("*")
+            .eq("team_id", 
+                supabase.table("athletes").select("team_id").eq("id", athlete_id)
+                .execute().data[0].get("team_id")
+            )
+            .execute()
+        )
 
-#         else:
-#             logger.error("No coaches found in database.")
+        if response:
+            team_details = {
+                "sport": response.data[0].get("sport"),
+                "team_name": response.data[0].get("team_name"),
+                "coach": supabase.table("users").select("name").eq("id", response.data[0].get("coach_id")).execute().data[0].get("name"),
+            }
 
-#     except Exception as e:
-#         logger.error(f"Error retrieving coaches: {e}")
-#         return jsonify(error=str(e)), 500
+            return jsonify(team_details=team_details), 200
+        
+    except Exception as e:
+        logger.error(f"Error fetching team details for athlete {athlete_id}: {e}")
+        return jsonify(error=str(e)), 500
 
 
-# @app.route('/api/assign-coach/<user_id>', methods=['PUT'])
-# def assign_coach(athlete_id):
-#     try:
-#         data = request.get_json()
+@app.route('/api/athlete/join-team', methods=['POST'])
+def join_team():
+    try:
+        data = request.get_json()
+        response = (
+            supabase.table("athletes")
+            .update({"team_id": data.get("team_id")})
+            .eq("id", data.get("athlete_id"))
+            .execute()
+        )
 
-#         athlete = users.get_one({"user_id": athlete_id})
-#         coach = users.get(
-#             {"name": data.get('coach_name'), "user_type": "coach"})
-
-#         if athlete and coach:
-#             # TODO: Implement coach assignment logic
-#             pass
-
-#     except Exception as e:
-#         logger.error(f"Error assigning coach: {e}")
-#         return jsonify(error=str(e)), 500
-
+        if response:
+            logger.info("Athlete joined team successfully.")
+            return jsonify(message="Athlete joined team successfully"), 200
+        
+    except Exception as e:
+        logger.error(f"Error athlete joining team: {e}")
+        return jsonify(error=str(e)), 500
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
