@@ -155,6 +155,20 @@ export default function LoginScreen() {
                 onPress={() => navigation.navigate("Register")}
                 containerStyle={{ marginTop: 15 }}
             />
+
+            {/* DEBUG ZONE */}
+            <Button title="DEBUG: Sign in Athlete" onPress={() => { 
+                setEmail("nogegi1021@emaxasp.com"); 
+                setPassword("SuperAthlete!1");
+                handleLogin() 
+            }}/>
+
+            <Button title="DEBUG: Sign in Coach" onPress={() => { 
+                setEmail("peyij65076@dubokutv.com"); 
+                setPassword("SuperCoach!1");
+                handleLogin() 
+            }}/>
+
         </View>
     );
 }

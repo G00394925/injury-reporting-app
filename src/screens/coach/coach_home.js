@@ -1,14 +1,15 @@
 import { Card } from "@rneui/base";
 import { View, Text, StyleSheet } from "react-native";
 import { globalStyles } from "../../styles/globalStyles";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CoachDashScreen() {
     return (
-        <View style={styles.container}>
-            <View style={[globalStyles.header, {paddingBottom: 100}]}>
+        <SafeAreaView style={styles.container} edges={["top"]}>
+            <View style={globalStyles.header}>
                 <Text style={[globalStyles.header_text, {alignContent: "flex-start"}]}>Hello Macdarach</Text>
             </View>
-            <View style={styles.contentContainer}>
+            <View style={globalStyles.content_container}>
                 <Card containerStyle={styles.overview_card}>
                     <Card.Title style={styles.stats_card_title}>Team Overview</Card.Title>
                     <Text style={styles.overview_text}>Athletes require your attention</Text>
@@ -35,7 +36,7 @@ export default function CoachDashScreen() {
                     <Text>TIMETABLE</Text>
                 </Card>
             </View>
-        </View>
+        </SafeAreaView>
 
     )
 }
@@ -43,8 +44,7 @@ export default function CoachDashScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "flex-start",
-        alignItems: "center",
+        backgroundColor: "#001a79",
     },
     contentContainer: {
         flex: 1,
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         flexWrap: "wrap",
         justifyContent: "space-between",
-        marginTop: 60,
+        marginTop: 15,
         marginHorizontal: 0,
     },
     stats_card: {
@@ -92,10 +92,15 @@ const styles = StyleSheet.create({
         backgroundColor: "#ffffffff",
         borderRadius: 10,
         margin: 10,
-        position: "fixed",
-        top: 92,
         alignSelf: "center",
-        shadowOffset: { width: 0, height: 5 },
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 4,
     },
     overview_text: {
         fontSize: 20,

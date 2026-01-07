@@ -9,12 +9,20 @@ export const globalStyles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: "#ffffffff",
     },
+    content_container: {
+        flex: 1,
+        borderRadius: 10,
+        backgroundColor: "#ffffff",
+        padding: 20,
+        marginTop: -8,
+        marginBottom: -10
+    },
     header: {
         flexDirection: "row",
         backgroundColor: "#001a79",
         width: "100%",   
         padding: 25,
-        paddingTop: 35,
+        paddingTop: 10,
     },
     header_text: {
         margin: 5,

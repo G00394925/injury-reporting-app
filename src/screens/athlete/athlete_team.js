@@ -2,17 +2,18 @@ import { Text, StyleSheet, View, Button } from "react-native";
 import { globalStyles } from "../../styles/globalStyles";
 import { Card } from "@rneui/base";
 import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 export default function AthleteTeamScreen() {
     const navigation = useNavigation();
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container} edges={["top"]}>
             <View style={globalStyles.header}>
                 <Text style={globalStyles.header_text}>Team</Text>
             </View>
-            <View style={styles.contentContainer}>
+            <View style={globalStyles.content_container}>
                 <View>
                     <Text style={styles.clubTitle}>Club</Text>
                     <Text style={styles.clubText}>ATU FC</Text>
@@ -33,7 +34,7 @@ export default function AthleteTeamScreen() {
                 </View>
             </View>
             <Button title="Choose team" onPress={() => {navigation.navigate("ClubSetup")}} />
-        </View>
+        </SafeAreaView>
 
     );
 }
@@ -41,6 +42,7 @@ export default function AthleteTeamScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: "#001a79",
     },
     contentContainer: {
         flex: 1,

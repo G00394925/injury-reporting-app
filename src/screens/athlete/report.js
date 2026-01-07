@@ -168,13 +168,14 @@ export default function ReportScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#ffffffff",
+        backgroundColor: "#001a79",
     },
     scroll_view: {
         flex: 1,
         backgroundColor: "#ffffffff",
         borderRadius: 10,
-        marginTop: -8
+        marginTop: -8,
+        marginBottom: -10
     },
     content: {
         flexGrow: 1,
@@ -210,7 +211,8 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         paddingHorizontal: 20,
         borderTopWidth: 1,
-        borderTopColor: "#00000020"
+        borderTopColor: "#00000020",
+        backgroundColor: "#ffffff"
     },
     nav_button_text: {
         color: "#3b3b3bff",
