@@ -23,7 +23,7 @@ export default function AthleteTeamScreen() {
             }
         }
         fetchTeamDetails();
-    }, [uuid])
+    }, [])
 
     return (
         <SafeAreaView style={styles.container} edges={["top"]}>
@@ -38,7 +38,7 @@ export default function AthleteTeamScreen() {
                 <View style={styles.detailContainer}>
                     <View style={styles.detail}>
                         <Text style={styles.detailTitle}>Name: </Text>
-                        <Text style={styles.detailText}>{userData.name}</Text>
+                        <Text style={styles.detailText}>{userData?.name}</Text>
                     </View>
                      <View style={styles.detail}>
                         <Text style={styles.detailTitle}>Coach: </Text>
