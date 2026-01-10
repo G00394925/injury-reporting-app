@@ -136,37 +136,36 @@ def register():
         return jsonify(error=str(e)), 500
 
 
-# @app.route('/api/health-report', methods=['POST'])
-# def health_report():
-#     try:
-#         report = request.get_json()
-#         report_data = {
-#             "user": report.get('user_id'),
-#             "answers": report.get('answers_list'),
-#         }
-#         logger.info(f"Received new health report: {report_data}")
+@app.route('/api/health-report', methods=['POST'])
+def health_report():
+    try:
+        report = request.get_json()
+        report_data = {
+            "user": report.get('user_id'),
+            "answers": report.get('answers_list'),
+        }
+        logger.info(f"Received new health report: {report_data}")
 
-#         health_reports.insert_one(report_data)
-#         logger.info("Health report submitted successfully.")
+        # supabase.table("reports").insert(report_data).execute()
+        # logger.info("Health report submitted successfully.")
 
-#         # Update user's health status if they're injured
-#         if 'injured' in report_data['answers']:
-#             injured = report_data['answers']['injured']
-#             user_id = report_data['user']
-#             new_status = health_status.HealthStatus.INJURED.value if injured else health_status.HealthStatus.HEALTHY.value
+        # Update user's health status if they're injured
+        if 'injured' in report_data['answers']:
+            injured = report_data['answers']['injured']
+            user_id = report_data['user']
+            new_status = health_status.HealthStatus.INJURED.value if injured else health_status.HealthStatus.HEALTHY.value
 
-#             users.update_one(
-#                 {"user_id": user_id},
-#                 {"$set": {"health_status": new_status}}
-#             )
-#             logger.info(
-#                 f"Updated health status for user {user_id} to {new_status}")
+            supabase.table("athletes").update(
+                {"status": new_status}
+            ).eq("id", user_id).execute()
+            logger.info(
+                f"Updated health status for user {user_id} to {new_status}")
 
-#         return jsonify(message="Health report submitted successfully"), 201
+        return jsonify(message="Health report submitted successfully"), 201
 
-#     except Exception as e:
-#         logger.error(f"Error submitting health report: {e}")
-#         return jsonify(error=str(e)), 500
+    except Exception as e:
+        logger.error(f"Error submitting health report: {e}")
+        return jsonify(error=str(e)), 500
 
 
 @app.route('/api/health-status/<user_id>', methods=['GET'])

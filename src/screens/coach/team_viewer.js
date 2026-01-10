@@ -2,7 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { globalStyles } from "../../styles/globalStyles";
 import { useAuth } from "../../context/AuthContext";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../../config/api_config";
@@ -25,10 +25,34 @@ export default function TeamViewerScreen({ route }) {
                     return (
                         <View
                             key={athlete.athlete_id}
-                            style={styles.athlete_slot} 
+                            style={[
+                                styles.athlete_slot, 
+                                {borderColor: 
+                                    athlete.health_status === "Injured" ? "#ff4d4d" : 
+                                    athlete.health_status === "Recovering" ? "#ffb84d" : 
+                                    "#66cc66"
+                                }
+                            ]} 
                         >
                             <Text style={styles.athlete_name_text}>{athlete.name}</Text>
-                            <Text style={styles.athlete_status_text}>{athlete.health_status}</Text>
+                            {athlete.health_status === "Injured" && (
+                                <Image
+                                    style={styles.light}
+                                    source={require("../../../assets/RedLightOn.png")}
+                                />
+                            )}
+                            {athlete.health_status === "Recovering" && (
+                                <Image
+                                    style={styles.light}
+                                    source={require("../../../assets/AmberLightOn.png")}
+                                />
+                            )}
+                            {athlete.health_status === "Healthy" && (
+                                <Image
+                                    style={styles.light}
+                                    source={require("../../../assets/GreenLightOn.png")}
+                                />
+                            )}
                         </View>
                     )
                 })
@@ -66,11 +90,13 @@ const styles = StyleSheet.create({
         marginBottom: -10
     },
     athlete_slot: {
+        flexDirection: "row",
+        justifyContent: "space-between",
         padding: 15, 
-        borderWidth: 1,
-        borderColor: "#ccc",
+        borderWidth: 2,
         borderRadius: 10,
         marginBottom: 10,
+        backgroundColor: "#ebebebff"
     },
     athlete_name_text: {
         fontSize: 16,
@@ -82,5 +108,9 @@ const styles = StyleSheet.create({
         fontFamily: "Rubik",
         marginTop: 5,
         color: "#555",
+    },
+    light: {
+        width: 40,
+        height: 40
     }
 })
