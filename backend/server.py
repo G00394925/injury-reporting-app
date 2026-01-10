@@ -36,6 +36,14 @@ except Exception as e:
 
 @app.route('/api/login', methods=['POST'])
 def login():
+    """
+    Handles user login by verifying submitted credentials with Supabase Auth
+    and retrieving the corresponding user data.
+
+    Returns:
+        JSON response with user details on successful login, or 
+        error message on failure.
+    """
     try:
         # Acquire submitted credentials from user
         credentials = request.get_json()
@@ -75,6 +83,14 @@ def login():
 
 @app.route('/api/register', methods=['POST'])
 def register():
+    """
+    Handles user registration by creating a new user in Supabase Auth
+    and inserting the corresponding user data into the database.
+
+    Returns:
+        JSON response indicating success or failure of registration.
+    """
+
     # Acquire submitted credentials from user
     user = request.get_json()
     logger.info(f"Received user registration data: {user}")
@@ -155,6 +171,15 @@ def register():
 
 @app.route('/api/health-status/<user_id>', methods=['GET'])
 def get_status(user_id):
+    """
+    Retrieves the health status of an athlete from Supabase by user ID
+    
+    Args:
+        user_id (str): The UUID of the athlete.
+
+    Returns:
+        JSON response with the athlete's health status or error message.
+    """
     try:
         user = (
             supabase.table("athletes")
@@ -182,6 +207,12 @@ def get_status(user_id):
 
 @app.route('/api/create-team', methods=['POST'])
 def create_team():
+    """
+    Handles the creation of a new team in the Supabase database.
+
+    Returns:
+        JSON response indicating success or failure of team creation.
+    """
     new_team = request.get_json()
 
     try:
@@ -203,6 +234,15 @@ def create_team():
 
 @app.route('/api/coach-teams/<coach_id>', methods=['GET'])
 def fetch_coach_teams(coach_id):
+    """
+    Fetches all teams associated with a specific coach from Supabase.
+    
+    Args:
+        coach_id (str): The UUID of the coach.
+
+    Returns:
+        JSON response with a list of teams or error message.
+    """
     try:
         response = supabase.table("teams").select("*").eq("coach_id", coach_id).execute()
 
@@ -213,8 +253,8 @@ def fetch_coach_teams(coach_id):
                     "team_id": team.get("team_id"),
                     "team_name": team.get("team_name"),
                     "sport": team.get("sport"),
+                    "players": supabase.table("athletes").select("*", count="exact").eq("team_id", team.get("team_id")).execute().count
                 })
-
             return jsonify(teams=teams), 200
 
     except Exception as e:
@@ -224,6 +264,12 @@ def fetch_coach_teams(coach_id):
 
 @app.route('/api/athlete/teams', methods=['GET'])
 def fetch_teams():
+    """
+    Fetches all teams from Supabase.
+
+    Returns:
+        JSON response with a list of teams or error message.
+    """
     try:
         response = supabase.table("teams").select("*").execute()
 
@@ -246,9 +292,15 @@ def fetch_teams():
 
 @app.route('/api/athlete/team/<athlete_id>', methods=['GET'])
 def fetch_team_details(athlete_id):
+    """
+    Fetches the team details for a specific athlete from Supabase.
+    
+    Args:
+        athlete_id (str): The UUID of the athlete.
 
-    team_details = {}
-
+    Returns:
+        JSON response with the team details or error message.
+    """
     try:
         response = (
             supabase.table("teams")
@@ -276,6 +328,12 @@ def fetch_team_details(athlete_id):
 
 @app.route('/api/athlete/join-team', methods=['POST'])
 def join_team():
+    """
+    POST request that handles an athelte joining a team, updating their team_id in Supabase.
+
+    Returns:
+        JSON response indicating success or failure of the operation.
+    """
     try:
         data = request.get_json()
         response = (
@@ -292,6 +350,39 @@ def join_team():
     except Exception as e:
         logger.error(f"Error athlete joining team: {e}")
         return jsonify(error=str(e)), 500
+
+
+@app.route('/api/team/get-athletes/<team_id>', methods=['GET'])
+def fetch_athletes(team_id):
+    """
+    Fetches athletes associated with a given team
+    
+    Args:
+        team_id (str): The UUID of the team to be queried.
+
+    Returns:
+        JSON response with a list of athletes or error message.
+    """
+    try:
+        response = supabase.table("athletes").select("*").eq("team_id", team_id).execute()
+
+        if response:
+            athletes = []
+            
+            for athlete in response.data:
+                athletes.append({
+                    "athlete_id": athlete.get("id"),
+                    "name": supabase.table("users").select("name").eq("id", athlete.get("id")).execute().data[0].get("name"),
+                    "health_status": athlete.get("status")
+                })
+            
+            logger.info(f"Fetched athletes for team {team_id} successfully.")
+            return jsonify(athletes=athletes), 200
+        
+    except Exception as e:
+        logger.error(f"Error fetching athletes for team {team_id}: {e}")
+        return jsonify(error=str(e)), 500
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

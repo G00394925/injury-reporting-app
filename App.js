@@ -19,6 +19,7 @@ import CoachAccountScreen from "./src/screens/coach/coach_account";
 import ClubSetup from "./src/screens/athlete/club_setup";
 import TeamManagerScreen from "./src/screens/coach/team_manager";
 import TeamCreatorScreen from "./src/screens/coach/team_creator";
+import TeamViewerScreen from "./src/screens/coach/team_viewer";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -72,6 +73,7 @@ function AppNavigator() {
                     <>
                         <Stack.Screen name="MainApp" component={CoachTabNavigator} />
                         <Stack.Screen name="TeamCreator" component={TeamCreatorScreen} />
+                        <Stack.Screen name="TeamViewer" component={TeamViewerScreen} />
                     </>
                 ) : (
                     <>

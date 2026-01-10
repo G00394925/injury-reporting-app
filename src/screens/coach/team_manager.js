@@ -22,13 +22,13 @@ export default function TeamManagerScreen() {
                         <TouchableOpacity 
                             key={team.team_id}
                             style={styles.teamSlot}
-                            onPress={() => {navigation.navigate("MainApp")}}
+                            onPress={() => {navigation.navigate("TeamViewer", {team: team})}}
                         >
                             <View style={styles.teamHeader}>
                                 <Text style={styles.teamText}>{team.team_name}</Text>
                                 <Text style={styles.sportText}>{team.sport}</Text>
                             </View>
-                            <Text style={styles.playerCountText}>20 Players</Text>
+                            <Text style={styles.playerCountText}>{team.players} Players</Text>
                             <Text style={styles.injuryStatusText}>3 Injured</Text>
                         </TouchableOpacity>
                     )
