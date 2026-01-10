@@ -367,8 +367,15 @@ def fetch_athletes(team_id):
 
         if response:
             athletes = []
+            healthy_athletes = 0
+            injured_athletes = 0
             
             for athlete in response.data:
+                if athlete.get("status") == health_status.HealthStatus.HEALTHY.value:
+                    healthy_athletes += 1
+                elif athlete.get("status") == health_status.HealthStatus.INJURED.value:
+                    injured_athletes += 1
+                    
                 athletes.append({
                     "athlete_id": athlete.get("id"),
                     "name": supabase.table("users").select("name").eq("id", athlete.get("id")).execute().data[0].get("name"),
@@ -376,7 +383,11 @@ def fetch_athletes(team_id):
                 })
             
             logger.info(f"Fetched athletes for team {team_id} successfully.")
-            return jsonify(athletes=athletes), 200
+            return jsonify(
+                athletes=athletes,
+                num_athletes=len(athletes),
+                healthy_athletes=healthy_athletes,
+                injured_athletes=injured_athletes), 200
         
     except Exception as e:
         logger.error(f"Error fetching athletes for team {team_id}: {e}")

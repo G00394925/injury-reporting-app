@@ -6,33 +6,36 @@ import { API_BASE_URL } from "../../config/api_config";
 import { useAuth } from "../../context/AuthContext";
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+ 
 
 export default function TeamManagerScreen() {
     const navigation = useNavigation();
     const {uuid, userData} = useAuth();
     const [teamItems, setTeamItems] = useState([]);
+    const [numInjured, setNumInjured] = useState(0);
+    const [numHealthy, setNumHealthy] = useState(0);
 
     useEffect(() => {
         const fetchTeams = async () => {
             try {
                 const response = await axios.get(`${API_BASE_URL}/api/coach-teams/${uuid}`);
                 const teams = response.data.teams.map((team) => {
-                    return (
-                        <TouchableOpacity 
-                            key={team.team_id}
-                            style={styles.teamSlot}
-                            onPress={() => {navigation.navigate("TeamViewer", {team: team})}}
-                        >
-                            <View style={styles.teamHeader}>
-                                <Text style={styles.teamText}>{team.team_name}</Text>
-                                <Text style={styles.sportText}>{team.sport}</Text>
-                            </View>
-                            <Text style={styles.playerCountText}>{team.players} Players</Text>
-                            <Text style={styles.injuryStatusText}>3 Injured</Text>
-                        </TouchableOpacity>
-                    )
-                })
+                getAthleteCount(teams[0].team_id);
+                
+                return (
+                    <TouchableOpacity 
+                        key={team.team_id}
+                        style={styles.teamSlot}
+                        onPress={() => {navigation.navigate("TeamViewer", {team: team})}}
+                    >
+                        <View style={styles.teamHeader}>
+                            <Text style={styles.teamText}>{team.team_name}</Text>
+                            <Text style={styles.sportText}>{team.sport}</Text>
+                        </View>
+                        <Text style={styles.playerCountText}>{team.players} Players</Text>
+                        <Text style={styles.injuryStatusText}>{numInjured}</Text>
+                    </TouchableOpacity>
+                )})
             
                 setTeamItems(teams);
             
@@ -43,6 +46,17 @@ export default function TeamManagerScreen() {
         
         fetchTeams();
     }, []);
+
+    const getAthleteCount = async (team_id) => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/api/team/get-athletes/${team_id}`);
+            setNumHealthy(response.data.healthy_athletes);
+            setNumInjured(response.data.injured_athletes);
+        
+        } catch (error) {
+            console.error("Error fetching athlete count:", error);
+        }
+    }
 
     return (
         <SafeAreaView style={styles.container} edges={["top"]}>
