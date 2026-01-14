@@ -15,6 +15,8 @@ export default function AthleteDashScreen() {
 
     useEffect(() => {
         const fetchHealthStatus = async () => {
+            // Fetch health status on user uuid change.
+            
             if (!uuid) return;
 
             try {

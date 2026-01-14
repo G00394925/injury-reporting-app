@@ -1,7 +1,10 @@
 import { Card } from "@rneui/base";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { globalStyles } from "../../styles/globalStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Calendar from "../../components/calendar";
+import { CalendarContainer, CalendarHeader, CalendarBody } from "@howljs/calendar-kit";
+
 
 export default function CoachDashScreen() {
     return (
@@ -9,7 +12,7 @@ export default function CoachDashScreen() {
             <View style={globalStyles.header}>
                 <Text style={[globalStyles.header_text, {alignContent: "flex-start"}]}>Hello Macdarach</Text>
             </View>
-            <View style={globalStyles.content_container}>
+            <ScrollView style={globalStyles.content_container}>
                 <Card containerStyle={styles.overview_card}>
                     <Card.Title style={styles.stats_card_title}>Team Overview</Card.Title>
                     <Text style={styles.overview_text}>Athletes require your attention</Text>
@@ -32,10 +35,21 @@ export default function CoachDashScreen() {
                         <Text style={styles.stats_text}>20</Text>
                     </Card>
                 </View>
-                <Card>
-                    <Text>TIMETABLE</Text>
-                </Card>
-            </View>
+                <View style={styles.calendar_view}>
+                    <CalendarContainer 
+                        numberOfDays={3} 
+                        hourWidth={50} 
+                        timeInterval={30} 
+                        start={540} 
+                        end={1320}
+                        initialTimeIntervalHeight={60}
+                        allowPinchToZoom={true}
+                    >
+                        <CalendarHeader />
+                        <CalendarBody />
+                    </CalendarContainer>    
+                </View>    
+            </ScrollView>
         </SafeAreaView>
 
     )
@@ -51,7 +65,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: "#ffffff",
         padding: 20,
-        marginTop: -8
+        marginTop: -8,
     },
     greetings_text: {
         alignItems: "flex-start",
@@ -105,5 +119,15 @@ const styles = StyleSheet.create({
     overview_text: {
         fontSize: 20,
         fontFamily: "Rubik",
+    },
+    calendar_view: {
+        height: 300,
+        marginTop: 40,
+        justifyContent: "center",
+        overflow: "hidden",
+        borderWidth: 1,
+        borderColor: "#ccccccff",
+        borderRadius: 10,
+        marginBottom: 50
     }
 });

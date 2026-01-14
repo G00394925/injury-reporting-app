@@ -19,23 +19,28 @@ export default function TeamManagerScreen() {
         const fetchTeams = async () => {
             try {
                 const response = await axios.get(`${API_BASE_URL}/api/coach-teams/${uuid}`);
-                const teams = response.data.teams.map((team) => {
-                getAthleteCount(teams[0].team_id);
+                const teamsData = response.data.teams;
                 
-                return (
-                    <TouchableOpacity 
-                        key={team.team_id}
-                        style={styles.teamSlot}
-                        onPress={() => {navigation.navigate("TeamViewer", {team: team})}}
-                    >
-                        <View style={styles.teamHeader}>
-                            <Text style={styles.teamText}>{team.team_name}</Text>
-                            <Text style={styles.sportText}>{team.sport}</Text>
-                        </View>
-                        <Text style={styles.playerCountText}>{team.players} Players</Text>
-                        <Text style={styles.injuryStatusText}>{numInjured}</Text>
-                    </TouchableOpacity>
-                )})
+                if (teamsData.length > 0) {
+                    getAthleteCount(teamsData[0].team_id);
+                }
+                
+                const teams = teamsData.map((team) => {
+                    return (
+                        <TouchableOpacity 
+                            key={team.team_id}
+                            style={styles.teamSlot}
+                            onPress={() => {navigation.navigate("TeamViewer", {team: team})}}
+                        >
+                            <View style={styles.teamHeader}>
+                                <Text style={styles.teamText}>{team.team_name}</Text>
+                                <Text style={styles.sportText}>{team.sport}</Text>
+                            </View>
+                            <Text style={styles.playerCountText}>{team.players} Players</Text>
+                            <Text style={styles.injuryStatusText}>{numInjured}</Text>
+                        </TouchableOpacity>
+                    )
+                });
             
                 setTeamItems(teams);
             
