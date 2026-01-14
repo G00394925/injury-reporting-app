@@ -1,12 +1,7 @@
-import { CalendarContainer, CalendarHeader, CalendarBody } from "@howljs/calendar-kit";
-
-const Calendar = () => {
-    return (
-        <CalendarContainer>
-            <CalendarHeader />
-            <CalendarBody />
-        </CalendarContainer>
-    );
-}
-
-export default Calendar;
+import CalendarKit, { 
+    CalendarContainer, 
+    CalendarHeader, 
+    CalendarBody,
+    DeepPartial,
+    ThemeConfigs
+}  from "@howljs/calendar-kit";

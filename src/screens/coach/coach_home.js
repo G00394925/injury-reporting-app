@@ -2,9 +2,8 @@ import { Card } from "@rneui/base";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { globalStyles } from "../../styles/globalStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Calendar from "../../components/calendar";
 import { CalendarContainer, CalendarHeader, CalendarBody } from "@howljs/calendar-kit";
-
+import calendarTheme from "../../styles/calendar_theme";
 
 export default function CoachDashScreen() {
     return (
@@ -37,6 +36,7 @@ export default function CoachDashScreen() {
                 </View>
                 <View style={styles.calendar_view}>
                     <CalendarContainer 
+                        theme={calendarTheme}
                         numberOfDays={3} 
                         hourWidth={50} 
                         timeInterval={30} 
@@ -44,6 +44,7 @@ export default function CoachDashScreen() {
                         end={1320}
                         initialTimeIntervalHeight={60}
                         allowPinchToZoom={true}
+                        scrollByDay
                     >
                         <CalendarHeader />
                         <CalendarBody />
