@@ -34,22 +34,27 @@ export default function CoachDashScreen() {
                         <Text style={styles.stats_text}>20</Text>
                     </Card>
                 </View>
-                <View style={styles.calendar_view}>
-                    <CalendarContainer 
-                        theme={calendarTheme}
-                        numberOfDays={3} 
-                        hourWidth={50} 
-                        timeInterval={30} 
-                        start={540} 
-                        end={1320}
-                        initialTimeIntervalHeight={60}
-                        allowPinchToZoom={true}
-                        scrollByDay
-                    >
-                        <CalendarHeader />
-                        <CalendarBody />
-                    </CalendarContainer>    
-                </View>    
+                <View style={styles.schedule_container}>
+                    <Text style={{fontFamily: "Rubik", fontSize: 18, fontWeight: "bold"}}>
+                        Team Schedule
+                    </Text>
+                    <View style={styles.calendar_view}>
+                        <CalendarContainer 
+                            theme={calendarTheme}
+                            numberOfDays={3} 
+                            hourWidth={50} 
+                            timeInterval={30} 
+                            start={540} 
+                            end={1320}
+                            initialTimeIntervalHeight={60}
+                            allowPinchToZoom={true}
+                            scrollByDay
+                            >
+                            <CalendarHeader />
+                            <CalendarBody />
+                        </CalendarContainer>    
+                    </View>    
+                </View>
             </ScrollView>
         </SafeAreaView>
 
@@ -121,9 +126,13 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontFamily: "Rubik",
     },
+    schedule_container: {
+        flex: 1,
+        marginTop: 30
+    },
     calendar_view: {
         height: 300,
-        marginTop: 40,
+        marginTop: 10,
         justifyContent: "center",
         overflow: "hidden",
         borderWidth: 1,
