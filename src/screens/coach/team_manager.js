@@ -37,7 +37,7 @@ export default function TeamManagerScreen() {
                                 <Text style={styles.sportText}>{team.sport}</Text>
                             </View>
                             <Text style={styles.playerCountText}>{team.players} Players</Text>
-                            <Text style={styles.injuryStatusText}>{numInjured}</Text>
+                            <Text style={styles.injuryStatusText}>{numInjured} Injured</Text>
                         </TouchableOpacity>
                     )
                 });
@@ -105,7 +105,8 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontFamily: "Rubik",
         alignSelf: "flex-start",
-        verticalAlign: "top"
+        verticalAlign: "top",
+        fontWeight: "bold"
     },
     playerCountText: {
         fontSize: 14,

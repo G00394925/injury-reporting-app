@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
         fontFamily: "Rubik",
         alignSelf: "flex-start",
         verticalAlign: "top",
-        fontWeight: "500"
+        fontWeight: "bold"
     },
     coach_text: {
         fontSize: 14,
