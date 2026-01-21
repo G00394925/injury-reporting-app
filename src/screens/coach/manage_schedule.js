@@ -1,17 +1,21 @@
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useAuth } from "../../context/AuthContext";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, TextInput } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, TextInput, Alert } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { CalendarContainer, CalendarHeader, CalendarBody } from "@howljs/calendar-kit";
 import calendarTheme from "../../styles/calendar_theme";
 import { globalStyles } from "../../styles/globalStyles";
 import { useState } from "react";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { API_BASE_URL } from "../../config/api_config";
+import axios from "axios";
 
 
 export default function ManageScheduleScreen() {
     const navigation = useNavigation();
+    const route = useRoute();
+    const { team } = route.params;
     const { uuid } = useAuth();
     const [modalVisible, setModalVisible] = useState(false);
     const [eventType, setEventType] = useState('');
@@ -85,15 +89,42 @@ export default function ManageScheduleScreen() {
         hideEndTimePicker();
     };
 
-    const handleSubmit = () => {
-        console.log('Creating event:', { 
-            eventType, 
-            eventTitle, 
-            eventDate: formatDate(eventDate),
-            eventStartTime: formatTime(eventStartTime),
-            eventEndTime: formatTime(eventEndTime)
-        });
-        closeModal();
+    // Handle new event submission
+    const handleSubmit = async () => {
+        try {
+            // Format dates and times for database
+            const formattedDate = eventDate.toISOString().split('T')[0]; // YYYY-MM-DD
+            const formattedStartTime = formatTime(eventStartTime);
+            const formattedEndTime = formatTime(eventEndTime);
+
+            console.log('Submitting event:', { 
+                team_id: team.team_id,
+                title: eventTitle,
+                event_date: formattedDate,
+                start_time: formattedStartTime,
+                end_time: formattedEndTime,
+                type: eventType,
+            });
+
+            const response = await axios.post(`${API_BASE_URL}/api/event/create`, {
+                team_id: team.team_id,
+                title: eventTitle,
+                event_date: formattedDate,
+                start_time: formattedStartTime,
+                end_time: formattedEndTime,
+                type: eventType,
+            });
+
+            console.log('Event created successfully: ', response.data);
+            Alert.alert('Success', 'Event created successfully');
+            closeModal();
+        } catch (error) {
+            console.error('Error creating event:', error);
+            Alert.alert(
+                'Error', 
+                error.response?.data?.error || 'Failed to create event. Please try again.'
+            );
+        }
     };
 
     return (
@@ -123,12 +154,12 @@ export default function ManageScheduleScreen() {
                 </View>
                 
                 <View style={styles.actionsContainer}>
-                    <TouchableOpacity style={styles.actionButton} onPress={() => openModal('training')}>
+                    <TouchableOpacity style={styles.actionButton} onPress={() => openModal('Training')}>
                         <MaterialIcons name="fitness-center" size={24} color="white" />
                         <Text style={styles.actionButtonText}>Add Training Session</Text>
                     </TouchableOpacity>
                     
-                    <TouchableOpacity style={[styles.actionButton, styles.secondaryButton]} onPress={() => openModal('match')}>
+                    <TouchableOpacity style={[styles.actionButton, styles.secondaryButton]} onPress={() => openModal('Match')}>
                         <MaterialIcons name="sports-soccer" size={24} color="white" />
                         <Text style={styles.actionButtonText}>Add Match/Game</Text>
                     </TouchableOpacity>

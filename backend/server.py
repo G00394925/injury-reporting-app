@@ -394,5 +394,35 @@ def fetch_athletes(team_id):
         return jsonify(error=str(e)), 500
 
 
+@app.route('/api/event/create', methods=['POST'])
+def create_event():
+    """
+    Handles the creation of a new event in the Supabase database.
+
+    Returns:
+        JSON response indicating success or failure of event creation.
+    """
+    new_event = request.get_json()
+    logger.info(f"Received new event creation request: {new_event}")
+
+    try:
+        response = supabase.table("events").insert({
+            "team_id": new_event.get("team_id"),
+            "title": new_event.get("title"),
+            "event_date": new_event.get("event_date"),
+            "start_time": new_event.get("start_time"),
+            "end_time": new_event.get("end_time"),
+            "type": new_event.get("type"),
+        }).execute()
+
+        if response:
+            logger.info(f"Event created successfully: {new_event.get('title')}")
+            return jsonify(message="Event created successfully"), 201
+
+    except Exception as e:
+        logger.error(f"Error creating event: {e}")
+        return jsonify(error=str(e)), 500
+
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
