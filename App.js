@@ -13,7 +13,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import { AuthProvider, useAuth } from "./src/context/AuthContext";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import AthleteAccountScreen from "./src/screens/athlete/athlete_account";
 import CoachAccountScreen from "./src/screens/coach/coach_account";
 import ClubSetup from "./src/screens/athlete/club_setup";
@@ -29,7 +29,31 @@ const Stack = createStackNavigator();
 
 function AthleteTabNavigator() {
     return (
-        <Tab.Navigator screenOptions={{ headerShown: false }}>
+        <Tab.Navigator 
+            screenOptions={({ route }) => ({
+                headerShown: false,
+                tabBarIcon: ({ focused, color, size }) => {
+                    let iconName;
+
+                    if (route.name === "Dashboard") {
+                        iconName = 'view-dashboard'
+                    } else if (route.name === "Report") {
+                        iconName = 'file-document'
+                    } else if (route.name === "Team") {
+                        iconName = 'human-queue'
+                    } else if (route.name === "Schedule") {
+                        iconName = 'calendar-month'
+                    } else if (route.name === "Account") {
+                        iconName = 'account-circle'
+                    }
+
+                    return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
+                },
+                tabBarActiveTintColor: '#001a79',
+                tabBarInactiveTintColor: 'gray',
+            })}
+        >
+
             <Tab.Screen name="Dashboard" component={AthleteDashScreen} />
             <Tab.Screen
                 name="Report"
@@ -38,7 +62,7 @@ function AthleteTabNavigator() {
                     tabBarStyle: { display: "none" },
                 }}
             />
-            <Stack.Screen name="ScheduleManager" component={ManageScheduleScreen} />
+            <Tab.Screen name="Schedule" component={ManageScheduleScreen} />
             <Tab.Screen name="Team" component={AthleteTeamScreen} />
             <Tab.Screen name="Account" component={AthleteAccountScreen} />
         </Tab.Navigator>

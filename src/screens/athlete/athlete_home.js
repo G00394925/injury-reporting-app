@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image, ActivityIndicator } from "react-native";
 import { Button, Card } from "@rneui/themed";
 import { useEffect, useState } from "react";
 import { CardTitle } from "@rneui/base/dist/Card/Card.Title";
@@ -6,7 +6,6 @@ import { useAuth } from "../../context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { API_BASE_URL } from "../../config/api_config";
-import { ActivityIndicator } from "react-native-web";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { globalStyles } from "../../styles/globalStyles";
 
@@ -153,7 +152,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     light: {
-        marginVertical: 20,
+        marginVertical: 10,
         width: 80,
         height: 80
     },
