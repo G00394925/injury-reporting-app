@@ -77,10 +77,6 @@ export default function TeamViewerScreen({ route }) {
                 <Text style={globalStyles.header_text}>{team.team_name}</Text>
             </View>
             <View style={styles.content_container}>
-                <TouchableOpacity style={styles.scheduleButton} onPress={() => {navigation.navigate("ScheduleManager", {team: team})}}>
-                    <MaterialIcons name="calendar-month" size={24} color="white" />
-                    <Text style={styles.scheduleButtonText}>Manage Schedule</Text>
-                </TouchableOpacity>
                 {loading ? (
                     <ActivityIndicator size="large" color="#001a79" />
                 ) : (

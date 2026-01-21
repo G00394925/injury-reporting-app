@@ -20,7 +20,7 @@ import ClubSetup from "./src/screens/athlete/club_setup";
 import TeamManagerScreen from "./src/screens/coach/team_manager";
 import TeamCreatorScreen from "./src/screens/coach/team_creator";
 import TeamViewerScreen from "./src/screens/coach/team_viewer";
-import ManageScheduleScreen from "./src/screens/coach/manage_schedule";
+import ManageScheduleScreen from "./src/screens/athlete/manage_schedule";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -38,6 +38,7 @@ function AthleteTabNavigator() {
                     tabBarStyle: { display: "none" },
                 }}
             />
+            <Stack.Screen name="ScheduleManager" component={ManageScheduleScreen} />
             <Tab.Screen name="Team" component={AthleteTeamScreen} />
             <Tab.Screen name="Account" component={AthleteAccountScreen} />
         </Tab.Navigator>
@@ -75,7 +76,6 @@ function AppNavigator() {
                         <Stack.Screen name="MainApp" component={CoachTabNavigator} />
                         <Stack.Screen name="TeamCreator" component={TeamCreatorScreen} />
                         <Stack.Screen name="TeamViewer" component={TeamViewerScreen} />
-                        <Stack.Screen name="ScheduleManager" component={ManageScheduleScreen} />
                     </>
                 ) : (
                     <>

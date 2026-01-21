@@ -66,21 +66,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#001a79",
     },
-    contentContainer: {
-        flex: 1,
-        borderRadius: 10,
-        backgroundColor: "#ffffff",
-        padding: 20,
-        marginTop: -8,
-    },
-    greetings_text: {
-        alignItems: "flex-start",
-        fontSize: 20,
-        fontWeight: "bold",
-        paddingLeft: 10,
-        marginBottom: 20,
-        fontFamily: "Rubik",
-    },
     stats_cards_container: {
         flexDirection: "row",
         flexWrap: "wrap",

@@ -15,7 +15,6 @@ import axios from "axios";
 export default function ManageScheduleScreen() {
     const navigation = useNavigation();
     const route = useRoute();
-    const { team } = route.params;
     const { uuid } = useAuth();
     const [modalVisible, setModalVisible] = useState(false);
     const [eventType, setEventType] = useState('');
@@ -98,7 +97,7 @@ export default function ManageScheduleScreen() {
             const formattedEndTime = formatTime(eventEndTime);
 
             console.log('Submitting event:', { 
-                team_id: team.team_id,
+                athlete_id: uuid,
                 title: eventTitle,
                 event_date: formattedDate,
                 start_time: formattedStartTime,
@@ -107,7 +106,7 @@ export default function ManageScheduleScreen() {
             });
 
             const response = await axios.post(`${API_BASE_URL}/api/event/create`, {
-                team_id: team.team_id,
+                athlete_id: uuid,
                 title: eventTitle,
                 event_date: formattedDate,
                 start_time: formattedStartTime,
