@@ -127,7 +127,7 @@ export default function ManageScheduleScreen() {
     };
 
     return (
-        <SafeAreaView style={styles.container} edges={["top"]}>
+        <SafeAreaView style={globalStyles.container} edges={["top"]}>
             <View style={globalStyles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={28} color="white" />
@@ -250,20 +250,9 @@ export default function ManageScheduleScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#001a79",
-    },
     backButton: {
         marginRight: 10,
         padding: 5,
-    },
-    contentContainer: {
-        flex: 1,
-        borderRadius: 10,
-        backgroundColor: "#ffffff",
-        padding: 20,
-        marginTop: -8,
     },
     calendarView: {
         height: 430,

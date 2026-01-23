@@ -42,11 +42,11 @@ export default function ClubSetup() {
     };
 
     return (
-        <SafeAreaView style={styles.container} edges={["top"]}>
+        <SafeAreaView style={globalStyles.container} edges={["top"]}>
             <View style={globalStyles.header}>
                 <Text style={globalStyles.headerText}>Choose Team</Text>
             </View>
-            <View style={styles.contentContainer}>
+            <View style={globalStyles.contentContainer}>
                 {teams.map((team) => (
                     <TouchableOpacity
                         key={team.team_id}
@@ -70,17 +70,6 @@ export default function ClubSetup() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#001a79",
-    },
-    contentContainer: {
-        flex: 1,
-        borderRadius: 10,
-        backgroundColor: "#ffffff",
-        padding: 20,
-        marginTop: -8
-    },
     teamSlotInactive: {
         padding: 15,
         borderWidth: 1,

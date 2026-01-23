@@ -69,14 +69,14 @@ export default function TeamViewerScreen({ route }) {
     }, [team.team_id]);
 
     return (
-        <SafeAreaView style={styles.container} edges={["top"]}>
+        <SafeAreaView style={globalStyles.container} edges={["top"]}>
             <View style={globalStyles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={28} color="white" />
                 </TouchableOpacity>
                 <Text style={globalStyles.headerText}>{team.team_name}</Text>
             </View>
-            <View style={styles.contentContainer}>
+            <View style={globalStyles.contentContainer}>
                 {loading ? (
                     <ActivityIndicator size="large" color="#001a79" />
                 ) : (
@@ -90,18 +90,6 @@ export default function TeamViewerScreen({ route }) {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#001a79",
-    },
-    contentContainer: {
-        flex: 1,
-        borderRadius: 10,
-        backgroundColor: "#ffffff",
-        padding: 20,
-        marginTop: -8,
-        marginBottom: -10
-    },
     backButton: {
         marginRight: 10,
         padding: 5,

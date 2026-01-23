@@ -40,7 +40,7 @@ function AthleteTabNavigator() {
                     } else if (route.name === "Report") {
                         iconName = 'file-document'
                     } else if (route.name === "Team") {
-                        iconName = 'human-queue'
+                        iconName = 'crowd'
                     } else if (route.name === "Schedule") {
                         iconName = 'calendar-month'
                     } else if (route.name === "Account") {
@@ -71,7 +71,26 @@ function AthleteTabNavigator() {
 
 function CoachTabNavigator() {
     return (
-        <Tab.Navigator screenOptions={{ headerShown: false }}>
+        <Tab.Navigator 
+            screenOptions={({ route }) => ({
+                headerShown: false,
+                tabBarIcon: ({ focused, color, size }) => {
+                    let iconName;
+
+                    if (route.name === "Dashboard") {
+                        iconName = 'view-dashboard'
+                    } else if (route.name === "Team") {
+                        iconName = 'crowd'
+                    } else if (route.name === "Account") {
+                        iconName = 'account-circle'
+                    }
+
+                    return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
+                },
+                tabBarActiveTintColor: '#001a79',
+                tabBarInactiveTintColor: 'gray',
+            })}
+        >
             <Tab.Screen name="Dashboard" component={CoachDashScreen} />
             <Tab.Screen name="Team" component={TeamManagerScreen} />
             <Tab.Screen name="Account" component={CoachAccountScreen} />

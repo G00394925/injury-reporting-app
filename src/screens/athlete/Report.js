@@ -129,7 +129,7 @@ export default function ReportScreen() {
     const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={globalStyles.container}>
             <View style={globalStyles.header}>
                 <Text style={globalStyles.headerText}>Daily Health Report</Text>
             </View>
@@ -166,10 +166,6 @@ export default function ReportScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#001a79",
-    },
     scrollView: {
         flex: 1,
         backgroundColor: "#ffffffff",

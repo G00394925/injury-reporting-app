@@ -64,11 +64,11 @@ export default function TeamManagerScreen() {
     }
 
     return (
-        <SafeAreaView style={styles.container} edges={["top"]}>
+        <SafeAreaView style={globalStyles.container} edges={["top"]}>
             <View style={globalStyles.header}>
                 <Text style={globalStyles.headerText}>Team Manager</Text>
             </View>
-            <View style={styles.contentContainer}>
+            <View style={globalStyles.contentContainer}>
 
                 {teamItems}
 
@@ -81,18 +81,6 @@ export default function TeamManagerScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#001a79",
-    },
-    contentContainer: {
-        flex: 1,
-        borderRadius: 10,
-        backgroundColor: "#ffffff",
-        padding: 20,
-        marginTop: -8,
-        marginBottom: -10
-    },
     teamSlot: {
         padding: 15,
         borderWidth: 1,

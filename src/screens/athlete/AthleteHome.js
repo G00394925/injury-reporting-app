@@ -36,7 +36,7 @@ export default function AthleteDashScreen() {
     }, [uuid]);
 
     return (
-        <SafeAreaView style={styles.container} edges={["top"]}>
+        <SafeAreaView style={globalStyles.container} edges={["top"]}>
             {loading ? (
                 <ActivityIndicator size="large" color="#001a79" />
             ) : (
@@ -134,10 +134,6 @@ export default function AthleteDashScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#001a79",
-    },
     lightsCard: {
         padding: 15,
         paddingTop: 5,

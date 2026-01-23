@@ -7,7 +7,7 @@ import calendarTheme from "../../styles/calendar_theme";
 
 export default function CoachDashScreen() {
     return (
-        <SafeAreaView style={styles.container} edges={["top"]}>
+        <SafeAreaView style={globalStyles.container} edges={["top"]}>
             <View style={globalStyles.header}>
                 <Text style={[globalStyles.headerText, {alignContent: "flex-start"}]}>Hello Macdarach</Text>
             </View>
@@ -62,10 +62,6 @@ export default function CoachDashScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#001a79",
-    },
     statsCardContainer: {
         flexDirection: "row",
         flexWrap: "wrap",

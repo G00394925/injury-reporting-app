@@ -31,7 +31,7 @@ export default function TeamCreatorScreen() {
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={globalStyles.container}>
             <View style={globalStyles.header}>
                 <Text style={globalStyles.headerText}>Create New Team</Text>
             </View>
@@ -50,10 +50,6 @@ export default function TeamCreatorScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: "flex-start",
-    },
     label: {
         fontFamily: "Rubik",
         fontSize: 16,

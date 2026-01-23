@@ -183,6 +183,7 @@ def get_status(user_id):
         user = (
             supabase.table("athletes")
             .select("*")
+            .eq("id", user_id)
             .execute()
         )
 

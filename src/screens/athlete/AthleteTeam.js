@@ -26,7 +26,7 @@ export default function AthleteTeamScreen() {
     }, [])
 
     return (
-        <SafeAreaView style={styles.container} edges={["top"]}>
+        <SafeAreaView style={globalStyles.container} edges={["top"]}>
             <View style={globalStyles.header}>
                 <Text style={globalStyles.headerText}>Team</Text>
             </View>
@@ -57,17 +57,6 @@ export default function AthleteTeamScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#001a79",
-    },
-    contentContainer: {
-        flex: 1,
-        borderRadius: 10,
-        backgroundColor: "#ffffff",
-        padding: 20,
-        marginTop: -8
-    },
     clubTitle: {
         fontWeight: "bold",
         fontFamily: "Rubik",
