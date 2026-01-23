@@ -5,8 +5,8 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "../../config/api_config";
 import { useAuth } from "../../context/AuthContext";
-import RpeSlider from "../../components/rpe_slider";
-import MultiChoice from "../../components/multi_choice";
+import RpeSlider from "../../components/RPESlider";
+import MultiChoice from "../../components/MultiChoice";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
