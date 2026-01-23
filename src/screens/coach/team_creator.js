@@ -33,14 +33,14 @@ export default function TeamCreatorScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <View style={globalStyles.header}>
-                <Text style={globalStyles.header_text}>Create New Team</Text>
+                <Text style={globalStyles.headerText}>Create New Team</Text>
             </View>
             <View style={styles.contentContainer}>
                 <Text style={styles.label}>Enter team name</Text>
-                <TextInput style={styles.text_input} placeholder="Team Name" value={team_name} onChangeText={setTeamName} />
+                <TextInput style={styles.textInput} placeholder="Team Name" value={team_name} onChangeText={setTeamName} />
 
                 <Text style={styles.label}>What sport will your team be playing?</Text>
-                <TextInput style={styles.text_input} placeholder="Sport" value={sport} onChangeText={setSport} />
+                <TextInput style={styles.textInput} placeholder="Sport" value={sport} onChangeText={setSport} />
 
                 <Button title="Create Team" onPress={handleCreateTeam} />
                 <Button title="Go back" onPress={(navigation.goBack)} />
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
         padding: 20,
         marginTop: -8
     },
-    text_input: {
+    textInput: {
         borderWidth: 1,
         borderColor: "#ccc",
         padding: 15,

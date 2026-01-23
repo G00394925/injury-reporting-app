@@ -44,20 +44,20 @@ export default function ClubSetup() {
     return (
         <SafeAreaView style={styles.container} edges={["top"]}>
             <View style={globalStyles.header}>
-                <Text style={globalStyles.header_text}>Choose Team</Text>
+                <Text style={globalStyles.headerText}>Choose Team</Text>
             </View>
             <View style={styles.contentContainer}>
                 {teams.map((team) => (
                     <TouchableOpacity
                         key={team.team_id}
-                        style={[styles.team_slot_inactive, selection === team.team_id && styles.team_slot_active]}
+                        style={[styles.teamSlotInactive, selection === team.team_id && styles.teamSlotActive]}
                         onPress={() => setSelection(team.team_id)}
                     >
-                        <View style={styles.team_header}>
-                            <Text style={styles.team_text}>{team.team_name}</Text>
-                            <Text style={styles.sport_text}>{team.sport}</Text>
+                        <View style={styles.teamHeader}>
+                            <Text style={styles.teamText}>{team.team_name}</Text>
+                            <Text style={styles.sportText}>{team.sport}</Text>
                         </View>
-                        <Text style={styles.coach_text}>Coach: {team.coach_name}</Text>
+                        <Text style={styles.coachText}>Coach: {team.coach_name}</Text>
                     </TouchableOpacity>
                 ))}
                 <View style={styles.controls}>
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
         padding: 20,
         marginTop: -8
     },
-    team_slot_inactive: {
+    teamSlotInactive: {
         padding: 15,
         borderWidth: 1,
         borderColor: "#888888ff",
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         justifyContent: "flex-start"
     },
-    team_slot_active: {
+    teamSlotActive: {
         padding: 15,
         borderWidth: 2,
         borderColor: "#001a79",
@@ -97,27 +97,27 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         justifyContent: "flex-start"
     },
-    team_text: {
+    teamText: {
         fontSize: 18,
         fontFamily: "Rubik",
         alignSelf: "flex-start",
         verticalAlign: "top",
         fontWeight: "bold"
     },
-    coach_text: {
+    coachText: {
         fontSize: 14,
         marginTop: 10,
         fontFamily: "Rubik",
         alignSelf: "flex-start",
         verticalAlign: "bottom"
     },
-    team_header: {
+    teamHeader: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
         marginBottom: 10
     },
-    sport_text: {
+    sportText: {
         fontSize: 14,
         fontFamily: "Rubik",
         color: "#1d3adfff",

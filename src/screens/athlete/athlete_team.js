@@ -28,9 +28,9 @@ export default function AthleteTeamScreen() {
     return (
         <SafeAreaView style={styles.container} edges={["top"]}>
             <View style={globalStyles.header}>
-                <Text style={globalStyles.header_text}>Team</Text>
+                <Text style={globalStyles.headerText}>Team</Text>
             </View>
-            <View style={globalStyles.content_container}>
+            <View style={globalStyles.contentContainer}>
                 <View>
                     <Text style={styles.clubTitle}>Club</Text>
                     <Text style={styles.clubText}>{teamDetails?.team_name}</Text>

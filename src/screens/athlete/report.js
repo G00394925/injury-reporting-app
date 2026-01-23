@@ -47,9 +47,9 @@ export default function ReportScreen() {
             text: null,
             subtext: null,
             component: (
-                <View style={styles.compact_container}>
+                <View style={styles.compactContainer}>
                     <View>
-                        <Text style={styles.compact_question_text}>Did you get injured today?</Text>
+                        <Text style={styles.compactQuestionText}>Did you get injured today?</Text>
                         <MultiChoice
                             options={["Yes", "No"]}
                             value={answers.injured}
@@ -58,7 +58,7 @@ export default function ReportScreen() {
                         />
                     </View>
                     <View>
-                        <Text style={styles.compact_question_text}>Do you feel sick?</Text>
+                        <Text style={styles.compactQuestionText}>Do you feel sick?</Text>
                         <MultiChoice
                             options={["Yes", "No"]}
                             value={answers.ill}
@@ -131,16 +131,16 @@ export default function ReportScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <View style={globalStyles.header}>
-                <Text style={globalStyles.header_text}>Daily Health Report</Text>
+                <Text style={globalStyles.headerText}>Daily Health Report</Text>
             </View>
             <ScrollView
-                style={styles.scroll_view}
+                style={styles.scrollView}
                 contentContainerStyle={styles.content}
                 showsVerticalScrollIndicator={false}
             >
-                <View style={styles.question_container}>
-                    <Text style={styles.question_text}>{questions[currentQuestionIndex].text}</Text>
-                    <Text style={styles.question_subtext}>
+                <View style={styles.questionContainer}>
+                    <Text style={styles.questionText}>{questions[currentQuestionIndex].text}</Text>
+                    <Text style={styles.questionSubtext}>
                         {questions[currentQuestionIndex].subtext}
                     </Text>
                 </View>
@@ -148,17 +148,17 @@ export default function ReportScreen() {
                     {questions[currentQuestionIndex].component}
                 </View>
             </ScrollView>
-            <View style={styles.navigation_buttons}>
+            <View style={styles.navigationButtons}>
                 <TouchableOpacity
                     onPress={() => currentQuestionIndex === 0 ? navigation.navigate("Dashboard") : setCurrentQuestionIndex(currentQuestionIndex - 1)}
                 >
-                    <Text style={styles.nav_button_text}>Previous</Text>
+                    <Text style={styles.navButtonText}>Previous</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() =>
                         isLastQuestion ? handleReportSubmission(answers) : setCurrentQuestionIndex(currentQuestionIndex + 1)}
                 >
-                    <Text style={styles.nav_button_text}>{isLastQuestion ? "Submit" : "Next"}</Text>
+                    <Text style={styles.navButtonText}>{isLastQuestion ? "Submit" : "Next"}</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#001a79",
     },
-    scroll_view: {
+    scrollView: {
         flex: 1,
         backgroundColor: "#ffffffff",
         borderRadius: 10,
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         paddingVertical: 30,
     },
-    question_container: {
+    questionContainer: {
         paddingHorizontal: 20,
         marginBottom: 20
     },
@@ -189,22 +189,22 @@ const styles = StyleSheet.create({
         width: "100%",
         alignItems: "center"
     },
-    question_text: {
+    questionText: {
         fontSize: 28,
         marginBottom: 10,
         fontWeight: "bold",
         fontFamily: "Rubik",
     },
-    question_subtext: {
+    questionSubtext: {
         fontSize: 16,
         fontFamily: "Rubik"
     },
-    buttons_container: {
+    buttonsContainer: {
         flexDirection: "row",
         width: "100%",
         marginBottom: 50
     },
-    navigation_buttons: {
+    navigationButtons: {
         flexDirection: "row",
         justifyContent: "space-between",
         width: "100%",
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
         borderTopColor: "#00000020",
         backgroundColor: "#ffffff"
     },
-    nav_button_text: {
+    navButtonText: {
         color: "#3b3b3bff",
         fontSize: 16,
         fontWeight: "bold",
@@ -233,29 +233,29 @@ const styles = StyleSheet.create({
         minHeight: 150,
         maxHeight: 200
     },
-    choice_button_text: {
+    choiceButtonText: {
         fontSize: 16,
         marginTop: 10,
         alignSelf: "center",
         fontFamily: "Rubik",
         fontWeight: "bold"
     },
-    choice_image: {
+    choiceImage: {
         width: 100,
         height: 100
     },
-    choice_active: {
+    choiceActive: {
         backgroundColor: "#1d65ecff"
     },
-    choice_text_active: {
+    choiceTextActive: {
         color: "#ffffffff",
         fontWeight: "bold"
     },
-    compact_container: {
+    compactContainer: {
         gap: 40,
         width: "100%"
     },
-    compact_question_text: {
+    compactQuestionText: {
         fontSize: 22,
         marginHorizontal: 20,
         marginBottom: 20,

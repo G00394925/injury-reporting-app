@@ -42,10 +42,10 @@ export default function AthleteDashScreen() {
             ) : (
                 <>
                     <View style={globalStyles.header}>
-                        <Text style={globalStyles.header_text}>Hello {userData?.name}</Text>
+                        <Text style={globalStyles.headerText}>Hello {userData?.name}</Text>
                     </View>
-                    <View style={globalStyles.content_container}>
-                        <Card containerStyle={styles.lights_card}>
+                    <View style={globalStyles.contentContainer}>
+                        <Card containerStyle={styles.lightsCard}>
                             <CardTitle
                                 style={{
                                     fontSize: 18,
@@ -60,7 +60,7 @@ export default function AthleteDashScreen() {
                                         ? "Your Status: Recovering"
                                         : "Your Status: Ready to play"}
                             </CardTitle>
-                            <View style={styles.lights_container}>
+                            <View style={styles.lightsContainer}>
                                 <Image
                                     style={styles.light}
                                     source={healthStatus === "Injured" ? require("../../../assets/RedLightOn.png") : require("../../../assets/RedLightOff.png")}
@@ -75,10 +75,10 @@ export default function AthleteDashScreen() {
                                 />
                             </View>
                         </Card>
-                        <View style={styles.info_cards_container}>
+                        <View style={styles.infoCardsContainer}>
                             <Card
                                 containerStyle={[
-                                    styles.info_card,
+                                    styles.infoCard,
                                     { backgroundColor: "#6684fd" },
                                 ]}
                             >
@@ -87,7 +87,7 @@ export default function AthleteDashScreen() {
                             </Card>
                             <Card
                                 containerStyle={[
-                                    styles.info_card,
+                                    styles.infoCard,
                                     { backgroundColor: "#8bbbff" },
                                 ]}
                             >
@@ -98,7 +98,7 @@ export default function AthleteDashScreen() {
                             </Card>
                             <Card
                                 containerStyle={[
-                                    styles.info_card,
+                                    styles.infoCard,
                                     { backgroundColor: "#8bbbff" },
                                 ]}
                             >
@@ -109,7 +109,7 @@ export default function AthleteDashScreen() {
                             </Card>
                             <Card
                                 containerStyle={[
-                                    styles.info_card,
+                                    styles.infoCard,
                                     { backgroundColor: "#6684fd" },
                                 ]}
                             >
@@ -121,7 +121,7 @@ export default function AthleteDashScreen() {
                         </View>
                         <Button
                             title="Submit Daily Report"
-                            buttonStyle={styles.report_button}
+                            buttonStyle={styles.reportButton}
                             containerStyle={{ marginTop: 20}}
                             titleStyle={{ color: "#575757ff", fontWeight: "bold" }}
                             onPress={() => navigation.navigate("Report")}
@@ -138,14 +138,14 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#001a79",
     },
-    lights_card: {
+    lightsCard: {
         padding: 15,
         paddingTop: 5,
         backgroundColor: "#424242ff",
         borderRadius: 10,
         margin: 0
     },
-    lights_container: {
+    lightsContainer: {
         flexDirection: "row",
         justifyContent: "space-evenly",
         backgroundColor: "#333333ff",
@@ -156,21 +156,21 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80
     },
-    info_cards_container: {
+    infoCardsContainer: {
         flexDirection: "row",
         flexWrap: "wrap",
         justifyContent: "space-between",
         width: "100%",
         marginTop: 15,
     },
-    info_card: {
+    infoCard: {
         padding: 10,
         borderRadius: 10,
         marginTop: 10,
         marginHorizontal: 0,
         width: "48%",
     },
-    report_button: {
+    reportButton: {
         marginTop: 20,
         alignContent: "center",
         paddingHorizontal: 40,

@@ -28,7 +28,7 @@ export default function TeamViewerScreen({ route }) {
                         <View
                             key={athlete.athlete_id}
                             style={[
-                                styles.athlete_slot, 
+                                styles.athleteSlot, 
                                 {borderColor: 
                                     athlete.health_status === "Injured" ? "#ff4d4d" : 
                                     athlete.health_status === "Recovering" ? "#ffb84d" : 
@@ -36,7 +36,7 @@ export default function TeamViewerScreen({ route }) {
                                 }
                             ]} 
                         >
-                            <Text style={styles.athlete_name_text}>{athlete.name}</Text>
+                            <Text style={styles.athleteNameText}>{athlete.name}</Text>
                             {athlete.health_status === "Injured" && (
                                 <Image
                                     style={styles.light}
@@ -74,9 +74,9 @@ export default function TeamViewerScreen({ route }) {
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={28} color="white" />
                 </TouchableOpacity>
-                <Text style={globalStyles.header_text}>{team.team_name}</Text>
+                <Text style={globalStyles.headerText}>{team.team_name}</Text>
             </View>
-            <View style={styles.content_container}>
+            <View style={styles.contentContainer}>
                 {loading ? (
                     <ActivityIndicator size="large" color="#001a79" />
                 ) : (
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#001a79",
     },
-    content_container: {
+    contentContainer: {
         flex: 1,
         borderRadius: 10,
         backgroundColor: "#ffffff",
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
         fontFamily: "Rubik",
         color: '#666'
     },
-    athlete_slot: {
+    athleteSlot: {
         flexDirection: "row",
         justifyContent: "space-between",
         padding: 15, 
@@ -146,12 +146,12 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         backgroundColor: "#ebebebff"
     },
-    athlete_name_text: {
+    athleteNameText: {
         fontSize: 16,
         fontWeight: "bold",
         fontFamily: "Rubik",
     },
-    athlete_status_text: {
+    athleteStatusText: {
         fontSize: 14,
         fontFamily: "Rubik",
         marginTop: 5,

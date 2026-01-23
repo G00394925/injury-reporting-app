@@ -136,20 +136,20 @@ export default function RegisterScreen() {
                     showsVerticalScrollIndicator={false}
                 >
                     <Text style={{ fontSize: 42, fontWeight: "bold" }}>Sign up</Text>
-                    <View style={styles.text_box_container}>
-                        <Text style={styles.dob_text}>I am a: </Text>
-                        <View style={styles.type_container}>
+                    <View style={styles.textBoxContainer}>
+                        <Text style={styles.dobText}>I am a: </Text>
+                        <View style={styles.typeContainer}>
                             <TouchableOpacity
                                 style={[
-                                    styles.type_button,
-                                    role === "Athlete" && styles.type_active,
+                                    styles.typeButton,
+                                    role === "Athlete" && styles.typeActive,
                                 ]}
                                 onPress={() => setRole("Athlete")}
                             >
                                 <Text
                                     style={[
-                                        styles.type_text,
-                                        role === "Athlete" && styles.type_text_active,
+                                        styles.typeText,
+                                        role === "Athlete" && styles.typeTextActive,
                                     ]}
                                 >
                                     Athlete
@@ -158,15 +158,15 @@ export default function RegisterScreen() {
 
                             <TouchableOpacity
                                 style={[
-                                    styles.type_button,
-                                    role === "Coach" && styles.type_active,
+                                    styles.typeButton,
+                                    role === "Coach" && styles.typeActive,
                                 ]}
                                 onPress={() => setRole("Coach")}
                             >
                                 <Text
                                     style={[
-                                        styles.type_text,
-                                        role === "Coach" && styles.type_text_active,
+                                        styles.typeText,
+                                        role === "Coach" && styles.typeTextActive,
                                     ]}
                                 >
                                     Coach
@@ -175,7 +175,7 @@ export default function RegisterScreen() {
                         </View>
 
                         <TextInput
-                            style={[styles.text_box, errors.name && styles.text_box_error]}
+                            style={[styles.textBox, errors.name && styles.textBoxError]}
                             placeholder="Full Name"
                             value={name}
                             onChangeText={(text) => {
@@ -184,11 +184,11 @@ export default function RegisterScreen() {
                             }}
                         />
                         {errors.name && (
-                            <Text style={styles.error_text}>{errors.name}</Text>
+                            <Text style={styles.errorText}>{errors.name}</Text>
                         )}
 
                         <TextInput
-                            style={[styles.text_box, errors.email && styles.text_box_error]}
+                            style={[styles.textBox, errors.email && styles.textBoxError]}
                             placeholder="Email"
                             value={email}
                             onChangeText={(text) => {
@@ -200,13 +200,13 @@ export default function RegisterScreen() {
                             autoComplete="email"
                         />
                         {errors.email && (
-                            <Text style={styles.error_text}>{errors.email}</Text>
+                            <Text style={styles.errorText}>{errors.email}</Text>
                         )}
 
                         <TextInput
                             style={[
-                                styles.text_box,
-                                errors.password && styles.text_box_error,
+                                styles.textBox,
+                                errors.password && styles.textBoxError,
                             ]}
                             placeholder="Password"
                             value={password}
@@ -217,13 +217,13 @@ export default function RegisterScreen() {
                             secureTextEntry={true}
                         />
                         {errors.password && (
-                            <Text style={styles.error_text}>{errors.password}</Text>
+                            <Text style={styles.errorText}>{errors.password}</Text>
                         )}
 
                         <TextInput
                             style={[
-                                styles.text_box,
-                                errors.confirmPassword && styles.text_box_error,
+                                styles.textBox,
+                                errors.confirmPassword && styles.textBoxError,
                             ]}
                             placeholder="Confirm Password"
                             value={confirmPassword}
@@ -235,10 +235,10 @@ export default function RegisterScreen() {
                             secureTextEntry={true}
                         />
                         {errors.confirmPassword && (
-                            <Text style={styles.error_text}>{errors.confirmPassword}</Text>
+                            <Text style={styles.errorText}>{errors.confirmPassword}</Text>
                         )}
 
-                        <Text style={styles.dob_text}>Please enter your date of birth</Text>
+                        <Text style={styles.dobText}>Please enter your date of birth</Text>
                         <View
                             style={{
                                 flexDirection: "row",
@@ -248,9 +248,9 @@ export default function RegisterScreen() {
                         >
                             <TextInput
                                 style={[
-                                    styles.dob_box,
+                                    styles.dobBox,
                                     { flex: 1 },
-                                    errors.dob && styles.text_box_error,
+                                    errors.dob && styles.textBoxError,
                                 ]}
                                 placeholder="DD"
                                 value={dobDay}
@@ -263,9 +263,9 @@ export default function RegisterScreen() {
                             />
                             <TextInput
                                 style={[
-                                    styles.dob_box,
+                                    styles.dobBox,
                                     { flex: 1 },
-                                    errors.dob && styles.text_box_error,
+                                    errors.dob && styles.textBoxError,
                                 ]}
                                 placeholder="MM"
                                 value={dobMonth}
@@ -278,9 +278,9 @@ export default function RegisterScreen() {
                             />
                             <TextInput
                                 style={[
-                                    styles.dob_box,
+                                    styles.dobBox,
                                     { flex: 1.5 },
-                                    errors.dob && styles.text_box_error,
+                                    errors.dob && styles.textBoxError,
                                 ]}
                                 placeholder="YYYY"
                                 value={dobYear}
@@ -292,11 +292,11 @@ export default function RegisterScreen() {
                                 }}
                             />
                         </View>
-                        {errors.dob && <Text style={styles.error_text}>{errors.dob}</Text>}
+                        {errors.dob && <Text style={styles.errorText}>{errors.dob}</Text>}
                     </View>
                     <Button
                         title={loading ? "Creating Account..." : "Register"}
-                        buttonStyle={styles.register_button}
+                        buttonStyle={styles.registerButton}
                         containerStyle={{ width: "90%", marginTop: 20 }}
                         onPress={handleSubmission}
                         disabled={loading}
@@ -306,7 +306,7 @@ export default function RegisterScreen() {
                         title="Already have an account? Log in"
                         titleStyle={{ color: "#ffffffff" }}
                         buttonStyle={{
-                            ...styles.register_button,
+                            ...styles.registerButton,
                             backgroundColor: "rgba(107, 107, 107, 1)",
                             marginTop: 20,
                         }}
@@ -327,14 +327,14 @@ const styles = StyleSheet.create({
         justifyContent: "flex-start",
         alignItems: "center",
     },
-    text_box_container: {
+    textBoxContainer: {
         justifyContent: "flex-start",
         alignItems: "center",
         marginTop: 40,
         width: "100%",
         paddingHorizontal: 20,
     },
-    text_box: {
+    textBox: {
         padding: 15,
         borderRadius: 30,
         backgroundColor: "#ffffffff",
@@ -349,11 +349,11 @@ const styles = StyleSheet.create({
         elevation: 5,
         fontSize: 16,
     },
-    text_box_error: {
+    textBoxError: {
         borderColor: "#ff0000",
         borderWidth: 2,
     },
-    error_text: {
+    errorText: {
         color: "#ff0000",
         fontSize: 12,
         width: "90%",
@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
         marginTop: 2,
         paddingLeft: 15,
     },
-    dob_box: {
+    dobBox: {
         flex: 1,
         padding: 15,
         borderRadius: 30,
@@ -377,14 +377,14 @@ const styles = StyleSheet.create({
         fontSize: 16,
         textAlign: "center",
     },
-    dob_text: {
+    dobText: {
         width: "90%",
         marginBottom: 10,
         marginTop: 15,
         fontSize: 16,
         textAlign: "center",
     },
-    type_container: {
+    typeContainer: {
         flexDirection: "row",
         width: "90%",
         marginBottom: 20,
@@ -393,25 +393,25 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         overflow: "hidden",
     },
-    type_button: {
+    typeButton: {
         flex: 1,
         padding: 15,
         alignItems: "center",
         backgroundColor: "#ffffffff",
         justifyContent: "center",
     },
-    type_active: {
+    typeActive: {
         backgroundColor: "#1d65ecff",
     },
-    type_text: {
+    typeText: {
         fontSize: 16,
         color: "#1d65ecff",
     },
-    type_text_active: {
+    typeTextActive: {
         color: "#ffffffff",
         fontWeight: "bold",
     },
-    register_button: {
+    registerButton: {
         padding: 15,
         backgroundColor: "#1d65ecff",
         borderRadius: 30,

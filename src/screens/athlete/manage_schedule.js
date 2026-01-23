@@ -132,10 +132,10 @@ export default function ManageScheduleScreen() {
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={28} color="white" />
                 </TouchableOpacity>
-                <Text style={globalStyles.header_text}>Manage Schedule</Text>
+                <Text style={globalStyles.headerText}>Manage Schedule</Text>
             </View>
-            <ScrollView style={globalStyles.content_container}>
-                <View style={styles.calendar_view}>
+            <ScrollView style={globalStyles.contentContainer}>
+                <View style={styles.calendarView}>
                     <CalendarContainer 
                         theme={calendarTheme}
                         numberOfDays={3} 
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
         padding: 20,
         marginTop: -8,
     },
-    calendar_view: {
+    calendarView: {
         height: 430,
         marginTop: 10,
         justifyContent: "center",

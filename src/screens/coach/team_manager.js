@@ -66,7 +66,7 @@ export default function TeamManagerScreen() {
     return (
         <SafeAreaView style={styles.container} edges={["top"]}>
             <View style={globalStyles.header}>
-                <Text style={globalStyles.header_text}>Team Manager</Text>
+                <Text style={globalStyles.headerText}>Team Manager</Text>
             </View>
             <View style={styles.contentContainer}>
 

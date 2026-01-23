@@ -9,36 +9,36 @@ export default function CoachDashScreen() {
     return (
         <SafeAreaView style={styles.container} edges={["top"]}>
             <View style={globalStyles.header}>
-                <Text style={[globalStyles.header_text, {alignContent: "flex-start"}]}>Hello Macdarach</Text>
+                <Text style={[globalStyles.headerText, {alignContent: "flex-start"}]}>Hello Macdarach</Text>
             </View>
-            <ScrollView style={globalStyles.content_container}>
-                <Card containerStyle={styles.overview_card}>
-                    <Card.Title style={styles.stats_card_title}>Team Overview</Card.Title>
-                    <Text style={styles.overview_text}>Athletes require your attention</Text>
+            <ScrollView style={globalStyles.contentContainer}>
+                <Card containerStyle={styles.overviewCard}>
+                    <Card.Title style={styles.statsCardTitle}>Team Overview</Card.Title>
+                    <Text style={styles.overviewText}>Athletes require your attention</Text>
                 </Card>
-                <View style={styles.stats_cards_container}>
-                    <Card containerStyle={styles.stats_card}>
-                        <Card.Title style={styles.stats_card_title}>Healthy</Card.Title>
-                        <Text style={styles.stats_text}>5</Text>
+                <View style={styles.statsCardContainer}>
+                    <Card containerStyle={styles.statsCard}>
+                        <Card.Title style={styles.statsCardTitle}>Healthy</Card.Title>
+                        <Text style={styles.statsText}>5</Text>
                     </Card>
-                    <Card containerStyle={styles.stats_card}>
-                        <Card.Title style={styles.stats_card_title}>Injured</Card.Title>
-                        <Text style={styles.stats_text}>3</Text>
+                    <Card containerStyle={styles.statsCard}>
+                        <Card.Title style={styles.statsCardTitle}>Injured</Card.Title>
+                        <Text style={styles.statsText}>3</Text>
                     </Card>
-                    <Card containerStyle={styles.stats_card}>
-                        <Card.Title style={styles.stats_card_title}>Not Reported</Card.Title>
-                        <Text style={styles.stats_text}>12</Text>
+                    <Card containerStyle={styles.statsCard}>
+                        <Card.Title style={styles.statsCardTitle}>Not Reported</Card.Title>
+                        <Text style={styles.statsText}>12</Text>
                     </Card>
-                    <Card containerStyle={styles.stats_card}>
-                        <Card.Title style={styles.stats_card_title}>Total</Card.Title>
-                        <Text style={styles.stats_text}>20</Text>
+                    <Card containerStyle={styles.statsCard}>
+                        <Card.Title style={styles.statsCardTitle}>Total</Card.Title>
+                        <Text style={styles.statsText}>20</Text>
                     </Card>
                 </View>
-                <View style={styles.schedule_container}>
+                <View style={styles.scheduleContainer}>
                     <Text style={{fontFamily: "Rubik", fontSize: 18, fontWeight: "bold"}}>
                         Team Schedule
                     </Text>
-                    <View style={styles.calendar_view}>
+                    <View style={styles.calendarView}>
                         <CalendarContainer 
                             theme={calendarTheme}
                             numberOfDays={3} 
@@ -66,33 +66,33 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#001a79",
     },
-    stats_cards_container: {
+    statsCardContainer: {
         flexDirection: "row",
         flexWrap: "wrap",
         justifyContent: "space-between",
         marginTop: 15,
         marginHorizontal: 0,
     },
-    stats_card: {
+    statsCard: {
         padding: 10,
         borderRadius: 10,
         marginTop: 10,
         marginHorizontal: 0,
         width: "48%",
     },
-    stats_card_title: {
+    statsCardTitle: {
         color: "#464646ff",
         fontSize: 14,
         fontFamily: "Rubik",
         alignSelf: "flex-start"
     },
-    stats_text: {
+    statsText: {
         fontSize: 24,
         fontWeight: "bold",
         fontFamily: "Rubik",
 
     },
-    overview_card: {
+    overviewCard: {
         padding: 20,
         backgroundColor: "#ffffffff",
         borderRadius: 10,
@@ -107,15 +107,15 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         elevation: 4,
     },
-    overview_text: {
+    overviewText: {
         fontSize: 20,
         fontFamily: "Rubik",
     },
-    schedule_container: {
+    scheduleContainer: {
         flex: 1,
         marginTop: 30
     },
-    calendar_view: {
+    calendarView: {
         height: 300,
         marginTop: 10,
         justifyContent: "center",

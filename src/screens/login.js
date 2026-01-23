@@ -119,7 +119,7 @@ export default function LoginScreen() {
             )}
 
             <TextInput
-                style={[styles.input, errors.email && styles.text_box_error]}
+                style={[styles.input, errors.email && styles.textBoxError]}
                 placeholder="Email"
                 value={email}
                 onChangeText={setEmail}
@@ -127,18 +127,18 @@ export default function LoginScreen() {
                 autoCapitalize="none"
             />
             {errors.confirmPassword && (
-                <Text style={styles.error_text}>{errors.confirmPassword}</Text>
+                <Text style={styles.errorText}>{errors.confirmPassword}</Text>
             )}
 
             <TextInput
-                style={[styles.input, errors.password && styles.text_box_error]}
+                style={[styles.input, errors.password && styles.textBoxError]}
                 placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
             />
             {errors.confirmPassword && (
-                <Text style={styles.error_text}>{errors.confirmPassword}</Text>
+                <Text style={styles.errorText}>{errors.confirmPassword}</Text>
             )}
 
             <Button
@@ -200,11 +200,11 @@ const styles = StyleSheet.create({
         backgroundColor: "#1d65ecff",
         borderRadius: 30,
     },
-    text_box_error: {
+    textBoxError: {
         borderColor: "#ff0000",
         borderWidth: 2,
     },
-    error_text: {
+    errorText: {
         color: "#ff0000",
         fontSize: 12,
         width: "90%",
