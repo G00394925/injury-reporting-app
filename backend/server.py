@@ -6,6 +6,22 @@ import os
 import health_status
 import logging
 
+# Flask Blueprints
+from routes.auth import auth_bp
+from routes.athletes import athletes_bp
+from routes.teams import teams_bp
+
+################################################################
+#
+#
+# TODO: REFACTOR THIS FILE TO SEPERATE ROUTES, SERVICES, ETC INTO
+# THEIR OWN RESPECTIVE FILES.
+#
+# NEED BETTER ORGANISATION.
+#
+#
+################################################################
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -16,10 +32,16 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 CORS(app,
-     origins="*",
+     resources={r"/api/*": {"origins": "*"}},
      allow_headers=["Content-Type", "Authorization"],
      methods=["GET", "PUT", "POST", "DELETE", "OPTIONS"],
      supports_credentials=True)
+
+# Register Blueprints
+app.register_blueprint(auth_bp, url_prefix='/api/auth')
+app.register_blueprint(athletes_bp, url_prefix='/api/athlete')
+app.register_blueprint(teams_bp, url_prefix='/api/team')
+
 
 load_dotenv()
 
@@ -34,51 +56,53 @@ except Exception as e:
     logger.error(f"Error connecting to Supabase: {e}")
 
 
-@app.route('/api/login', methods=['POST'])
-def login():
-    """
-    Handles user login by verifying submitted credentials with Supabase Auth
-    and retrieving the corresponding user data.
+# @app.route('/api/login', methods=['POST'])
+# def login():
+#     """
+#     Handles user login by verifying submitted credentials with Supabase Auth
+#     and retrieving the corresponding user data.
 
-    Returns:
-        JSON response with user details on successful login, or 
-        error message on failure.
-    """
-    try:
-        # Acquire submitted credentials from user
-        credentials = request.get_json()
-        email = credentials.get('email')
-        password = credentials.get('password')
+#     Returns:
+#         JSON response with user details on successful login, or 
+#         error message on failure.
+#     """
+#     try:
+#         # Acquire submitted credentials from user
+#         credentials = request.get_json()
+#         email = credentials.get('email')
+#         password = credentials.get('password')
 
-        logger.info(f"Login attempt for: {email}")
+#         logger.info(f"Login attempt for: {email}")
 
-        response = supabase.auth.sign_in_with_password({
-            "email": email,
-            "password": password
-        })
+#         response = supabase.auth.sign_in_with_password({
+#             "email": email,
+#             "password": password
+#         })
 
-        if response:
-            try:
-                # Fetch user data from database
-                user_data = supabase.table("users").select("*").eq("id", response.user.id).execute()
+#         if response:
+#             try:
+#                 # Fetch user data from database
+#                 user_data = supabase.table("users").select(
+#                     "*").eq("id", response.user.id).execute()
 
-                return jsonify(
-                    message="Login successful",
-                    uuid=response.user.id,
-                    user={
-                        "name": user_data.data[0].get('name', '').split()[0],
-                        "email": email,
-                        "user_type": user_data.data[0].get('role'),
-                        "dob": user_data.data[0].get('dob'),
-                    }
-                )
-            except Exception as e:
-                logger.error(f"Error retrieving user data from Supabase table: {e}")
-                return jsonify(error=str(e)), 401
-    
-    except Exception as e:
-        logger.error(f"Error during login: {e}")
-        return jsonify(error=str(e)), 500
+#                 return jsonify(
+#                     message="Login successful",
+#                     uuid=response.user.id,
+#                     user={
+#                         "name": user_data.data[0].get('name', '').split()[0],
+#                         "email": email,
+#                         "user_type": user_data.data[0].get('role'),
+#                         "dob": user_data.data[0].get('dob'),
+#                     }
+#                 )
+#             except Exception as e:
+#                 logger.error(
+#                     f"Error retrieving user data from Supabase table: {e}")
+#                 return jsonify(error=str(e)), 401
+
+#     except Exception as e:
+#         logger.error(f"Error during login: {e}")
+#         return jsonify(error=str(e)), 500
 
 
 @app.route('/api/register', methods=['POST'])
@@ -122,12 +146,12 @@ def register():
                     "role": user_data["user_type"],
                 }).execute()
 
-                logger.info("User data inserted into Supabase table successfully.")
+                logger.info(
+                    "User data inserted into Supabase table successfully.")
 
             except Exception as e:
-                logger.error(f"Error inserting user data into Supabase table: {e}")
-
-        # TODO: Complete Supabase setup and REMOVE MongoDB client.
+                logger.error(
+                    f"Error inserting user data into Supabase table: {e}")
 
         logger.info("User registered successfully.")
         return jsonify(message="User registered successfully"), 201
@@ -172,7 +196,7 @@ def health_report():
 def get_status(user_id):
     """
     Retrieves the health status of an athlete from Supabase by user ID
-    
+
     Args:
         user_id (str): The UUID of the athlete.
 
@@ -199,10 +223,10 @@ def get_status(user_id):
         else:
             logger.warning(f"User of ID {user_id} not found.")
             return jsonify(message="User not found"), 404
-        
+
     except Exception as e:
         logger.error(f"Error retrieving health status for user {user_id}: {e}")
-        return jsonify(error=str(e)), 500        
+        return jsonify(error=str(e)), 500
 
 
 @app.route('/api/create-team', methods=['POST'])
@@ -226,7 +250,7 @@ def create_team():
             logger.info("New team added to supabase database successfully")
 
             return jsonify(message="Team created successfully"), 201
-    
+
     except Exception as e:
         logger.error(f"Error creating new team: {e}")
         return jsonify(error=str(e)), 500
@@ -236,7 +260,7 @@ def create_team():
 def fetch_coach_teams(coach_id):
     """
     Fetches all teams associated with a specific coach from Supabase.
-    
+
     Args:
         coach_id (str): The UUID of the coach.
 
@@ -244,7 +268,8 @@ def fetch_coach_teams(coach_id):
         JSON response with a list of teams or error message.
     """
     try:
-        response = supabase.table("teams").select("*").eq("coach_id", coach_id).execute()
+        response = supabase.table("teams").select(
+            "*").eq("coach_id", coach_id).execute()
 
         if response:
             teams = []
@@ -260,7 +285,7 @@ def fetch_coach_teams(coach_id):
     except Exception as e:
         logger.error(f"Error fetching teams for coach {coach_id}: {e}")
         return jsonify(error=str(e)), 500
-    
+
 
 @app.route('/api/athlete/teams', methods=['GET'])
 def fetch_teams():
@@ -284,7 +309,7 @@ def fetch_teams():
                 })
 
             return jsonify(teams=teams), 200
-        
+
     except Exception as e:
         logger.error(f"Error fetching teams: {e}")
         return jsonify(error=str(e)), 500
@@ -294,7 +319,7 @@ def fetch_teams():
 def fetch_team_details(athlete_id):
     """
     Fetches the team details for a specific athlete from Supabase.
-    
+
     Args:
         athlete_id (str): The UUID of the athlete.
 
@@ -305,10 +330,12 @@ def fetch_team_details(athlete_id):
         response = (
             supabase.table("teams")
             .select("*")
-            .eq("team_id", 
-                supabase.table("athletes").select("team_id").eq("id", athlete_id)
-                .execute().data[0].get("team_id")
-            )
+            .eq("team_id",
+                supabase.table("athletes")
+                    .select("team_id")
+                    .eq("id", athlete_id)
+                    .execute().data[0].get("team_id")
+                )
             .execute()
         )
 
@@ -320,9 +347,10 @@ def fetch_team_details(athlete_id):
             }
 
             return jsonify(team_details=team_details), 200
-        
+
     except Exception as e:
-        logger.error(f"Error fetching team details for athlete {athlete_id}: {e}")
+        logger.error(
+            f"Error fetching team details for athlete {athlete_id}: {e}")
         return jsonify(error=str(e)), 500
 
 
@@ -346,7 +374,7 @@ def join_team():
         if response:
             logger.info("Athlete joined team successfully.")
             return jsonify(message="Athlete joined team successfully"), 200
-        
+
     except Exception as e:
         logger.error(f"Error athlete joining team: {e}")
         return jsonify(error=str(e)), 500
@@ -356,7 +384,7 @@ def join_team():
 def fetch_athletes(team_id):
     """
     Fetches athletes associated with a given team
-    
+
     Args:
         team_id (str): The UUID of the team to be queried.
 
@@ -364,32 +392,33 @@ def fetch_athletes(team_id):
         JSON response with a list of athletes or error message.
     """
     try:
-        response = supabase.table("athletes").select("*").eq("team_id", team_id).execute()
+        response = supabase.table("athletes").select(
+            "*").eq("team_id", team_id).execute()
 
         if response:
             athletes = []
             healthy_athletes = 0
             injured_athletes = 0
-            
+
             for athlete in response.data:
                 if athlete.get("status") == health_status.HealthStatus.HEALTHY.value:
                     healthy_athletes += 1
                 elif athlete.get("status") == health_status.HealthStatus.INJURED.value:
                     injured_athletes += 1
-                    
+
                 athletes.append({
                     "athlete_id": athlete.get("id"),
                     "name": supabase.table("users").select("name").eq("id", athlete.get("id")).execute().data[0].get("name"),
                     "health_status": athlete.get("status")
                 })
-            
+
             logger.info(f"Fetched athletes for team {team_id} successfully.")
             return jsonify(
                 athletes=athletes,
                 num_athletes=len(athletes),
                 healthy_athletes=healthy_athletes,
                 injured_athletes=injured_athletes), 200
-        
+
     except Exception as e:
         logger.error(f"Error fetching athletes for team {team_id}: {e}")
         return jsonify(error=str(e)), 500
@@ -417,7 +446,8 @@ def create_event():
         }).execute()
 
         if response:
-            logger.info(f"Event created successfully: {new_event.get('title')}")
+            logger.info(
+                f"Event created successfully: {new_event.get('title')}")
             return jsonify(message="Event created successfully"), 201
 
     except Exception as e:

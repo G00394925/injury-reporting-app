@@ -44,7 +44,7 @@ export default function LoginScreen() {
         setErrors({});
 
         try {
-            const url = `${API_BASE_URL}/api/login`;
+            const url = `${API_BASE_URL}/api/auth/login`;
             console.log("Making request to:", url);
 
             const payload = {
