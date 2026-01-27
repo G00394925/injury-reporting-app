@@ -103,7 +103,7 @@ export default function ReportScreen() {
                 return;
             }
 
-            const response = await axios.post(`${API_BASE_URL}/api/health-report`, {
+            const response = await axios.post(`${API_BASE_URL}/api/health/report`, {
                 user_id: uuid,
                 answers_list: answers
             });

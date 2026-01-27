@@ -16,7 +16,7 @@ export default function TeamCreatorScreen() {
 
     const handleCreateTeam = async () => {
         if (team_name && sport) {
-            const response = await axios.post(`${API_BASE_URL}/api/create-team`, {
+            const response = await axios.post(`${API_BASE_URL}/api/teams/new`, {
                 team_name: team_name,
                 sport: sport,
                 coach_id: uuid,

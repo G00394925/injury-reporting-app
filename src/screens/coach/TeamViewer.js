@@ -20,7 +20,7 @@ export default function TeamViewerScreen({ route }) {
         const fetchAthletes = async () => {
             try {
                 console.log("Fetching athletes for team:", team.team_id);
-                const response = await axios.get(`${API_BASE_URL}/api/team/get-athletes/${team.team_id}`);
+                const response = await axios.get(`${API_BASE_URL}/api/teams/get_athletes/${team.team_id}`);
                 console.log("Response data:", response.data);
                 
                 const athletes = response.data.athletes.map((athlete) => {

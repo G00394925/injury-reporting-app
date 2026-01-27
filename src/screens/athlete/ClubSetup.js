@@ -14,14 +14,14 @@ export default function ClubSetup() {
     const [teams, setTeams] = useState([]);
     const navigation = useNavigation();
 
-    // Acquire list of coaches from database
+    // Acquire list of teams from database
     useEffect(() => {
         const fetchTeams = async () => {
             try {
-                const response = await axios.get(`${API_BASE_URL}/api/athlete/teams`);
+                const response = await axios.get(`${API_BASE_URL}/api/teams/get_teams`);
                 setTeams(response.data.teams);
             } catch (error) {
-                console.error("Error fetching coaches:", error);
+                console.error("Error fetching teams:", error);
             }
         };
         fetchTeams();
@@ -29,7 +29,7 @@ export default function ClubSetup() {
 
     const handleSave = async (team_id) => {
         try {
-            const response = await axios.post(`${API_BASE_URL}/api/athlete/join-team`, {
+            const response = await axios.post(`${API_BASE_URL}/api/athletes/join_team`, {
                 athlete_id: uuid,
                 team_id: team_id,
             });

@@ -13,7 +13,7 @@ class DatabaseService:
             format='%(asctime)s - %(levelname)s - %(message)s',
             datefmt='%Y-%m-%d %H:%M:%S'
         )
-        
+
         self.logger = logging.getLogger(__name__)
         self.supabase = SupabaseService().get_client()
 
@@ -34,7 +34,9 @@ class DatabaseService:
         try:
             response = self.supabase.table(table).insert(data).execute()
             self.logger.info(f"Data inserted into {table}: {response}")
+        
             return response
+        
         except Exception as e:
             self.logger.error(f"Error inserting data into {table}: {e}")
             raise e
@@ -62,7 +64,9 @@ class DatabaseService:
             
             response = query.execute()
             self.logger.info(f"Data fetched from {table} with filters {filters}: {response}")
+        
             return response
+        
         except Exception as e:
             self.logger.error(f"Error fetching data from {table} with filters {filters}: {e}")
             raise e
@@ -90,7 +94,9 @@ class DatabaseService:
             
             response = query.execute()
             self.logger.info(f"Data updated in {table}: {response}")
+        
             return response
+        
         except Exception as e:
             self.logger.error(f"Error updating data in {table}: {e}")
             raise e

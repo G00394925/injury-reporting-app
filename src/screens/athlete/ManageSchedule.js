@@ -105,7 +105,7 @@ export default function ManageScheduleScreen() {
                 type: eventType,
             });
 
-            const response = await axios.post(`${API_BASE_URL}/api/event/create`, {
+            const response = await axios.post(`${API_BASE_URL}/api/events/new`, {
                 athlete_id: uuid,
                 title: eventTitle,
                 event_date: formattedDate,

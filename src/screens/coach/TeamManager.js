@@ -18,7 +18,7 @@ export default function TeamManagerScreen() {
     useEffect(() => {
         const fetchTeams = async () => {
             try {
-                const response = await axios.get(`${API_BASE_URL}/api/coach-teams/${uuid}`);
+                const response = await axios.get(`${API_BASE_URL}/api/teams/coach_teams/${uuid}`);
                 const teamsData = response.data.teams;
                 
                 if (teamsData.length > 0) {
@@ -54,7 +54,7 @@ export default function TeamManagerScreen() {
 
     const getAthleteCount = async (team_id) => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/api/team/get-athletes/${team_id}`);
+            const response = await axios.get(`${API_BASE_URL}/api/teams/get_athletes/${team_id}`);
             setNumHealthy(response.data.healthy_athletes);
             setNumInjured(response.data.injured_athletes);
         

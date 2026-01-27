@@ -23,7 +23,7 @@ export default function AthleteDashScreen() {
             if (!uuid) return;
 
             try {
-                const response = await axios.get(`${API_BASE_URL}/api/health-status/${uuid}`);
+                const response = await axios.get(`${API_BASE_URL}/api/health/status/${uuid}`);
                 setHealthStatus(response.data.health_status);
             } catch (error) {
                 console.error("Error fetching health status:", error);
