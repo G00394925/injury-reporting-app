@@ -4,11 +4,15 @@ from services.database_service import DatabaseService
 import logging
 
 auth_bp = Blueprint('auth', __name__)
-
-logger = logging.getLogger(__name__)
-
 auth_service = AuthService()
 db_service = DatabaseService()
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger(__name__)
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
@@ -63,6 +67,7 @@ def register():
     except Exception as e:
         logger.error(f"Error registering user: {e}")
         return jsonify(error=str(e)), 500
+
 
 @auth_bp.route('/login', methods=['POST'])
 def login():

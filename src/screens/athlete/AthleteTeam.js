@@ -16,7 +16,7 @@ export default function AthleteTeamScreen() {
     useEffect(() => {
         const fetchTeamDetails = async () => {
             try {
-                const response = await axios.get(`${API_BASE_URL}/api/athlete/team/${uuid}`);
+                const response = await axios.get(`${API_BASE_URL}/api/athletes/team/${uuid}`);
                 setTeamDetails(response.data.team_details);
             } catch (error) {
                 console.error("Error fetching team details:", error);
