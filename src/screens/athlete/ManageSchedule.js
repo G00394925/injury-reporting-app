@@ -6,7 +6,7 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { CalendarContainer, CalendarHeader, CalendarBody } from "@howljs/calendar-kit";
 import calendarTheme from "../../styles/calendar_theme";
 import { globalStyles } from "../../styles/globalStyles";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { API_BASE_URL } from "../../config/api_config";
 import axios from "axios";
@@ -172,6 +172,23 @@ export default function ManageScheduleScreen() {
         fetchEvents();
     }, [uuid]);
 
+    const renderEvent = useCallback((event) => (
+        <View style={{
+            width: '100%',
+            height: '100%',
+            padding: 5,
+            backgroundColor: event.color,
+            borderRadius: 4
+        }}>
+            <Text style={{
+                color: 'white',
+                fontSize: 12,
+                fontWeight: '500',
+                fontFamily: 'Rubik',
+            }}>{event.title}</Text>
+        </View>
+    ), []);
+
     return (
         <SafeAreaView style={globalStyles.container} edges={["top"]}>
             <View style={globalStyles.header}>
@@ -193,9 +210,9 @@ export default function ManageScheduleScreen() {
                         allowPinchToZoom={true}
                         scrollByDay
                         events={events}>
-                            
                         <CalendarHeader />
-                        <CalendarBody />
+                        <CalendarBody 
+                            renderEvent={renderEvent} />
                     </CalendarContainer>    
                 </View>
                 

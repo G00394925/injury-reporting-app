@@ -32,7 +32,7 @@ function AthleteTabNavigator() {
         <Tab.Navigator 
             screenOptions={({ route }) => ({
                 headerShown: false,
-                tabBarIcon: ({ focused, color, size }) => {
+                tabBarIcon: ({ color, size }) => {
                     let iconName;
 
                     if (route.name === "Dashboard") {
@@ -74,7 +74,7 @@ function CoachTabNavigator() {
         <Tab.Navigator 
             screenOptions={({ route }) => ({
                 headerShown: false,
-                tabBarIcon: ({ focused, color, size }) => {
+                tabBarIcon: ({ color, size }) => {
                     let iconName;
 
                     if (route.name === "Dashboard") {
