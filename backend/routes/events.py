@@ -25,7 +25,7 @@ def create_event():
 
     try:
         response = db_service.insert("events", data={
-            "team_id": new_event.get("team_id"),
+            "athlete_id": new_event.get("athlete_id"),
             "title": new_event.get("title"),
             "event_date": new_event.get("event_date"),
             "start_time": new_event.get("start_time"),
@@ -40,4 +40,22 @@ def create_event():
 
     except Exception as e:
         logger.error(f"Error creating event: {e}")
+        return jsonify(error=str(e)), 500
+
+
+@events_bp.route('/get/<athlete_id>')
+def get_events(athlete_id):
+    
+    try:
+        events = db_service.fetch("events", filters={"athlete_id": athlete_id})
+
+        if events:
+            logger.info(f"Event fetched for user {athlete_id}")
+            return jsonify(events=events), 200
+        else:
+            logger.error(f"No events found for user {athlete_id}")
+            return jsonify(error="No events found"), 404
+        
+    except Exception as e:
+        logger.error(f"Error fetching events for user {athlete_id}: {e}")
         return jsonify(error=str(e)), 500
