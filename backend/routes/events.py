@@ -47,11 +47,23 @@ def create_event():
 def get_events(athlete_id):
     
     try:
-        events = db_service.fetch("events", filters={"athlete_id": athlete_id})
+        response = db_service.fetch("events", filters={"athlete_id": athlete_id})
 
-        if events:
-            logger.info(f"Event fetched for user {athlete_id}")
-            return jsonify(events=events), 200
+        if response:
+            events = []
+
+            for event in response.data:
+                events.append({
+                    "event_id": event.get("id"),
+                    "title": event.get("title"),
+                    "event_date": event.get("event_date"),
+                    "start_time": event.get("start_time"),
+                    "end_time": event.get("end_time"),
+                    "type": event.get("type"),
+                })
+
+            logger.info(f"Events fetched for user {athlete_id}")
+            return jsonify(events), 200
         else:
             logger.error(f"No events found for user {athlete_id}")
             return jsonify(error="No events found"), 404

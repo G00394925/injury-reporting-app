@@ -6,7 +6,7 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { CalendarContainer, CalendarHeader, CalendarBody } from "@howljs/calendar-kit";
 import calendarTheme from "../../styles/calendar_theme";
 import { globalStyles } from "../../styles/globalStyles";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { API_BASE_URL } from "../../config/api_config";
 import axios from "axios";
@@ -25,6 +25,8 @@ export default function ManageScheduleScreen() {
     const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
     const [isStartTimePickerVisible, setIsStartTimePickerVisible] = useState(false);
     const [isEndTimePickerVisible, setIsEndTimePickerVisible] = useState(false);
+    const [events, setEvents] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const formatDate = (date) => {
         return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -117,6 +119,7 @@ export default function ManageScheduleScreen() {
             console.log('Event created successfully: ', response.data);
             Alert.alert('Success', 'Event created successfully');
             closeModal();
+            fetchEvents(); // Refresh the calendar
         } catch (error) {
             console.error('Error creating event:', error);
             Alert.alert(
@@ -125,6 +128,49 @@ export default function ManageScheduleScreen() {
             );
         }
     };
+
+    const fetchEvents = async () => {
+        try {
+            setLoading(true)
+            const response = await axios.get(`${API_BASE_URL}/api/events/get/${uuid}`);
+            
+            if (response.data) {
+                console.log('Fetched events: ', response.data);
+                
+                // Change events to use calendar format
+                const formattedEvents = response.data.map(event => {
+                    const eventDate = new Date(event.event_date);
+                    const [startHour, startMinute] = event.start_time.split(':')
+                    const [endHour, endMinute] = event.end_time.split(':')
+
+                    const startDate = new Date(eventDate);
+                    startDate.setHours(parseInt(startHour), parseInt(startMinute), 0, 0);
+
+                    const endDate = new Date(eventDate);
+                    endDate.setHours(parseInt(endHour), parseInt(endMinute), 0, 0);
+
+                    return {
+                        id: event.event_id.toString(),
+                        title: event.title,
+                        start: { dateTime: startDate.toISOString() },
+                        end: { dateTime: endDate.toISOString() },
+                        color: event.type === 'training' ? '#1d3adfff' : '#28a745',
+                    };
+                });
+                
+                console.log('Formatted events for calendar:', formattedEvents);
+                setEvents(formattedEvents);
+            }
+        } catch (error) {
+            console.error('Error fetching events:', error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        fetchEvents();
+    }, [uuid]);
 
     return (
         <SafeAreaView style={globalStyles.container} edges={["top"]}>
@@ -145,7 +191,8 @@ export default function ManageScheduleScreen() {
                         end={1320}
                         initialTimeIntervalHeight={60}
                         allowPinchToZoom={true}
-                        scrollByDay >
+                        scrollByDay
+                        events={events}>
                             
                         <CalendarHeader />
                         <CalendarBody />
