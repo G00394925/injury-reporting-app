@@ -14,6 +14,7 @@ export default function ReportScreen() {
     const navigation = useNavigation();
     const { uuid } = useAuth();
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    const [injured, setInjured] = useState(false);
 
     const [answers, setAnswers] = useState({
         rpe: 1,
@@ -54,7 +55,7 @@ export default function ReportScreen() {
                             options={["Yes", "No"]}
                             value={answers.injured}
                             compact={true}
-                            onValueChange={(value) => updateAnswer("injured", value)}
+                            onValueChange={(value) => { updateAnswer("injured", value); setInjured(value === "Yes"); }}
                         />
                     </View>
                     <View>
@@ -89,9 +90,14 @@ export default function ReportScreen() {
                     value={answers.injuryLocation}
                     onValueChange={(value) => updateAnswer("injuryLocation", value)}
                 />
-            )
+            ),
+            condition: () => injured
         }
     ];
+
+    const availableQuestions = questions.filter(q =>
+        !q.condition || q.condition()
+    )
 
     // Submit health report to database
     const handleReportSubmission = async (answers) => {
@@ -125,8 +131,9 @@ export default function ReportScreen() {
         }
     };
 
-    // Check if last question in order to change button text from "Next" to "Submit"
-    const isLastQuestion = currentQuestionIndex === questions.length - 1;
+    // Check if last question in order to change button text 
+    const isLastQuestion = currentQuestionIndex === availableQuestions.length - 1;
+    const currentQuestion = availableQuestions[currentQuestionIndex];
 
     return (
         <SafeAreaView style={globalStyles.container}>
@@ -139,13 +146,13 @@ export default function ReportScreen() {
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.questionContainer}>
-                    <Text style={styles.questionText}>{questions[currentQuestionIndex].text}</Text>
+                    <Text style={styles.questionText}>{currentQuestion.text}</Text>
                     <Text style={styles.questionSubtext}>
-                        {questions[currentQuestionIndex].subtext}
+                        {currentQuestion.subtext}
                     </Text>
                 </View>
                 <View style={styles.componentContainer}>
-                    {questions[currentQuestionIndex].component}
+                    {currentQuestion.component}
                 </View>
             </ScrollView>
             <View style={styles.navigationButtons}>
@@ -155,8 +162,10 @@ export default function ReportScreen() {
                     <Text style={styles.navButtonText}>Previous</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    onPress={() =>
-                        isLastQuestion ? handleReportSubmission(answers) : setCurrentQuestionIndex(currentQuestionIndex + 1)}
+                    onPress={() => {
+                        isLastQuestion ? handleReportSubmission(answers)
+                        : setCurrentQuestionIndex(currentQuestionIndex + 1)
+                    }}
                 >
                     <Text style={styles.navButtonText}>{isLastQuestion ? "Submit" : "Next"}</Text>
                 </TouchableOpacity>
