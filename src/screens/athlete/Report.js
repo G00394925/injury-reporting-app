@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Modal } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { globalStyles } from "../../styles/globalStyles";
 import { useState, useEffect } from "react";
@@ -9,6 +9,7 @@ import RpeSlider from "../../components/RPESlider";
 import MultiChoice from "../../components/MultiChoice";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function ReportScreen() {
     const navigation = useNavigation();
@@ -19,7 +20,7 @@ export default function ReportScreen() {
     const [answers, setAnswers] = useState({
         rpe: 1,
         injured: null,
-        ill: null,
+        recurring: null,
         injuryLocation: null
     });
 
@@ -29,6 +30,9 @@ export default function ReportScreen() {
             [key]: value
         }));
     };
+
+    const [showHelpModal, setShowHelpModal] = useState(false);
+
 
     // List of Questions for report
     const questions = [
@@ -58,20 +62,36 @@ export default function ReportScreen() {
                             onValueChange={(value) => { updateAnswer("injured", value); setInjured(value === "Yes"); }}
                         />
                     </View>
-                    <View>
-                        <Text style={styles.compactQuestionText}>Do you feel sick?</Text>
-                        <MultiChoice
-                            options={["Yes", "No"]}
-                            value={answers.ill}
-                            compact={true}
-                            onValueChange={(value) => updateAnswer("ill", value)}
-                        />
-                    </View>
+                    { injured && (
+                        <View>
+                            <Text style={styles.compactQuestionText}>Is this a new or recurring injury?</Text>
+                            <MultiChoice
+                                options={["New", "Recurring"]}
+                                value={answers.recurring}
+                                compact={true}
+                                onValueChange={(value) => updateAnswer("recurring", value)}
+                            />
+                        </View>
+                    )}                    
                 </View>
             )
         },
         {
             index: 2,
+            text: "Describe the injury onset",
+            subtext: null,
+            showButton: true,
+            component: (
+                <MultiChoice
+                    options={["Acute", "Repetitive Sudden Onset", "Repetitive Gradual Onset", "Other"]}
+                    value={answers.injuryOnset}
+                    onValueChange={(value) => updateAnswer("injuryOnset", value)}
+                />
+            ),
+            condition: () => injured
+        },
+        {
+            index: 3,
             text: "Where did you get injured?",
             subtext: "Select the aproximate location of your injury.",
             component: (
@@ -147,6 +167,14 @@ export default function ReportScreen() {
             >
                 <View style={styles.questionContainer}>
                     <Text style={styles.questionText}>{currentQuestion.text}</Text>
+                    {currentQuestion.showButton && (
+                        <TouchableOpacity 
+                            style={styles.questionButton}
+                            onPress={() => setShowHelpModal(true)}
+                        >
+                            <Text style={styles.questionButtonText}>?</Text>
+                        </TouchableOpacity>
+                    )}
                     <Text style={styles.questionSubtext}>
                         {currentQuestion.subtext}
                     </Text>
@@ -155,6 +183,49 @@ export default function ReportScreen() {
                     {currentQuestion.component}
                 </View>
             </ScrollView>
+
+            <Modal 
+                animationType="slide"
+                transparent={true}
+                visible={showHelpModal}
+                onRequestClose={() => setShowHelpModal(false)}
+                statusBarTranslucent={true}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <View style={styles.modalHeader}>
+                            <Text style={styles.modalTitle}>Onset types</Text>
+                            <TouchableOpacity onPress={() => setShowHelpModal(false)}>
+                                <Ionicons name="close-outline" size={24} color="#333" />
+                            </TouchableOpacity>
+                        </View>
+                        <ScrollView style={styles.modalBody}>
+                            <Text style={{fontSize: 16, fontFamily: "Rubik", marginBottom: 15}}>
+                                <Text style={{fontWeight: "bold"}}>Acute: </Text> 
+                                    An acute injury occurs suddenly due to a specific traumatic 
+                                    event, such as a fall, collision, or lifting something heavy.
+                                    Examples include sprains, fractures, and dislocations.
+                            </Text>
+
+                            <Text style={{fontSize: 16, fontFamily: "Rubik", marginBottom: 15}}>
+                                <Text style={{fontWeight: "bold"}}>Repetitive Sudden Onset: </Text> 
+                                    An injury that is caused by repeated stress and motion that occurs
+                                    with a single event. Some examples include carpal tunnel syndrome,
+                                    trigger finger, and back strain. 
+                            </Text>
+
+                            <Text style={{fontSize: 16, fontFamily: "Rubik", marginBottom: 15}}>
+                                <Text style={{fontWeight: "bold"}}>Repetitive Gradual Onset: </Text> 
+                                    An injury that develops over time with no identifiable singular cause
+                                    or event. Example: a gradual increase in knee pain over weeks or months.
+                            </Text>
+
+                        </ScrollView>
+                    </View>
+                </View>
+
+            </Modal>
+
             <View style={styles.navigationButtons}>
                 <TouchableOpacity
                     onPress={() => currentQuestionIndex === 0 ? navigation.navigate("Dashboard") : setCurrentQuestionIndex(currentQuestionIndex - 1)}
@@ -190,12 +261,26 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         marginBottom: 20
     },
+    questionButton: {
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        backgroundColor: "#1d65ecff",
+        justifyContent: "center",
+    },
+    questionButtonText: {
+        color: "#ffffffff",
+        fontSize: 12,
+        fontWeight: "bold",
+        alignSelf: "center",
+        fontFamily: "Rubik",
+    },
     componentContainer: {
         width: "100%",
         alignItems: "center"
     },
     questionText: {
-        fontSize: 28,
+        fontSize: 20,
         marginBottom: 10,
         fontWeight: "bold",
         fontFamily: "Rubik",
@@ -266,5 +351,46 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         fontWeight: "bold",
         fontFamily: "Rubik",
-    }
+    },
+    modalOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContent: {
+        backgroundColor: '#ffffff',
+        borderRadius: 15,
+        width: '90%',
+        maxHeight: '80%',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 4.65,
+        elevation: 8,
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: '#e0e0e0',
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        fontFamily: 'Rubik',
+        color: '#333',
+    },
+    modalBody: {
+        padding: 20,
+    },
 });

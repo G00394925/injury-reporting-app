@@ -234,6 +234,8 @@ export default function ManageScheduleScreen() {
                 transparent={true}
                 visible={modalVisible}
                 onRequestClose={closeModal}
+                statusBarTranslucent={true}
+                navigationBarTranslucent={true}
             >
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
