@@ -29,8 +29,8 @@ export default function RpeSlider({ value, onValueChange }) {
     };
 
     const getLabel = () => {
-        if (value <= 2) return "Very Little Exertion";
-        if (value <= 4) return "Light Activity";
+        if (value <= 2) return "Very Light / None";
+        if (value <= 4) return "Light";
         if (value <= 6) return "Moderate";
         if (value <= 8) return "Intense";
         return "Very Intense";
@@ -43,7 +43,7 @@ export default function RpeSlider({ value, onValueChange }) {
             </View>
             <View style={styles.sliderContainer}>
                 <Text style={styles.sliderHeading}>
-                    Rate your perceived exertion level
+                    Rate your perceived pain level
                 </Text>
                 <Slider
                     style={{ width: SLIDER_WIDTH, height: 40 }}

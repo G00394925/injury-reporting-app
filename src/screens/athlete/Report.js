@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, TouchableOpacity, Modal } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { globalStyles } from "../../styles/globalStyles";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "../../config/api_config";
 import { useAuth } from "../../context/AuthContext";
@@ -16,12 +16,22 @@ export default function ReportScreen() {
     const { uuid } = useAuth();
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [injured, setInjured] = useState(false);
+    const [timeloss, setTimeLoss] = useState(false);
+    const [consulted, setConsulted] = useState(false);
+
+    // Modal showing definitions of injury onset types
+    const [showHelpModal, setShowHelpModal] = useState(false);
 
     const [answers, setAnswers] = useState({
         rpe: 1,
         injured: null,
         recurring: null,
-        injuryLocation: null
+        timeloss: null,
+        injuryOnset: null,
+        injuryLocation: null,
+        consulted: null,
+        missedActivity: null,
+        expectedOutage: null
     });
 
     const updateAnswer = (key, value) => {
@@ -31,25 +41,13 @@ export default function ReportScreen() {
         }));
     };
 
-    const [showHelpModal, setShowHelpModal] = useState(false);
-
-
+    // TODO: Check if all questions have been answered to enable nav button
+    
     // List of Questions for report
     const questions = [
         {
             index: 0,
             text: "How was training?",
-            subtext: null,
-            component: (
-                <RpeSlider
-                    value={answers.rpe}
-                    onValueChange={(value) => updateAnswer("rpe", value)}
-                />
-            )
-        },
-        {
-            index: 1,
-            text: null,
             subtext: null,
             component: (
                 <View style={styles.compactContainer}>
@@ -72,12 +70,12 @@ export default function ReportScreen() {
                                 onValueChange={(value) => updateAnswer("recurring", value)}
                             />
                         </View>
-                    )}                    
+                    )}
                 </View>
             )
         },
         {
-            index: 2,
+            index: 1,
             text: "Describe the injury onset",
             subtext: null,
             showButton: true,
@@ -91,9 +89,9 @@ export default function ReportScreen() {
             condition: () => injured
         },
         {
-            index: 3,
+            index: 2,
             text: "Where did you get injured?",
-            subtext: "Select the aproximate location of your injury.",
+            subtext: "Select the approximate location of your injury.",
             component: (
                 <MultiChoice
                     options={[
@@ -105,6 +103,7 @@ export default function ReportScreen() {
                         "Foot",
                         "Leg",
                         "Back",
+                        "Groin",
                         "Other"
                     ]}
                     value={answers.injuryLocation}
@@ -112,6 +111,97 @@ export default function ReportScreen() {
                 />
             ),
             condition: () => injured
+        },
+        {
+            index: 3,
+            text: "Rate your current pain level.",
+            subtext: null,
+            component: (
+                <RpeSlider
+                    value={answers.rpe}
+                    onValueChange={(value) => updateAnswer("rpe", value)}
+                />
+            )
+        },
+        {
+            index: 4,
+            text: null,
+            subtext: null,
+            component: (
+                <View style={styles.compactContainer}>
+                    <View>
+                        <Text style={styles.compactQuestionText}>Have you seen a healthcare professional for this injury?</Text>
+                        <MultiChoice
+                            options={["Yes", "No"]}
+                            value={answers.consulted}
+                            compact={true}
+                            onValueChange={(value) => { updateAnswer("consulted", value); setConsulted(value === "Yes"); }}
+                        />
+                    </View>
+                    { consulted && (
+                        <View>
+                            <Text style={styles.compactQuestionText}>Was timeloss suggested?</Text>
+                            <MultiChoice
+                                options={["Yes", "No"]}
+                                value={answers.timeloss}
+                                compact={true}
+                                onValueChange={(value) => { updateAnswer("timeloss", value); setTimeLoss(value === "Yes"); }}
+                            />
+                        </View>
+                    )}
+
+                    { consulted && timeloss && (
+                        <View>
+                            <Text style={styles.compactQuestionText}>What activities were you advised to avoid?</Text>
+                            <MultiChoice
+                                options={["Competing Only", "Training & Competing"]}
+                                value={answers.missedActivity}
+                                compact={true}
+                                onValueChange={(value) => updateAnswer("missedActivity", value)}
+                            />
+                        </View>
+                    )}
+
+                </View>
+            ),
+            condition: () => injured 
+        },
+        {
+            index: 5,
+            text: "Do you expect to miss any training or games due to this injury?",
+            subtext: null,
+            component: (
+                <MultiChoice
+                    options={["Yes", "No", "Unsure"]}
+                    value={answers.timeloss}
+                    onValueChange={(value) => updateAnswer("timeloss", value)}
+                />
+            ),
+            condition: () => injured && !consulted
+        },
+        {
+            index: 6,
+            text: "What activities will you be avoiding?",
+            component: (
+                <MultiChoice
+                    options={["Competing", "Training & Competing"]}
+                    value={answers.missedActivity}
+                    onValueChange={(value) => updateAnswer("missedActivity", value)}
+                />
+            ),
+            condition: () => injured && !consulted && answers.timeloss === "Yes" 
+        },
+        {
+            index: 7,
+            text: "For how long do you expect to be out?",
+            component: (
+                <MultiChoice
+                    options={["3 days", "5 days", "7 days", "14 days", "21 days", "30+ days"]}
+                    value={answers.expectedOutage}
+                    onValueChange={(value) => updateAnswer("expectedOutage", value)}
+                />
+            ),
+            condition: () => injured && answers.timeloss === "Yes"
         }
     ];
 
@@ -233,6 +323,7 @@ export default function ReportScreen() {
                     <Text style={styles.navButtonText}>Previous</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
+                    disabled={answers[currentQuestion.value] === null}
                     onPress={() => {
                         isLastQuestion ? handleReportSubmission(answers)
                         : setCurrentQuestionIndex(currentQuestionIndex + 1)
@@ -309,6 +400,9 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
         fontFamily: "Rubik"
+    },
+    navButtonDisabled: {
+        color: "#d4d4d49d",
     },
     choice: {
         flex: 1,
