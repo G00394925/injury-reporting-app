@@ -7,7 +7,7 @@ import { API_BASE_URL } from "../../config/api_config";
 import { useAuth } from "../../context/AuthContext";
 import RpeSlider from "../../components/RPESlider";
 import MultiChoice from "../../components/MultiChoice";
-import { ScrollView } from "react-native-gesture-handler";
+import { ScrollView, TextInput } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -16,6 +16,7 @@ export default function ReportScreen() {
     const { uuid } = useAuth();
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [injured, setInjured] = useState(false);
+    const [ill, setIll] = useState(false);
     const [timeloss, setTimeLoss] = useState(false);
     const [consulted, setConsulted] = useState(false);
 
@@ -25,13 +26,15 @@ export default function ReportScreen() {
     const [answers, setAnswers] = useState({
         rpe: 1,
         injured: null,
+        ill: null,
         recurring: null,
         timeloss: null,
         injuryOnset: null,
         injuryLocation: null,
         consulted: null,
         missedActivity: null,
-        expectedOutage: null
+        expectedOutage: null,
+        comments: ""
     });
 
     const updateAnswer = (key, value) => {
@@ -41,8 +44,47 @@ export default function ReportScreen() {
         }));
     };
 
-    // TODO: Check if all questions have been answered to enable nav button
+    // Check if all questions have been answered to enable nav button
+    const isQuestionAnswered = (question) => {
+        switch(question.index) {
+            case 0: // Injury question
+                if (answers.injured === null) return false;
+                if (answers.injured === "Yes" && answers.recurring === null) return false;
+                if (answers.injured === "No" && answers.ill === null) return false;
+                return true;
+
+            case 1: // Injury onset
+                return answers.injuryOnset !== null;
+            
+            case 2: // Injury location
+                return answers.injuryLocation !== null;
+            
+            case 3: // RPE slider (always has a default value)
+                return true;
+        
+            case 4: // Healthcare professional question
+                if (answers.consulted === null) return false;
+                if (answers.consulted === "Yes" && answers.timeloss === null) return false;
+                if (answers.consulted === "Yes" && answers.timeloss === "Yes" && answers.missedActivity === null) return false;
+                return true;
     
+            case 5: // Expected timeloss (when not consulted)
+                return answers.timeloss !== null;
+                
+            case 6: // Activities to avoid (when not consulted)
+                return answers.missedActivity !== null;
+            
+            case 7: // Expected outage duration
+                return answers.expectedOutage !== null;
+            
+            case 8: // Additional comments (optional)
+                return true;
+        
+            default:
+                return true;
+        }
+    }
+
     // List of Questions for report
     const questions = [
         {
@@ -71,6 +113,17 @@ export default function ReportScreen() {
                             />
                         </View>
                     )}
+                    { !injured && (
+                        <View>
+                            <Text style={styles.compactQuestionText}>Did you feel ill today?</Text>
+                            <MultiChoice
+                                options={["Yes", "No"]}
+                                value={answers.ill}
+                                compact={true}
+                                onValueChange={(value) => { updateAnswer("ill", value); setIll(value === "Yes"); }}
+                            />
+                        </View>
+                    )}
                 </View>
             )
         },
@@ -86,7 +139,7 @@ export default function ReportScreen() {
                     onValueChange={(value) => updateAnswer("injuryOnset", value)}
                 />
             ),
-            condition: () => injured
+            condition: () => injured  // Filters future questions based on answer
         },
         {
             index: 2,
@@ -130,7 +183,7 @@ export default function ReportScreen() {
             component: (
                 <View style={styles.compactContainer}>
                     <View>
-                        <Text style={styles.compactQuestionText}>Have you seen a healthcare professional for this injury?</Text>
+                        <Text style={styles.compactQuestionText}>Have you seen a healthcare professional?</Text>
                         <MultiChoice
                             options={["Yes", "No"]}
                             value={answers.consulted}
@@ -164,7 +217,7 @@ export default function ReportScreen() {
 
                 </View>
             ),
-            condition: () => injured 
+            condition: () => injured || ill
         },
         {
             index: 5,
@@ -177,7 +230,7 @@ export default function ReportScreen() {
                     onValueChange={(value) => updateAnswer("timeloss", value)}
                 />
             ),
-            condition: () => injured && !consulted
+            condition: () => (injured || ill) && !consulted
         },
         {
             index: 6,
@@ -189,7 +242,7 @@ export default function ReportScreen() {
                     onValueChange={(value) => updateAnswer("missedActivity", value)}
                 />
             ),
-            condition: () => injured && !consulted && answers.timeloss === "Yes" 
+            condition: () => (injured || ill) && !consulted && answers.timeloss === "Yes" 
         },
         {
             index: 7,
@@ -201,7 +254,23 @@ export default function ReportScreen() {
                     onValueChange={(value) => updateAnswer("expectedOutage", value)}
                 />
             ),
-            condition: () => injured && answers.timeloss === "Yes"
+            condition: () => (injured || ill) && answers.timeloss === "Yes"
+        },
+        {
+            index: 8,
+            text: "Have you any additional notes or comments?",
+            component: (
+                <View style={styles.commentBoxContainer}>
+                    <TextInput
+                        style={styles.commentBox}
+                        placeholder="Add any additional details here..."
+                        placeholderTextColor="#999"
+                        multiline={true}
+                        value={answers.comments}
+                        onChangeText={(text) => updateAnswer("comments", text)}
+                    />
+                </View>
+            )
         }
     ];
 
@@ -232,7 +301,11 @@ export default function ReportScreen() {
                 rpe: 1,
                 injured: null,
                 ill: null,
-                injuryLocation: null
+                injuryLocation: null,
+                timeloss: null,
+                missedActivity: null,
+                expectedOutage: null,
+                comments: ""
             });
 
             navigation.navigate("Dashboard");
@@ -318,18 +391,21 @@ export default function ReportScreen() {
 
             <View style={styles.navigationButtons}>
                 <TouchableOpacity
-                    onPress={() => currentQuestionIndex === 0 ? navigation.navigate("Dashboard") : setCurrentQuestionIndex(currentQuestionIndex - 1)}
+                    onPress={() => currentQuestionIndex === 0 ? navigation.navigate("Dashboard") 
+                        : setCurrentQuestionIndex(currentQuestionIndex - 1)}
                 >
                     <Text style={styles.navButtonText}>Previous</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    disabled={answers[currentQuestion.value] === null}
+                    disabled={!isQuestionAnswered(currentQuestion)}
                     onPress={() => {
                         isLastQuestion ? handleReportSubmission(answers)
                         : setCurrentQuestionIndex(currentQuestionIndex + 1)
                     }}
                 >
-                    <Text style={styles.navButtonText}>{isLastQuestion ? "Submit" : "Next"}</Text>
+                    <Text style={[styles.navButtonText, !isQuestionAnswered(currentQuestion) && styles.navButtonDisabled]}>
+                        {isLastQuestion ? "Submit" : "Next"}
+                    </Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -487,4 +563,18 @@ const styles = StyleSheet.create({
     modalBody: {
         padding: 20,
     },
+    commentBoxContainer: {
+        width: "100%",
+        paddingHorizontal: 20,
+        marginHorizontal: 10
+    },
+    commentBox: {
+        width: '100%',
+        borderRadius: 15,
+        height: 250,
+        borderWidth: 1,
+        borderColor: "#cccccc",
+        padding: 15,
+        backgroundColor: "#eeeeee",
+    }
 });
