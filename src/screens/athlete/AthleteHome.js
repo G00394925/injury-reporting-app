@@ -53,20 +53,20 @@ export default function AthleteDashScreen() {
                                     marginBottom: 5,
                                 }}
                             >
-                                {healthStatus === "Injured"
-                                    ? "Your Status: Injured"
-                                    : healthStatus === "Recovering"
-                                        ? "Your Status: Recovering"
-                                        : "Your Status: Ready to play"}
+                                {healthStatus === "No training or competing"
+                                    ? "No training or competing"
+                                    : healthStatus === "No competing"
+                                        ? "Cleared to train - No competing"
+                                        : "Ready to play"}
                             </CardTitle>
                             <View style={styles.lightsContainer}>
                                 <Image
                                     style={styles.light}
-                                    source={healthStatus === "Injured" ? require("../../../assets/RedLightOn.png") : require("../../../assets/RedLightOff.png")}
+                                    source={healthStatus === "No training or competing" ? require("../../../assets/RedLightOn.png") : require("../../../assets/RedLightOff.png")}
                                 />
                                 <Image
                                     style={styles.light}
-                                    source={healthStatus === "Recovering" ? require("../../../assets/AmberLightOn.png") : require("../../../assets/AmberLightOff.png")}
+                                    source={healthStatus === "No competing" ? require("../../../assets/AmberLightOn.png") : require("../../../assets/AmberLightOff.png")}
                                 />
                                 <Image
                                     style={styles.light}

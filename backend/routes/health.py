@@ -1,7 +1,9 @@
 from flask import Blueprint, request, jsonify
 from services.database_service import DatabaseService
 import logging
-import health_status
+from health_status import HealthStatus
+from datetime import datetime, timedelta
+import re
 
 db_service = DatabaseService()
 health_bp = Blueprint('health', __name__)
@@ -16,6 +18,9 @@ logger = logging.getLogger(__name__)
 
 @health_bp.route('/report', methods=['POST'])
 def health_report():
+
+    proposed_status = HealthStatus.GREEN
+
     try:
         report = request.get_json()
         report_data = {
@@ -24,23 +29,58 @@ def health_report():
         }
         logger.info(f"Received new health report: {report_data}")
 
-        # supabase.table("reports").insert(report_data).execute()
-        # logger.info("Health report submitted successfully.")
+        estimated_recovery_date = None
+    
+        if report_data['answers'].get('expected_outage'):
+            # Extract days from string 
+            outage_days = int(re.split(r'[+\s]+', report_data['answers'].get('expected_outage'))[0])
+            restriction = report_data['answers'].get('missed_activity')
+            estimated_recovery_date = (datetime.now() + timedelta(days=outage_days)).isoformat()
 
-        # Update user's health status if they're injured
-        if 'injured' in report_data['answers']:
-            injured = report_data['answers']['injured']
-            user_id = report_data['user']
-            new_status = health_status.HealthStatus.INJURED.value if injured else health_status.HealthStatus.HEALTHY.value
+            if restriction == "Competing Only":
+                proposed_status = HealthStatus.AMBER
+            elif restriction == "Training & Competing":
+                proposed_status = HealthStatus.RED
 
-            db_service.update(
-                "athletes", 
-                data={"status": new_status},
-                filters={"id": user_id}
-            )
+        # Update athlete's health status based on report data
+        update_data = {
+            "status": proposed_status.value
+        }
 
-            logger.info(f"Updated health status for user {user_id} to {new_status}")
+        if proposed_status in [HealthStatus.AMBER, HealthStatus.RED]:
+            update_data["injury_date"] = datetime.now().isoformat()
+            if estimated_recovery_date:
+                update_data["estimated_recovery_date"] = estimated_recovery_date
+        
+        else:
+            # Clear injury data if status is green
+            update_data["injury_date"] = None
+            update_data["estimated_recovery_date"] = None
 
+        try:
+            # Update athlete's health status in the database
+            db_service.update("athletes", data=update_data, filters={"id": report_data['user']})
+            logger.info(f"Updated athlete's status: Recovery date: {estimated_recovery_date}, Proposed status: {proposed_status.value}")
+
+        except Exception as e:
+            logger.error(f"Error updating athlete's health status: {e}")
+            return jsonify(error="Failed to update health status"), 500
+        
+        # Insert health report into database
+        report_insert_data = {
+            "athlete_id": report_data['user'],
+            "injured": report_data['answers'].get('injured'),
+            "ill": report_data['answers'].get('ill'),
+            "injury_type": report_data['answers'].get('injury_type'),
+            "timeloss": report_data['answers'].get('timeloss'),
+            "injury_location": report_data['answers'].get('injury_location'),
+            "injury_onset": report_data['answers'].get('injury_onset'),
+            "consulted": report_data['answers'].get('consulted'),
+            "comments": report_data['answers'].get('comments'),
+        }
+        db_service.insert("reports", data=report_insert_data)
+
+        logger.info("Inserted new report to database")
         return jsonify(message="Health report submitted successfully"), 201
 
     except Exception as e:

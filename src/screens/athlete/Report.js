@@ -19,6 +19,7 @@ export default function ReportScreen() {
     const [ill, setIll] = useState(false);
     const [timeloss, setTimeLoss] = useState(false);
     const [consulted, setConsulted] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     // Modal showing definitions of injury onset types
     const [showHelpModal, setShowHelpModal] = useState(false);
@@ -27,13 +28,13 @@ export default function ReportScreen() {
         rpe: 1,
         injured: null,
         ill: null,
-        recurring: null,
+        injury_type: null,
         timeloss: null,
-        injuryOnset: null,
-        injuryLocation: null,
+        injury_onset: null,
+        injury_location: null,
         consulted: null,
-        missedActivity: null,
-        expectedOutage: null,
+        missed_activity: null,
+        expected_outage: null,
         comments: ""
     });
 
@@ -49,15 +50,15 @@ export default function ReportScreen() {
         switch(question.index) {
             case 0: // Injury question
                 if (answers.injured === null) return false;
-                if (answers.injured === "Yes" && answers.recurring === null) return false;
+                if (answers.injured === "Yes" && answers.injury_type === null) return false;
                 if (answers.injured === "No" && answers.ill === null) return false;
                 return true;
 
             case 1: // Injury onset
-                return answers.injuryOnset !== null;
+                return answers.injury_onset !== null;
             
             case 2: // Injury location
-                return answers.injuryLocation !== null;
+                return answers.injury_location !== null;
             
             case 3: // RPE slider (always has a default value)
                 return true;
@@ -65,17 +66,17 @@ export default function ReportScreen() {
             case 4: // Healthcare professional question
                 if (answers.consulted === null) return false;
                 if (answers.consulted === "Yes" && answers.timeloss === null) return false;
-                if (answers.consulted === "Yes" && answers.timeloss === "Yes" && answers.missedActivity === null) return false;
+                if (answers.consulted === "Yes" && answers.timeloss === "Yes" && answers.missed_activity === null) return false;
                 return true;
     
             case 5: // Expected timeloss (when not consulted)
                 return answers.timeloss !== null;
                 
             case 6: // Activities to avoid (when not consulted)
-                return answers.missedActivity !== null;
+                return answers.missed_activity !== null;
             
             case 7: // Expected outage duration
-                return answers.expectedOutage !== null;
+                return answers.expected_outage !== null;
             
             case 8: // Additional comments (optional)
                 return true;
@@ -89,8 +90,6 @@ export default function ReportScreen() {
     const questions = [
         {
             index: 0,
-            text: "How was training?",
-            subtext: null,
             component: (
                 <View style={styles.compactContainer}>
                     <View>
@@ -107,13 +106,13 @@ export default function ReportScreen() {
                             <Text style={styles.compactQuestionText}>Is this a new or recurring injury?</Text>
                             <MultiChoice
                                 options={["New", "Recurring"]}
-                                value={answers.recurring}
+                                value={answers.injury_type}
                                 compact={true}
-                                onValueChange={(value) => updateAnswer("recurring", value)}
+                                onValueChange={(value) => updateAnswer("injury_type", value)}
                             />
                         </View>
                     )}
-                    { !injured && (
+                    { answers.injured === "No" && (
                         <View>
                             <Text style={styles.compactQuestionText}>Did you feel ill today?</Text>
                             <MultiChoice
@@ -130,13 +129,12 @@ export default function ReportScreen() {
         {
             index: 1,
             text: "Describe the injury onset",
-            subtext: null,
             showButton: true,
             component: (
                 <MultiChoice
                     options={["Acute", "Repetitive Sudden Onset", "Repetitive Gradual Onset", "Other"]}
-                    value={answers.injuryOnset}
-                    onValueChange={(value) => updateAnswer("injuryOnset", value)}
+                    value={answers.injury_onset}
+                    onValueChange={(value) => updateAnswer("injury_onset", value)}
                 />
             ),
             condition: () => injured  // Filters future questions based on answer
@@ -159,8 +157,8 @@ export default function ReportScreen() {
                         "Groin",
                         "Other"
                     ]}
-                    value={answers.injuryLocation}
-                    onValueChange={(value) => updateAnswer("injuryLocation", value)}
+                    value={answers.injury_location}
+                    onValueChange={(value) => updateAnswer("injury_location", value)}
                 />
             ),
             condition: () => injured
@@ -178,8 +176,6 @@ export default function ReportScreen() {
         },
         {
             index: 4,
-            text: null,
-            subtext: null,
             component: (
                 <View style={styles.compactContainer}>
                     <View>
@@ -208,9 +204,9 @@ export default function ReportScreen() {
                             <Text style={styles.compactQuestionText}>What activities were you advised to avoid?</Text>
                             <MultiChoice
                                 options={["Competing Only", "Training & Competing"]}
-                                value={answers.missedActivity}
+                                value={answers.missed_activity}
                                 compact={true}
-                                onValueChange={(value) => updateAnswer("missedActivity", value)}
+                                onValueChange={(value) => updateAnswer("missed_activity", value)}
                             />
                         </View>
                     )}
@@ -222,7 +218,6 @@ export default function ReportScreen() {
         {
             index: 5,
             text: "Do you expect to miss any training or games due to this injury?",
-            subtext: null,
             component: (
                 <MultiChoice
                     options={["Yes", "No", "Unsure"]}
@@ -237,9 +232,9 @@ export default function ReportScreen() {
             text: "What activities will you be avoiding?",
             component: (
                 <MultiChoice
-                    options={["Competing", "Training & Competing"]}
-                    value={answers.missedActivity}
-                    onValueChange={(value) => updateAnswer("missedActivity", value)}
+                    options={["Competing Only", "Training & Competing"]}
+                    value={answers.missed_activity}
+                    onValueChange={(value) => updateAnswer("missed_activity", value)}
                 />
             ),
             condition: () => (injured || ill) && !consulted && answers.timeloss === "Yes" 
@@ -250,8 +245,8 @@ export default function ReportScreen() {
             component: (
                 <MultiChoice
                     options={["3 days", "5 days", "7 days", "14 days", "21 days", "30+ days"]}
-                    value={answers.expectedOutage}
-                    onValueChange={(value) => updateAnswer("expectedOutage", value)}
+                    value={answers.expected_outage}
+                    onValueChange={(value) => updateAnswer("expected_outage", value)}
                 />
             ),
             condition: () => (injured || ill) && answers.timeloss === "Yes"
@@ -280,6 +275,17 @@ export default function ReportScreen() {
 
     // Submit health report to database
     const handleReportSubmission = async (answers) => {
+        setIsLoading(true);
+        
+        // Format to boolean values for backend
+        const formattedAnswers = {
+            ...answers,
+            injured: answers.injured === "Yes",
+            ill: answers.ill === "Yes",
+            consulted: answers.consulted === "Yes",
+            timeloss: answers.timeloss === "Yes"
+        }
+
         try {
             console.log("Submitting health report for user:", uuid);
 
@@ -290,7 +296,7 @@ export default function ReportScreen() {
 
             const response = await axios.post(`${API_BASE_URL}/api/health/report`, {
                 user_id: uuid,
-                answers_list: answers
+                answers_list: formattedAnswers
             });
 
             console.log("Health Report Response:", response.data);
@@ -301,16 +307,22 @@ export default function ReportScreen() {
                 rpe: 1,
                 injured: null,
                 ill: null,
-                injuryLocation: null,
+                injury_type: null,
                 timeloss: null,
-                missedActivity: null,
-                expectedOutage: null,
+                injury_onset: null,
+                injury_location: null,
+                consulted: null,
+                missed_activity: null,
+                expected_outage: null,
                 comments: ""
             });
 
             navigation.navigate("Dashboard");
+
         } catch (error) {
             console.error("Error submitting health report:", error);
+        } finally {
+            setIsLoading(false);
         }
     };
 

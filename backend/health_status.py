@@ -1,8 +1,6 @@
 from enum import Enum
 
 class HealthStatus(str, Enum):
-    HEALTHY = "Healthy"
-    INJURED = "Injured"
-    RECOVERING = "Recovering"
-
-    
+    GREEN = "Healthy"
+    AMBER = "No competing"
+    RED = "No training or competing"
