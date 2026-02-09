@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View, Image, ActivityIndicator } from "react-native";
 import { Button, Card } from "@rneui/themed";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { CardTitle } from "@rneui/base/dist/Card/Card.Title";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { API_BASE_URL } from "../../config/api_config";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,25 +14,28 @@ export default function AthleteDashScreen() {
     const { uuid, userData } = useAuth();
     const [healthStatus, setHealthStatus] = useState(null);
     const navigation = useNavigation();
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        const fetchHealthStatus = async () => {
-            // Fetch health status on user uuid change.
-            if (!uuid) return;
-
-            try {
-                const response = await axios.get(`${API_BASE_URL}/api/health/status/${uuid}`);
-                setHealthStatus(response.data.health_status);
-            } catch (error) {
-                console.error("Error fetching health status:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchHealthStatus();
-    }, [uuid]);
+    useFocusEffect(
+        useCallback(() => {
+            const fetchHealthStatus = async () => {
+                // Fetch health status on page render.
+                setLoading(true);
+                if (!uuid) return;
+    
+                try {
+                    const response = await axios.get(`${API_BASE_URL}/api/health/status/${uuid}`);
+                    setHealthStatus(response.data.health_status);
+                } catch (error) {
+                    console.error("Error fetching health status:", error);
+                } finally {
+                    setLoading(false);
+                }
+            };
+    
+            fetchHealthStatus();
+        }, [uuid])
+    );
 
     return (
         <SafeAreaView style={globalStyles.container} edges={["top"]}>

@@ -18,6 +18,13 @@ logger = logging.getLogger(__name__)
 
 @health_bp.route('/report', methods=['POST'])
 def health_report():
+    """
+    Handles new report submissions from athletes, updating their health status 
+    wherever required before inserting report data into database.
+
+    Returns:
+        JSON response indicating success or failure of report submission.
+    """
 
     proposed_status = HealthStatus.GREEN
 
