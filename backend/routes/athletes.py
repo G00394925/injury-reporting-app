@@ -81,3 +81,8 @@ def join_team():
     except Exception as e:
         logger.error(f"Error athlete joining team: {e}")
         return jsonify(message="Error joining team"), 500
+    
+
+@athletes_bp.route('/dashboard/get_stats/<athlete_id>', methods=['GET'])
+def get_stats(athlete_id):
+    pass

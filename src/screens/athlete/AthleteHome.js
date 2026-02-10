@@ -10,7 +10,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { globalStyles } from "../../styles/globalStyles";
 
 export default function AthleteDashScreen() {
-    // Name to appear on welcome text
     const { uuid, userData } = useAuth();
     const [healthStatus, setHealthStatus] = useState(null);
     const navigation = useNavigation();

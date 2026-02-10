@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, TouchableOpacity, Modal } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { globalStyles } from "../../styles/globalStyles";
-import { useState, useEffect, use } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "../../config/api_config";
 import { useAuth } from "../../context/AuthContext";
@@ -20,12 +20,14 @@ export default function ReportScreen() {
     const [timeloss, setTimeLoss] = useState(false);
     const [consulted, setConsulted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [trained, setTrained] = useState(false);
 
     // Modal showing definitions of injury onset types
     const [showHelpModal, setShowHelpModal] = useState(false);
 
     const [answers, setAnswers] = useState({
         rpe: 1,
+        trained: null,
         injured: null,
         ill: null,
         injury_type: null,
@@ -49,9 +51,12 @@ export default function ReportScreen() {
     const isQuestionAnswered = (question) => {
         switch(question.index) {
             case 0: // Injury question
-                if (answers.injured === null) return false;
-                if (answers.injured === "Yes" && answers.injury_type === null) return false;
-                if (answers.injured === "No" && answers.ill === null) return false;
+                if (answers.trained === null) return false;
+                if (answers.trained === "Yes") {
+                    if (answers.injured === null) return false;
+                    if (answers.injured === "Yes" && answers.injury_type === null) return false;
+                }
+                if ((answers.trained === "No" || answers.injured === "No") && answers.ill === null) return false;
                 return true;
 
             case 1: // Injury onset
@@ -93,6 +98,16 @@ export default function ReportScreen() {
             component: (
                 <View style={styles.compactContainer}>
                     <View>
+                        <Text style={styles.compactQuestionText}>Did you train today?</Text>
+                        <MultiChoice
+                            options={["Yes", "No"]}
+                            value={answers.trained}
+                            compact={true}
+                            onValueChange={(value) => { updateAnswer("trained", value); setTrained(value === "Yes");}}
+                        />
+                    </View>
+                    { trained && (
+                    <View>
                         <Text style={styles.compactQuestionText}>Did you get injured today?</Text>
                         <MultiChoice
                             options={["Yes", "No"]}
@@ -101,6 +116,7 @@ export default function ReportScreen() {
                             onValueChange={(value) => { updateAnswer("injured", value); setInjured(value === "Yes"); }}
                         />
                     </View>
+                    )}
                     { injured && (
                         <View>
                             <Text style={styles.compactQuestionText}>Is this a new or recurring injury?</Text>
@@ -112,7 +128,7 @@ export default function ReportScreen() {
                             />
                         </View>
                     )}
-                    { answers.injured === "No" && (
+                    { (answers.injured === "No" || answers.trained === "No") && (
                         <View>
                             <Text style={styles.compactQuestionText}>Did you feel ill today?</Text>
                             <MultiChoice
@@ -280,6 +296,7 @@ export default function ReportScreen() {
         // Format to boolean values for backend
         const formattedAnswers = {
             ...answers,
+            trained: answers.trained === "Yes",
             injured: answers.injured === "Yes",
             ill: answers.ill === "Yes",
             consulted: answers.consulted === "Yes",
@@ -305,6 +322,7 @@ export default function ReportScreen() {
             setCurrentQuestionIndex(0);
             setAnswers({
                 rpe: 1,
+                trained: null,
                 injured: null,
                 ill: null,
                 injury_type: null,
@@ -317,12 +335,14 @@ export default function ReportScreen() {
                 comments: ""
             });
 
-            navigation.navigate("Dashboard");
-
         } catch (error) {
             console.error("Error submitting health report:", error);
         } finally {
             setIsLoading(false);
+            navigation.navigate("ReportFinish", {
+                restriction: answers.missed_activity,
+                expected_outage: answers.expected_outage
+            });
         }
     };
 
