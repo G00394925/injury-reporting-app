@@ -341,7 +341,8 @@ export default function ReportScreen() {
             setIsLoading(false);
             navigation.navigate("ReportFinish", {
                 restriction: answers.missed_activity,
-                expected_outage: answers.expected_outage
+                expected_outage: answers.expected_outage,
+                consulted: answers.consulted
             });
         }
     };
@@ -351,10 +352,7 @@ export default function ReportScreen() {
     const currentQuestion = availableQuestions[currentQuestionIndex];
 
     return (
-        <SafeAreaView style={globalStyles.container}>
-            <View style={globalStyles.header}>
-                <Text style={globalStyles.headerText}>Daily Health Report</Text>
-            </View>
+        <SafeAreaView style={[globalStyles.container, {backgroundColor:"#ffffff"}]}>
             <ScrollView
                 style={styles.scrollView}
                 contentContainerStyle={styles.content}

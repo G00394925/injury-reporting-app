@@ -6,11 +6,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function ReportFinish({ route }) {
-    const {restriction, expected_outage} = route.params;
+    const {restriction, expected_outage, consulted} = route.params;
     const navigation = useNavigation();
 
     return (
-        <SafeAreaView style={globalStyles.container}>
+        <SafeAreaView style={[globalStyles.container, {backgroundColor:"#ffffff"}]}>
             <View style={styles.container}>
                 <View style={styles.content}>
                     <Text style={styles.thankYouText}>Report submitted!</Text>
@@ -25,7 +25,10 @@ export default function ReportFinish({ route }) {
                             <>
                                 <Text style={styles.advisoryText}>Based on your responses, it is recommended you refrain from any physical activity for the next </Text>
                                 <Text style={[styles.advisoryText, {color: "red", fontWeight: "bold", fontSize: 22}]}>{expected_outage}.</Text>
-                                <Text style={styles.advisoryText}>Please take care to rest as much as possible. You will be asked to check-in your health status on the expected recovery date.</Text>
+                                <Text style={styles.advisoryText}>Please take care to rest as much as possible.
+                                    {consulted === "No" && 
+                                        <Text style={styles.advisoryText}> You should visit a healthcare professional to acquire a proper estimation of recovery time.</Text>
+                                    } You will be asked to check-in your health status on the expected recovery date.</Text>
                             </>
                         ) : restriction === "Competing Only" ? (
                             <>
