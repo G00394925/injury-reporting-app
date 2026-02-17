@@ -117,7 +117,6 @@ export default function ManageScheduleScreen() {
             });
 
             console.log('Event created successfully: ', response.data);
-            Alert.alert('Success', 'Event created successfully');
             closeModal();
             fetchEvents(); // Refresh the calendar
         } catch (error) {

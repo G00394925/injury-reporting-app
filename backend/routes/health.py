@@ -107,16 +107,21 @@ def get_status(user_id):
         JSON response with the athlete's health status or error message.
     """
     try:
-        user = (
-            db_service.fetch("athletes", filters={"id": user_id})
-        )
+        user = db_service.fetch("athletes", filters={"id": user_id})
+        num_reports = db_service.fetch("reports", filters={"athlete_id": user_id})
 
         if user.data:
             health_status_value = user.data[0].get('status')
+            num_reports = len(num_reports.data) if num_reports.data else 0
+            injury_date = user.data[0].get('injury_date')
+            estimated_recovery_date = user.data[0].get('estimated_recovery_date')
 
             return jsonify(
                 user_id=user_id,
-                health_status=health_status_value
+                health_status=health_status_value,
+                num_reports=num_reports,
+                injury_date=injury_date,
+                estimated_recovery_date=estimated_recovery_date
             ), 200
         
         else:

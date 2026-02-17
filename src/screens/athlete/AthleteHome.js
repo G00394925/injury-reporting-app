@@ -8,31 +8,61 @@ import axios from "axios";
 import { API_BASE_URL } from "../../config/api_config";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { globalStyles } from "../../styles/globalStyles";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function AthleteDashScreen() {
     const { uuid, userData } = useAuth();
     const [healthStatus, setHealthStatus] = useState(null);
     const navigation = useNavigation();
     const [loading, setLoading] = useState(false);
+    const [numReports, setNumReports] = useState(0);
+    const [injuryDate, setInjuryDate] = useState(null);
+    const [estimatedRecoveryDate, setEstimatedRecoveryDate] = useState(null);
+    const [hasRecentEvent, setHasRecentEvent] = useState(false);
+    const [daysSinceInjury, setDaysSinceInjury] = useState(0);
 
     useFocusEffect(
         useCallback(() => {
-            const fetchHealthStatus = async () => {
-                // Fetch health status on page render.
+            const fetchData = async () => {
                 setLoading(true);
                 if (!uuid) return;
 
                 try {
-                    const response = await axios.get(`${API_BASE_URL}/api/health/status/${uuid}`);
-                    setHealthStatus(response.data.health_status);
+                    // Fetch health status
+                    const dataResponse = await axios.get(`${API_BASE_URL}/api/health/status/${uuid}`);
+                    setHealthStatus(dataResponse.data.health_status);
+                    setNumReports(dataResponse.data.num_reports);
+                    setInjuryDate(dataResponse.data.injury_date);
+                    setEstimatedRecoveryDate(dataResponse.data.estimated_recovery_date);
+
+                    // Fetch events and check if any have passed
+                    const eventsResponse = await axios.get(`${API_BASE_URL}/api/events/get/${uuid}`);
+                    if (eventsResponse.data && eventsResponse.data.length > 0) {
+                        const now = new Date();
+                        const hasPastEvent = eventsResponse.data.some(event => {
+                            const eventDateTime = new Date(`${event.event_date}T${event.end_time}`);
+                            return eventDateTime < now;
+                        });
+                        setHasRecentEvent(hasPastEvent);
+                    }
+
+                    // Calculate days since injury
+                    if (injuryDate) {
+                        const injuryDateObj = new Date(injuryDate);
+                        const today = new Date();
+                        const diffTime = Math.abs(today - injuryDateObj);
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        setDaysSinceInjury(diffDays);
+                    }
+
                 } catch (error) {
-                    console.error("Error fetching health status:", error);
+                    console.error("Error fetching data:", error);
                 } finally {
                     setLoading(false);
                 }
             };
 
-            fetchHealthStatus();
+            fetchData();
         }, [uuid])
     );
 
@@ -64,56 +94,103 @@ export default function AthleteDashScreen() {
                             </View>
                         </Card>
 
-                        <View style={styles.noticeCard}>
-                            <Text style={styles.noticeTitle}>{
-                                healthStatus === "No training or competing" ? "You are not training or competing"
-                                    : healthStatus === "No competing"
-                                        ? "You are cleared to train but not competing"
-                                        : "You are ready to play"}
-                            </Text>
-                            <View style={[styles.line, { backgroundColor: healthStatus === "Healthy" ? "#00ff00" : healthStatus === "No competing" ? "#ffff00" : "#ff0000" }]} />
+                        <View style={[
+                            styles.noticeCard,
+                            healthStatus === "Healthy" 
+                                ? styles.noticeCardGreen 
+                                : healthStatus === "No competing" 
+                                    ? styles.noticeCardAmber 
+                                    : styles.noticeCardRed
+                        ]}>
+                            <View style={styles.noticeIconContainer}>
+                                <MaterialCommunityIcons 
+                                    name={
+                                        healthStatus === "Healthy" 
+                                            ? "check-circle" 
+                                            : healthStatus === "No competing" 
+                                                ? "alert-circle" 
+                                                : "close-circle"
+                                    }
+                                    size={40}
+                                    color={
+                                        healthStatus === "Healthy" 
+                                            ? "#10b981" 
+                                            : healthStatus === "No competing" 
+                                                ? "#f59e0b" 
+                                                : "#ef4444"
+                                    }
+                                />
+                            </View>
+                            <View style={styles.noticeTextContainer}>
+                                <Text style={styles.noticeLabel}>Status</Text>
+                                <Text style={styles.noticeTitle}>{
+                                    healthStatus === "No training or competing" ? "Not training or competing"
+                                        : healthStatus === "No competing"
+                                            ? "Training only"
+                                            : "Ready to play"}
+                                </Text>
+                                <Text style={styles.noticeSubtext}>{
+                                    healthStatus === "No training or competing" ? "Rest and recovery needed"
+                                        : healthStatus === "No competing"
+                                            ? "Cleared for training activities"
+                                            : "Fully cleared for all activities"}
+                                </Text>
+                            </View>
                         </View>
 
                         <View style={styles.infoCardsContainer}>
-                            <Card
-                                containerStyle={[
-                                    styles.infoCard,
-                                    { backgroundColor: "#6684fd" },
-                                ]}
-                            >
-                                <CardTitle style={{ fontSize: 24, textAlign: "left" }}>6</CardTitle>
-                                <Text>Injuries Reported</Text>
-                            </Card>
-                            <Card
-                                containerStyle={[
-                                    styles.infoCard,
-                                    { backgroundColor: "#8bbbff" },
-                                ]}
-                            >
-                                <CardTitle style={{ fontSize: 24, textAlign: "left" }}>
-                                    142
-                                </CardTitle>
-                                <Text>Days since your last injury</Text>
-                            </Card>
-                            <Card
-                                containerStyle={[
-                                    styles.infoCard,
-                                    { backgroundColor: "#8bbbff" },
-                                ]}
-                            >
-                                <CardTitle style={{ fontSize: 24, textAlign: "left" }}>
-                                    15
-                                </CardTitle>
-                                <Text>Consecutive Daily Reports</Text>
-                            </Card>
+                            <View style={styles.infoCard}>
+                                <MaterialCommunityIcons 
+                                    name="file-document-multiple" 
+                                    size={32} 
+                                    color="#6366f1" 
+                                    style={styles.cardIcon}
+                                />
+                                <Text style={styles.cardValue}>{numReports}</Text>
+                                <Text style={styles.cardLabel}>Total Reports</Text>
+                            </View>
+
+                            <View style={styles.infoCard}>
+                                <MaterialCommunityIcons 
+                                    name="calendar-check" 
+                                    size={32} 
+                                    color="#10b981" 
+                                    style={styles.cardIcon}
+                                />
+                                <Text style={styles.cardValue}>{daysSinceInjury}</Text>
+                                <Text style={styles.cardLabel}>Days Since Last Injury</Text>
+                            </View>
+
+                            <View style={styles.infoCard}>
+                                <MaterialCommunityIcons 
+                                    name="fire" 
+                                    size={32} 
+                                    color="#f59e0b" 
+                                    style={styles.cardIcon}
+                                />
+                                <Text style={styles.cardValue}>15</Text>
+                                <Text style={styles.cardLabel}>Consecutive Submissions</Text>
+                            </View>
                         </View>
-                        <Button
-                            title="Submit Daily Report"
-                            buttonStyle={styles.reportButton}
-                            containerStyle={{ marginTop: 20 }}
-                            titleStyle={{ color: "#575757ff", fontWeight: "bold" }}
-                            onPress={() => navigation.navigate("Report")}
-                        />
+                        {hasRecentEvent && (
+                            <View style={styles.reportButtonContainer}>
+                                <Button
+                                    title="Submit Report"
+                                    buttonStyle={styles.reportButton}
+                                    containerStyle={{ width: "100%" }}
+                                    titleStyle={styles.reportButtonText}
+                                    onPress={() => navigation.navigate("Report")}
+                                    icon={
+                                        <MaterialCommunityIcons 
+                                            name="clipboard-text" 
+                                            size={20} 
+                                            color="#ffffff" 
+                                            style={{ marginRight: 8 }}
+                                        />
+                                    }
+                                />
+                            </View>
+                        )}
                     </View>
                 </>
             )}
@@ -123,68 +200,148 @@ export default function AthleteDashScreen() {
 
 const styles = StyleSheet.create({
     noticeCard: {
-        padding: 15,
+        padding: 20,
         backgroundColor: "#ffffff",
-        borderRadius: 10,
-        borderColor: "#e7e7e7",
-        borderWidth: 1,
-        marginTop: 20
+        borderRadius: 15,
+        marginTop: 20,
+        flexDirection: "row",
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 3,
+        borderLeftWidth: 5,
+    },
+    noticeCardGreen: {
+        borderLeftColor: "#10b981",
+        backgroundColor: "#f0fdf4",
+    },
+    noticeCardAmber: {
+        borderLeftColor: "#f59e0b",
+        backgroundColor: "#fffbeb",
+    },
+    noticeCardRed: {
+        borderLeftColor: "#ef4444",
+        backgroundColor: "#fef2f2",
+    },
+    noticeIconContainer: {
+        marginRight: 15,
+    },
+    noticeTextContainer: {
+        flex: 1,
+    },
+    noticeLabel: {
+        fontSize: 12,
+        fontWeight: "600",
+        color: "#6b7280",
+        textTransform: "uppercase",
+        letterSpacing: 0.5,
+        fontFamily: "Rubik",
+        marginBottom: 4,
     },
     noticeTitle: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: "bold",
-        color: "#333333ff",
-        textAlign: "left"
+        color: "#1f2937",
+        fontFamily: "Rubik",
+        marginBottom: 4,
     },
-    line: {
-        height: 5,
-        backgroundColor: "#1dd545",
-        marginVertical: 10,
-        borderRadius: 25
+    noticeSubtext: {
+        fontSize: 14,
+        color: "#6b7280",
+        fontFamily: "Rubik",
     },
     lightsCard: {
-        padding: 15,
-        backgroundColor: "#424242ff",
-        borderRadius: 10,
-        margin: 0
+        padding: 5,
+        backgroundColor: "rgb(59, 59, 59)",
+        borderRadius: 90,
+        margin: 0,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 3,
     },
     lightsContainer: {
         flexDirection: "row",
         justifyContent: "space-evenly",
-        backgroundColor: "#333333ff",
         borderRadius: 10,
+        gap: 25
     },
     light: {
         marginVertical: 10,
-        width: 80,
-        height: 80
+        width: 70,
+        height: 70
     },
     infoCardsContainer: {
         flexDirection: "row",
-        flexWrap: "wrap",
         justifyContent: "space-between",
         width: "100%",
-        marginTop: 15,
+        marginTop: 25,
+        gap: 12,
     },
     infoCard: {
-        padding: 10,
-        borderRadius: 10,
-        marginTop: 10,
-        marginHorizontal: 0,
-        width: "48%",
+        flex: 1,
+        backgroundColor: "#ffffff",
+        borderRadius: 15,
+        padding: 16,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.08,
+        shadowRadius: 8,
+        elevation: 3,
+        borderWidth: 1,
+        borderColor: "#f3f4f6",
+    },
+    cardIcon: {
+        marginBottom: 8,
+    },
+    cardValue: {
+        fontSize: 28,
+        fontWeight: "bold",
+        color: "#1f2937",
+        fontFamily: "Rubik",
+        marginBottom: 4,
+    },
+    cardLabel: {
+        fontSize: 12,
+        color: "#6b7280",
+        fontFamily: "Rubik",
+        textAlign: "center",
+        lineHeight: 16,
+    },
+    reportButtonContainer: {
+        marginTop: 25,
+        width: "100%",
     },
     reportButton: {
-        marginTop: 20,
-        alignContent: "center",
-        paddingHorizontal: 40,
-        paddingVertical: 20,
-        color: "black",
-        backgroundColor: "#ffffffff",
-        borderRadius: 45,
-        borderWidth: 3,
-        borderBottomColor: "#00a0ccff",
-        borderRightColor: "#00a0ccff",
-        borderLeftColor: "#87b5f6ff",
-        borderTopColor: "#87c8f6ff",
+        backgroundColor: "#6366f1",
+        paddingVertical: 16,
+        borderRadius: 12,
+        shadowColor: "#6366f1",
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 6,
+    },
+    reportButtonText: {
+        color: "#ffffff",
+        fontWeight: "bold",
+        fontSize: 16,
+        fontFamily: "Rubik",
     },
 });
