@@ -9,6 +9,7 @@ import { API_BASE_URL } from "../../config/api_config";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { globalStyles } from "../../styles/globalStyles";
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default function AthleteDashScreen() {
     const { uuid, userData } = useAuth();
@@ -75,7 +76,10 @@ export default function AthleteDashScreen() {
                     <View style={globalStyles.header}>
                         <Text style={globalStyles.headerText}>Hello {userData?.name}</Text>
                     </View>
-                    <View style={globalStyles.contentContainer}>
+                    <ScrollView 
+                        style={globalStyles.contentContainer}
+                        contentContainerStyle={{ paddingBottom: 100 }}
+                    >
                         
                         {/* Traffic light status indicators */}
                         <Card containerStyle={styles.lightsCard}>
@@ -172,7 +176,7 @@ export default function AthleteDashScreen() {
                                     style={styles.cardIcon}
                                 />
                                 <Text style={styles.cardValue}>15</Text>
-                                <Text style={styles.cardLabel}>Consecutive Submissions</Text>
+                                <Text style={styles.cardLabel}>Consecutive Submitted Reports</Text>
                             </View>
                         </View>
 
@@ -209,7 +213,7 @@ export default function AthleteDashScreen() {
                                 />
                             </View>
                         )}
-                    </View>
+                    </ScrollView>
                 </>
             )}
         </SafeAreaView>
@@ -327,7 +331,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#ffffff",
         borderRadius: 15,
-        padding: 16,
+        padding: 14,
         alignItems: "center",
         shadowColor: "#000",
         shadowOffset: {
