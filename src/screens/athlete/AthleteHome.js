@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, View, Image, ActivityIndicator, TouchableOpacity } from "react-native";
 import { Button, Card } from "@rneui/themed";
 import { useCallback, useState } from "react";
 import { CardTitle } from "@rneui/base/dist/Card/Card.Title";
@@ -8,7 +8,7 @@ import axios from "axios";
 import { API_BASE_URL } from "../../config/api_config";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { globalStyles } from "../../styles/globalStyles";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 
 export default function AthleteDashScreen() {
     const { uuid, userData } = useAuth();
@@ -69,15 +69,16 @@ export default function AthleteDashScreen() {
     return (
         <SafeAreaView style={globalStyles.container} edges={["top"]}>
             {loading ? (
-                <ActivityIndicator size="large" color="#001a79" />
+                <ActivityIndicator size="large" color="#ffffff" />
             ) : (
                 <>
                     <View style={globalStyles.header}>
                         <Text style={globalStyles.headerText}>Hello {userData?.name}</Text>
                     </View>
                     <View style={globalStyles.contentContainer}>
+                        
+                        {/* Traffic light status indicators */}
                         <Card containerStyle={styles.lightsCard}>
-
                             <View style={styles.lightsContainer}>
                                 <Image
                                     style={styles.light}
@@ -94,29 +95,30 @@ export default function AthleteDashScreen() {
                             </View>
                         </Card>
 
+                        {/* Notice card */}
                         <View style={[
                             styles.noticeCard,
-                            healthStatus === "Healthy" 
-                                ? styles.noticeCardGreen 
-                                : healthStatus === "No competing" 
-                                    ? styles.noticeCardAmber 
+                            healthStatus === "Healthy"
+                                ? styles.noticeCardGreen
+                                : healthStatus === "No competing"
+                                    ? styles.noticeCardAmber
                                     : styles.noticeCardRed
                         ]}>
                             <View style={styles.noticeIconContainer}>
-                                <MaterialCommunityIcons 
+                                <MaterialCommunityIcons
                                     name={
-                                        healthStatus === "Healthy" 
-                                            ? "check-circle" 
-                                            : healthStatus === "No competing" 
-                                                ? "alert-circle" 
+                                        healthStatus === "Healthy"
+                                            ? "check-circle"
+                                            : healthStatus === "No competing"
+                                                ? "alert-circle"
                                                 : "close-circle"
                                     }
                                     size={40}
                                     color={
-                                        healthStatus === "Healthy" 
-                                            ? "#10b981" 
-                                            : healthStatus === "No competing" 
-                                                ? "#f59e0b" 
+                                        healthStatus === "Healthy"
+                                            ? "#10b981"
+                                            : healthStatus === "No competing"
+                                                ? "#f59e0b"
                                                 : "#ef4444"
                                     }
                                 />
@@ -138,12 +140,13 @@ export default function AthleteDashScreen() {
                             </View>
                         </View>
 
+                        {/* Information/Status cards */}
                         <View style={styles.infoCardsContainer}>
                             <View style={styles.infoCard}>
-                                <MaterialCommunityIcons 
-                                    name="file-document-multiple" 
-                                    size={32} 
-                                    color="#6366f1" 
+                                <MaterialCommunityIcons
+                                    name="file-document-multiple"
+                                    size={32}
+                                    color="#6366f1"
                                     style={styles.cardIcon}
                                 />
                                 <Text style={styles.cardValue}>{numReports}</Text>
@@ -151,10 +154,10 @@ export default function AthleteDashScreen() {
                             </View>
 
                             <View style={styles.infoCard}>
-                                <MaterialCommunityIcons 
-                                    name="calendar-check" 
-                                    size={32} 
-                                    color="#10b981" 
+                                <MaterialCommunityIcons
+                                    name="calendar-check"
+                                    size={32}
+                                    color="#10b981"
                                     style={styles.cardIcon}
                                 />
                                 <Text style={styles.cardValue}>{daysSinceInjury}</Text>
@@ -162,16 +165,31 @@ export default function AthleteDashScreen() {
                             </View>
 
                             <View style={styles.infoCard}>
-                                <MaterialCommunityIcons 
-                                    name="fire" 
-                                    size={32} 
-                                    color="#f59e0b" 
+                                <MaterialCommunityIcons
+                                    name="fire"
+                                    size={32}
+                                    color="#f59e0b"
                                     style={styles.cardIcon}
                                 />
                                 <Text style={styles.cardValue}>15</Text>
                                 <Text style={styles.cardLabel}>Consecutive Submissions</Text>
                             </View>
                         </View>
+
+                        {/* Next Event Card */}
+                        <TouchableOpacity style={styles.eventCard} onPress={() => {navigation.navigate("Schedule")}}>
+                            <View style={styles.noticeIconContainer}>
+                                <MaterialIcons name="sports-soccer" size={40} color="#1963ca"/>
+                            </View>
+                            <View style={styles.noticeTextContainer}>
+                                <Text style={styles.noticeLabel}>Next Event</Text>
+                                <Text style={styles.noticeTitle}>Training Session</Text>
+                                <Text style={styles.noticeSubtext}>24th February - 18:00</Text>
+                            </View>
+                            <Ionicons name="chevron-forward" size={24} color="#0000006c" />
+                        </TouchableOpacity>
+
+                        {/* Report Submission button */}
                         {hasRecentEvent && (
                             <View style={styles.reportButtonContainer}>
                                 <Button
@@ -181,10 +199,10 @@ export default function AthleteDashScreen() {
                                     titleStyle={styles.reportButtonText}
                                     onPress={() => navigation.navigate("Report")}
                                     icon={
-                                        <MaterialCommunityIcons 
-                                            name="clipboard-text" 
-                                            size={20} 
-                                            color="#ffffff" 
+                                        <MaterialCommunityIcons
+                                            name="clipboard-text"
+                                            size={20}
+                                            color="#ffffff"
                                             style={{ marginRight: 8 }}
                                         />
                                     }
@@ -230,6 +248,8 @@ const styles = StyleSheet.create({
     },
     noticeIconContainer: {
         marginRight: 15,
+        alignItems: "center",
+        justifyContent: "center",
     },
     noticeTextContainer: {
         flex: 1,
@@ -254,6 +274,22 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: "#6b7280",
         fontFamily: "Rubik",
+    },
+    eventCard: {
+        padding: 20,
+        backgroundColor: "#d8e5ff",
+        borderRadius: 15,
+        marginTop: 20,
+        flexDirection: "row",
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 3
     },
     lightsCard: {
         padding: 5,
