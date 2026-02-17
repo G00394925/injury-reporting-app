@@ -21,7 +21,7 @@ export default function AthleteDashScreen() {
                 // Fetch health status on page render.
                 setLoading(true);
                 if (!uuid) return;
-    
+
                 try {
                     const response = await axios.get(`${API_BASE_URL}/api/health/status/${uuid}`);
                     setHealthStatus(response.data.health_status);
@@ -31,7 +31,7 @@ export default function AthleteDashScreen() {
                     setLoading(false);
                 }
             };
-    
+
             fetchHealthStatus();
         }, [uuid])
     );
@@ -47,20 +47,7 @@ export default function AthleteDashScreen() {
                     </View>
                     <View style={globalStyles.contentContainer}>
                         <Card containerStyle={styles.lightsCard}>
-                            <CardTitle
-                                style={{
-                                    fontSize: 18,
-                                    textAlign: "left",
-                                    color: "#d5d5d5ff",
-                                    marginBottom: 5,
-                                }}
-                            >
-                                {healthStatus === "No training or competing"
-                                    ? "No training or competing"
-                                    : healthStatus === "No competing"
-                                        ? "Cleared to train - No competing"
-                                        : "Ready to play"}
-                            </CardTitle>
+
                             <View style={styles.lightsContainer}>
                                 <Image
                                     style={styles.light}
@@ -76,6 +63,17 @@ export default function AthleteDashScreen() {
                                 />
                             </View>
                         </Card>
+
+                        <View style={styles.noticeCard}>
+                            <Text style={styles.noticeTitle}>{
+                                healthStatus === "No training or competing" ? "You are not training or competing"
+                                    : healthStatus === "No competing"
+                                        ? "You are cleared to train but not competing"
+                                        : "You are ready to play"}
+                            </Text>
+                            <View style={[styles.line, { backgroundColor: healthStatus === "Healthy" ? "#00ff00" : healthStatus === "No competing" ? "#ffff00" : "#ff0000" }]} />
+                        </View>
+
                         <View style={styles.infoCardsContainer}>
                             <Card
                                 containerStyle={[
@@ -108,22 +106,11 @@ export default function AthleteDashScreen() {
                                 </CardTitle>
                                 <Text>Consecutive Daily Reports</Text>
                             </Card>
-                            <Card
-                                containerStyle={[
-                                    styles.infoCard,
-                                    { backgroundColor: "#6684fd" },
-                                ]}
-                            >
-                                <CardTitle style={{ fontSize: 24, textAlign: "left" }}>
-                                    95%
-                                </CardTitle>
-                                <Text>Availability %</Text>
-                            </Card>
                         </View>
                         <Button
                             title="Submit Daily Report"
                             buttonStyle={styles.reportButton}
-                            containerStyle={{ marginTop: 20}}
+                            containerStyle={{ marginTop: 20 }}
                             titleStyle={{ color: "#575757ff", fontWeight: "bold" }}
                             onPress={() => navigation.navigate("Report")}
                         />
@@ -135,9 +122,28 @@ export default function AthleteDashScreen() {
 }
 
 const styles = StyleSheet.create({
+    noticeCard: {
+        padding: 15,
+        backgroundColor: "#ffffff",
+        borderRadius: 10,
+        borderColor: "#e7e7e7",
+        borderWidth: 1,
+        marginTop: 20
+    },
+    noticeTitle: {
+        fontSize: 24,
+        fontWeight: "bold",
+        color: "#333333ff",
+        textAlign: "left"
+    },
+    line: {
+        height: 5,
+        backgroundColor: "#1dd545",
+        marginVertical: 10,
+        borderRadius: 25
+    },
     lightsCard: {
         padding: 15,
-        paddingTop: 5,
         backgroundColor: "#424242ff",
         borderRadius: 10,
         margin: 0

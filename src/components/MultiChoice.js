@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   optionActive: {
     borderColor: "#ffffffff",
     borderWidth: 2,
-    backgroundColor: "#1d65ecff"
+    backgroundColor: "#001a79"
   },
   optionText: {
     fontSize: 18,

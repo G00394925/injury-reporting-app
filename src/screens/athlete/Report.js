@@ -412,11 +412,9 @@ export default function ReportScreen() {
                                     An injury that develops over time with no identifiable singular cause
                                     or event. Example: a gradual increase in knee pain over weeks or months.
                             </Text>
-
                         </ScrollView>
                     </View>
                 </View>
-
             </Modal>
 
             <View style={styles.navigationButtons}>
