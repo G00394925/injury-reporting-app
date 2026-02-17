@@ -56,13 +56,6 @@ function AthleteTabNavigator() {
         >
 
             <Tab.Screen name="Dashboard" component={AthleteDashScreen} />
-            <Tab.Screen
-                name="Report"
-                component={ReportScreen}
-                options={{
-                    tabBarStyle: { display: "none" },
-                }}
-            />
             <Tab.Screen name="Schedule" component={ManageScheduleScreen} />
             <Tab.Screen name="Team" component={AthleteTeamScreen} />
             <Tab.Screen name="Account" component={AthleteAccountScreen} />

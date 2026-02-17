@@ -419,10 +419,10 @@ export default function ReportScreen() {
 
             <View style={styles.navigationButtons}>
                 <TouchableOpacity
-                    onPress={() => currentQuestionIndex === 0 ? navigation.navigate("Dashboard") 
+                    onPress={() => currentQuestionIndex === 0 ? navigation.navigate("AthleteMain") 
                         : setCurrentQuestionIndex(currentQuestionIndex - 1)}
                 >
-                    <Text style={styles.navButtonText}>Previous</Text>
+                    <Text style={styles.navButtonText}> {currentQuestionIndex === 0 ? "Cancel" : "Previous"}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     disabled={!isQuestionAnswered(currentQuestion)}
