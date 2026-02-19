@@ -288,6 +288,7 @@ export default function ManageScheduleScreen() {
                                 onConfirm={handleStartTimeConfirm}
                                 onCancel={hideStartTimePicker}
                                 date={eventStartTime}
+                                pickerComponentStyleIOS={{height: 300}}
                             />
                             
                             <DateTimePickerModal
@@ -296,6 +297,7 @@ export default function ManageScheduleScreen() {
                                 onConfirm={handleEndTimeConfirm}
                                 onCancel={hideEndTimePicker}
                                 date={eventEndTime}
+                                pickerComponentStyleIOS={{height: 300}}
                             />
                         </ScrollView>
                         

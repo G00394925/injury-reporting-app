@@ -25,7 +25,7 @@ export default function ReportFinish({ route }) {
                             <>
                                 <Text style={styles.advisoryText}>Based on your responses, it is recommended you refrain from any physical activity for the next </Text>
                                 <Text style={[styles.advisoryText, {color: "red", fontWeight: "bold", fontSize: 22}]}>{expected_outage}.</Text>
-                                <Text style={styles.advisoryText}>Please take care to rest as much as possible.
+                                <Text style={styles.advisoryText}>Please take as much rest as possible.
                                     {consulted === "No" && 
                                         <Text style={styles.advisoryText}> You should visit a healthcare professional to acquire a proper estimation of recovery time.</Text>
                                     } You will be asked to check-in your health status on the expected recovery date.</Text>
