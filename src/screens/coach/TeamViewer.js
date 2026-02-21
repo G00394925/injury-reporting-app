@@ -30,20 +30,20 @@ export default function TeamViewerScreen({ route }) {
                             style={[
                                 styles.athleteSlot, 
                                 {borderColor: 
-                                    athlete.health_status === "Injured" ? "#ff4d4d" : 
-                                    athlete.health_status === "Recovering" ? "#ffb84d" : 
+                                    athlete.health_status === "No training or competing" ? "#ff4d4d" : 
+                                    athlete.health_status === "No competing" ? "#ffb84d" : 
                                     "#66cc66"
                                 }
                             ]} 
                         >
                             <Text style={styles.athleteNameText}>{athlete.name}</Text>
-                            {athlete.health_status === "Injured" && (
+                            {athlete.health_status === "No training or competing" && (
                                 <Image
                                     style={styles.light}
                                     source={require("../../../assets/RedLightOn.png")}
                                 />
                             )}
-                            {athlete.health_status === "Recovering" && (
+                            {athlete.health_status === "No competing" && (
                                 <Image
                                     style={styles.light}
                                     source={require("../../../assets/AmberLightOn.png")}

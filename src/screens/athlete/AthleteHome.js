@@ -17,6 +17,7 @@ export default function AthleteDashScreen() {
     const navigation = useNavigation();
     const [loading, setLoading] = useState(false);
     const [numReports, setNumReports] = useState(0);
+    const [consecutiveReports, setConsecutiveReports] = useState(0);
     const [injuryDate, setInjuryDate] = useState(null);
     const [estimatedRecoveryDate, setEstimatedRecoveryDate] = useState(null);
     const [hasRecentEvent, setHasRecentEvent] = useState(false);
@@ -30,11 +31,17 @@ export default function AthleteDashScreen() {
 
                 try {
                     // Fetch health status
-                    const dataResponse = await axios.get(`${API_BASE_URL}/api/health/status/${uuid}`);
-                    setHealthStatus(dataResponse.data.health_status);
-                    setNumReports(dataResponse.data.num_reports);
-                    setInjuryDate(dataResponse.data.injury_date);
-                    setEstimatedRecoveryDate(dataResponse.data.estimated_recovery_date);
+                    const statusResponse = await axios.get(`${API_BASE_URL}/api/health/status/${uuid}`);
+                    
+                    if (statusResponse) {
+                        setHealthStatus(statusResponse.data.health_status);
+                        setInjuryDate(statusResponse.data.injury_date);
+                        setEstimatedRecoveryDate(statusResponse.data.estimated_recovery_date);
+                        setConsecutiveReports(statusResponse.data.report_streak);
+                        setNumReports(statusResponse.data.reports_count);
+                        setDaysSinceInjury(statusResponse.data.days_last_injury);
+                        console.log("Fetched injury data successfully.")
+                    }
 
                     // Fetch events and check if any have passed
                     const eventsResponse = await axios.get(`${API_BASE_URL}/api/events/get/${uuid}`);
@@ -46,16 +53,6 @@ export default function AthleteDashScreen() {
                         });
                         setHasRecentEvent(hasPastEvent);
                     }
-
-                    // Calculate days since injury
-                    if (injuryDate) {
-                        const injuryDateObj = new Date(injuryDate);
-                        const today = new Date();
-                        const diffTime = Math.abs(today - injuryDateObj);
-                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                        setDaysSinceInjury(diffDays);
-                    }
-
                 } catch (error) {
                     console.error("Error fetching data:", error);
                 } finally {
@@ -175,7 +172,7 @@ export default function AthleteDashScreen() {
                                     color="#f59e0b"
                                     style={styles.cardIcon}
                                 />
-                                <Text style={styles.cardValue}>15</Text>
+                                <Text style={styles.cardValue}>{consecutiveReports}</Text>
                                 <Text style={styles.cardLabel}>Consecutive Submitted Reports</Text>
                             </View>
                         </View>

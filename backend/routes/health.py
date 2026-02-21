@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from services.database_service import DatabaseService
 import logging
 from health_status import HealthStatus
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import re
 
 db_service = DatabaseService()
@@ -108,17 +108,26 @@ def get_status(user_id):
     """
     try:
         user = db_service.fetch("athletes", filters={"id": user_id})
+        days_last_injury = None
 
         if user.data:
+            reports = db_service.fetch("reports", filters={"athlete_id": user_id})
             health_status_value = user.data[0].get('status')
             injury_date = user.data[0].get('injury_date')
             estimated_recovery_date = user.data[0].get('estimated_recovery_date')
+            report_streak = user.data[0].get('report_streak')
+            if injury_date:
+                injury_datetime = datetime.fromisoformat(injury_date)
+                days_last_injury = (datetime.now(timezone.utc) - injury_datetime).days
 
             return jsonify(
                 user_id=user_id,
+                reports_count=len(reports.data) if reports.data else 0,
                 health_status=health_status_value,
                 injury_date=injury_date,
-                estimated_recovery_date=estimated_recovery_date
+                estimated_recovery_date=estimated_recovery_date,
+                report_streak=report_streak,
+                days_last_injury=days_last_injury
             ), 200
         
         else:
@@ -127,42 +136,4 @@ def get_status(user_id):
 
     except Exception as e:
         logger.error(f"Error retrieving health status for user {user_id}: {e}")
-        return jsonify(error=str(e)), 500
-    
-
-@health_bp.route('/stats/<athlete_id>', methods=['GET'])
-def get_athlete_stats(athlete_id):
-    """
-    Retreives health statistics for an athlete, providing insights on 
-    reported injuries, streaks, recovery dates, etc.
-    """
-
-    try:
-        # Fetch reports for the given athlete.
-        reports = db_service.fetch("reports", filters={"athlete_id": athlete_id})
-
-        # Calculate consecutive submitted reports
-        consecutive_days = 0
-        if reports.data:
-            report_dates = sorted([r.get("created_at") for r in reports.data])
-
-            for i, date_str in enumerate(report_dates):
-                # Compare current report's creation date with expected date, being i days 
-                # prior to today. Break if there's any mismatch
-                report_date = datetime.fromisoformat(date_str)
-                expected_date = datetime.now().date() - timedelta(days=i)
-
-                if report_date == expected_date:
-                    consecutive_days += 1
-                else:
-                    consecutive_days = 0
-                    break
-
-        return jsonify(
-            report_count=len(reports.data) if reports.data else 0,
-            consecutive_reports=consecutive_days
-        ), 200
-    
-    except Exception as e:
-        logger.error(f"Error when fetching athlete stats: {e}")
         return jsonify(error=str(e)), 500

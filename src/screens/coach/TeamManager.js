@@ -12,8 +12,6 @@ export default function TeamManagerScreen() {
     const navigation = useNavigation();
     const {uuid, userData} = useAuth();
     const [teamItems, setTeamItems] = useState([]);
-    const [numInjured, setNumInjured] = useState(0);
-    const [numHealthy, setNumHealthy] = useState(0);
 
     useEffect(() => {
         const fetchTeams = async () => {
@@ -21,11 +19,30 @@ export default function TeamManagerScreen() {
                 const response = await axios.get(`${API_BASE_URL}/api/teams/coach_teams/${uuid}`);
                 const teamsData = response.data.teams;
                 
-                if (teamsData.length > 0) {
-                    getAthleteCount(teamsData[0].team_id);
-                }
+                // Fetch athlete counts for each team
+                const teamsWithCounts = await Promise.all(
+                    teamsData.map(async (team) => {
+                        try {
+                            const athleteResponse = await axios.get(
+                                `${API_BASE_URL}/api/teams/get_athletes/${team.team_id}`
+                            );
+                            return {
+                                ...team,
+                                injured: athleteResponse.data.injured_athletes,
+                                healthy: athleteResponse.data.healthy_athletes
+                            };
+                        } catch (error) {
+                            console.error(`Error fetching athletes for team ${team.team_id}:`, error);
+                            return {
+                                ...team,
+                                injured: 0,
+                                healthy: 0
+                            };
+                        }
+                    })
+                );
                 
-                const teams = teamsData.map((team) => {
+                const teams = teamsWithCounts.map((team) => {
                     return (
                         <TouchableOpacity 
                             key={team.team_id}
@@ -37,7 +54,7 @@ export default function TeamManagerScreen() {
                                 <Text style={styles.sportText}>{team.sport}</Text>
                             </View>
                             <Text style={styles.playerCountText}>{team.players} Players</Text>
-                            <Text style={styles.injuryStatusText}>{numInjured} Injured</Text>
+                            <Text style={styles.injuryStatusText}>{team.injured} Injured</Text>
                         </TouchableOpacity>
                     )
                 });
@@ -51,17 +68,6 @@ export default function TeamManagerScreen() {
         
         fetchTeams();
     }, []);
-
-    const getAthleteCount = async (team_id) => {
-        try {
-            const response = await axios.get(`${API_BASE_URL}/api/teams/get_athletes/${team_id}`);
-            setNumHealthy(response.data.healthy_athletes);
-            setNumInjured(response.data.injured_athletes);
-        
-        } catch (error) {
-            console.error("Error fetching athlete count:", error);
-        }
-    }
 
     return (
         <SafeAreaView style={globalStyles.container} edges={["top"]}>

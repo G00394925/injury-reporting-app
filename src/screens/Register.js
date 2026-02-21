@@ -177,6 +177,7 @@ export default function RegisterScreen() {
                         <TextInput
                             style={[styles.textBox, errors.name && styles.textBoxError]}
                             placeholder="Full Name"
+                            placeholderTextColor="#999"
                             value={name}
                             onChangeText={(text) => {
                                 setName(text);
@@ -190,6 +191,7 @@ export default function RegisterScreen() {
                         <TextInput
                             style={[styles.textBox, errors.email && styles.textBoxError]}
                             placeholder="Email"
+                            placeholderTextColor="#999"
                             value={email}
                             onChangeText={(text) => {
                                 setEmail(text);
@@ -209,6 +211,7 @@ export default function RegisterScreen() {
                                 errors.password && styles.textBoxError,
                             ]}
                             placeholder="Password"
+                            placeholderTextColor="#999"
                             value={password}
                             onChangeText={(text) => {
                                 setPassword(text);
@@ -226,6 +229,7 @@ export default function RegisterScreen() {
                                 errors.confirmPassword && styles.textBoxError,
                             ]}
                             placeholder="Confirm Password"
+                            placeholderTextColor="#999"
                             value={confirmPassword}
                             onChangeText={(text) => {
                                 setConfirmPassword(text);
@@ -253,6 +257,7 @@ export default function RegisterScreen() {
                                     errors.dob && styles.textBoxError,
                                 ]}
                                 placeholder="DD"
+                                placeholderTextColor="#999"
                                 value={dobDay}
                                 keyboardType="numeric"
                                 maxLength={2}
@@ -268,6 +273,7 @@ export default function RegisterScreen() {
                                     errors.dob && styles.textBoxError,
                                 ]}
                                 placeholder="MM"
+                                placeholderTextColor="#999"
                                 value={dobMonth}
                                 keyboardType="numeric"
                                 maxLength={2}
@@ -283,6 +289,7 @@ export default function RegisterScreen() {
                                     errors.dob && styles.textBoxError,
                                 ]}
                                 placeholder="YYYY"
+                                placeholderTextColor="#999"
                                 value={dobYear}
                                 keyboardType="numeric"
                                 maxLength={4}
@@ -348,6 +355,7 @@ const styles = StyleSheet.create({
         shadowRadius: 3.25,
         elevation: 5,
         fontSize: 16,
+        color: "#000000",
     },
     textBoxError: {
         borderColor: "#ff0000",
@@ -376,6 +384,7 @@ const styles = StyleSheet.create({
         elevation: 5,
         fontSize: 16,
         textAlign: "center",
+        color: "#000000",
     },
     dobText: {
         width: "90%",

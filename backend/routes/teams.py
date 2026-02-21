@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-import health_status
+from health_status import HealthStatus
 from services.database_service import DatabaseService
 import logging
 
@@ -62,11 +62,12 @@ def fetch_coach_teams(coach_id):
         if response:
             teams = []
             for team in response.data:
+                players = db_service.fetch("athletes", filters={"team_id": team.get("team_id")})
                 teams.append({
                     "team_id": team.get("team_id"),
                     "team_name": team.get("team_name"),
                     "sport": team.get("sport"),
-                    "players": db_service.fetch("athletes", filters={"team_id": team.get("team_id")}).count
+                    "players": len(players.data)
                 })
             logger.info(f"Fetched teams for coach {coach_id} successfully.")    
             return jsonify(teams=teams), 200
@@ -125,10 +126,11 @@ def fetch_athletes(team_id):
             injured_athletes = 0
 
             for athlete in response.data:
-                if athlete.get("status") == health_status.HealthStatus.HEALTHY.value:
+                if athlete.get("status") == HealthStatus.GREEN:
                     healthy_athletes += 1
-                elif athlete.get("status") == health_status.HealthStatus.INJURED.value:
+                elif athlete.get("status") == HealthStatus.RED:
                     injured_athletes += 1
+                    print("Injured boy")
 
                 athletes.append({
                     "athlete_id": athlete.get("id"),
