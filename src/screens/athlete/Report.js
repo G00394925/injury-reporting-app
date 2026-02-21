@@ -7,6 +7,7 @@ import { API_BASE_URL } from "../../config/api_config";
 import { useAuth } from "../../context/AuthContext";
 import RpeSlider from "../../components/RPESlider";
 import MultiChoice from "../../components/MultiChoice";
+import BodyMap from "../../components/BodyMap";
 import { ScrollView, TextInput } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -158,21 +159,9 @@ export default function ReportScreen() {
         {
             index: 2,
             text: "Where did you get injured?",
-            subtext: "Select the approximate location of your injury.",
+            subtext: "Tap the area on the body map.",
             component: (
-                <MultiChoice
-                    options={[
-                        "Head",
-                        "Shoulder",
-                        "Chest",
-                        "Arm",
-                        "Hand",
-                        "Foot",
-                        "Leg",
-                        "Back",
-                        "Groin",
-                        "Other"
-                    ]}
+                <BodyMap
                     value={answers.injury_location}
                     onValueChange={(value) => updateAnswer("injury_location", value)}
                 />
