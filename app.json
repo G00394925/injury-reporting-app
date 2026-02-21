@@ -20,7 +20,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.anonymous.injuryreportingapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -30,7 +31,7 @@
         "expo-font",
         {
           "fonts": [
-            "./fonts/Rubik-VariableFont_wght.ttf"
+            "./assets/fonts/Rubik-VariableFont_wght.ttf"
           ]
         }
       ],
