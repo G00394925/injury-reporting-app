@@ -108,18 +108,15 @@ def get_status(user_id):
     """
     try:
         user = db_service.fetch("athletes", filters={"id": user_id})
-        num_reports = db_service.fetch("reports", filters={"athlete_id": user_id})
 
         if user.data:
             health_status_value = user.data[0].get('status')
-            num_reports = len(num_reports.data) if num_reports.data else 0
             injury_date = user.data[0].get('injury_date')
             estimated_recovery_date = user.data[0].get('estimated_recovery_date')
 
             return jsonify(
                 user_id=user_id,
                 health_status=health_status_value,
-                num_reports=num_reports,
                 injury_date=injury_date,
                 estimated_recovery_date=estimated_recovery_date
             ), 200
@@ -130,4 +127,42 @@ def get_status(user_id):
 
     except Exception as e:
         logger.error(f"Error retrieving health status for user {user_id}: {e}")
+        return jsonify(error=str(e)), 500
+    
+
+@health_bp.route('/stats/<athlete_id>', methods=['GET'])
+def get_athlete_stats(athlete_id):
+    """
+    Retreives health statistics for an athlete, providing insights on 
+    reported injuries, streaks, recovery dates, etc.
+    """
+
+    try:
+        # Fetch reports for the given athlete.
+        reports = db_service.fetch("reports", filters={"athlete_id": athlete_id})
+
+        # Calculate consecutive submitted reports
+        consecutive_days = 0
+        if reports.data:
+            report_dates = sorted([r.get("created_at") for r in reports.data])
+
+            for i, date_str in enumerate(report_dates):
+                # Compare current report's creation date with expected date, being i days 
+                # prior to today. Break if there's any mismatch
+                report_date = datetime.fromisoformat(date_str)
+                expected_date = datetime.now().date() - timedelta(days=i)
+
+                if report_date == expected_date:
+                    consecutive_days += 1
+                else:
+                    consecutive_days = 0
+                    break
+
+        return jsonify(
+            report_count=len(reports.data) if reports.data else 0,
+            consecutive_reports=consecutive_days
+        ), 200
+    
+    except Exception as e:
+        logger.error(f"Error when fetching athlete stats: {e}")
         return jsonify(error=str(e)), 500

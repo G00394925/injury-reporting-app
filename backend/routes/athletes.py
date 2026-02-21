@@ -12,6 +12,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 @athletes_bp.route('/team/<athlete_id>', methods=['GET'])
 def get_team_details(athlete_id):
     """
@@ -81,8 +82,3 @@ def join_team():
     except Exception as e:
         logger.error(f"Error athlete joining team: {e}")
         return jsonify(message="Error joining team"), 500
-    
-
-@athletes_bp.route('/dashboard/get_stats/<athlete_id>', methods=['GET'])
-def get_stats(athlete_id):
-    pass
