@@ -153,7 +153,7 @@ export default function ManageScheduleScreen() {
                         title: event.title,
                         start: { dateTime: startDate.toISOString() },
                         end: { dateTime: endDate.toISOString() },
-                        color: event.type === 'training' ? '#1d3adfff' : '#28a745',
+                        color: event.type === 'Training' ? '#2038be' : '#28a745',
                     };
                 });
                 
@@ -191,23 +191,21 @@ export default function ManageScheduleScreen() {
     return (
         <SafeAreaView style={globalStyles.container} edges={["top"]}>
             <View style={globalStyles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={28} color="white" />
-                </TouchableOpacity>
-                <Text style={globalStyles.headerText}>Manage Schedule</Text>
+                <Text style={globalStyles.headerText}>Schedule</Text>
             </View>
             <ScrollView style={globalStyles.contentContainer}>
                 <View style={styles.calendarView}>
                     <CalendarContainer 
                         theme={calendarTheme}
-                        numberOfDays={3} 
+                        numberOfDays={4} 
                         hourWidth={50} 
-                        timeInterval={30} 
-                        start={540} 
-                        end={1320}
+                        timeInterval={60} 
+                        start={480} 
+                        end={1380}
                         initialTimeIntervalHeight={60}
                         allowPinchToZoom={true}
                         scrollByDay
+                        scrollToNow={false}
                         events={events}>
                         <CalendarHeader />
                         <CalendarBody 
@@ -344,7 +342,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     actionButton: {
-        backgroundColor: "#1d3adfff",
+        backgroundColor: "#2038be",
         padding: 18,
         borderRadius: 12,
         marginBottom: 15,
