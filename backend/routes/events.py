@@ -80,9 +80,10 @@ def get_next_event(athlete_id):
         today = datetime.now().strftime('%Y-%m-%d')
         response = db_service.fetch("events", 
                                     filters={"athlete_id": athlete_id, "event_date": f"gte.{today}"}, 
-                                    modifiers={"order": "event_date", "limit": 1})
+                                    modifiers={"order": "event_date"})
 
         if response and response.data:
+            total_count = len(response.data)
             event = response.data[0]
             logger.info(f"Fetching most recent event")
 
@@ -101,7 +102,8 @@ def get_next_event(athlete_id):
                 next_event = {
                     "title": event.get("title"),
                     "date": date_obj.strftime("%d %B"),
-                    "time": time_obj.strftime("%H:%M")
+                    "time": time_obj.strftime("%H:%M"),
+                    "total_future_events": total_count
                 }
 
                 logger.info(f"Next event for user {athlete_id}: {next_event}")

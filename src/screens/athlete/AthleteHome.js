@@ -21,6 +21,7 @@ export default function AthleteDashScreen() {
     const [estimatedRecoveryDate, setEstimatedRecoveryDate] = useState(null);
     const [hasRecentEvent, setHasRecentEvent] = useState(false);
     const [daysSinceInjury, setDaysSinceInjury] = useState(0);
+    const [futureEvents, setFutureEvents] = useState(0);
     const [nextEventTitle, setNextEventTitle] = useState("No Upcoming Events")
     const [nextEventDate, setNextEventDate] = useState(null)
     const [nextEventTime, setNextEventTime] = useState(null)
@@ -59,6 +60,7 @@ export default function AthleteDashScreen() {
 
                     const nextEventResponse = await axios.get(`${API_BASE_URL}/api/events/get_next/${uuid}`)
                     if (nextEventResponse.data) {
+                        setFutureEvents(nextEventResponse.data["total_future_events"])
                         setNextEventTitle(nextEventResponse.data["title"])
                         setNextEventDate(nextEventResponse.data["date"])
                         setNextEventTime(nextEventResponse.data["time"])
@@ -199,8 +201,8 @@ export default function AthleteDashScreen() {
                                     color="#10b981"
                                     style={styles.cardIcon}
                                 />
-                                <Text style={styles.cardValue}>{daysSinceInjury}</Text>
-                                <Text style={styles.cardLabel}>Days Since Last Injury</Text>
+                                <Text style={styles.cardValue}>{futureEvents}</Text>
+                                <Text style={styles.cardLabel}>Planned Events</Text>
                             </View>
 
                             <View style={styles.infoCard}>

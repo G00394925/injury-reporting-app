@@ -62,7 +62,6 @@ def health_report():
         
         else:
             # Clear injury data if status is green
-            update_data["injury_date"] = None
             update_data["estimated_recovery_date"] = None
 
         try:
@@ -117,10 +116,11 @@ def get_status(user_id):
             injury_date = user.data[0].get('injury_date')
             estimated_recovery_date = user.data[0].get('estimated_recovery_date')
             report_streak = user.data[0].get('report_streak')
+
             if injury_date:
                 injury_datetime = datetime.fromisoformat(injury_date)
                 days_last_injury = (datetime.now(timezone.utc) - injury_datetime).days
-
+    
             return jsonify(
                 user_id=user_id,
                 reports_count=len(reports.data) if reports.data else 0,
