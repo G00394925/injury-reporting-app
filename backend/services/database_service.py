@@ -47,7 +47,8 @@ class DatabaseService:
 
         Args:
             table: Name of the table to fetch from
-            filters: Dictionary of filters to apply (e.g., {"id": "123"})
+            filters: Dictionary of filters to apply (e.g., {"id": "123"} or {"date": "gte.2026-01-01"})
+                    Supports operators: gte, lte, gt, lt, neq (e.g., "gte.value")
 
         Returns:
             Response containing the fetched data
@@ -60,7 +61,29 @@ class DatabaseService:
             
             if filters:
                 for key, value in filters.items():
-                    query = query.eq(key, value)
+                    # Check if value contains an operator prefix
+                    if isinstance(value, str) and '.' in value:
+                        operator_map = {
+                            'gte': 'gte',  # greater than or equal
+                            'lte': 'lte',  # less than or equal
+                            'gt': 'gt',    # greater than
+                            'lt': 'lt',    # less than
+                            'neq': 'neq'   # not equal
+                        }
+                        
+                        parts = value.split('.', 1)
+                        if len(parts) == 2 and parts[0] in operator_map:
+                            operator = parts[0]
+                            actual_value = parts[1]
+                            method = getattr(query, operator, None)
+                            if method and callable(method):
+                                query = method(key, actual_value)
+                            else:
+                                query = query.eq(key, value)
+                        else:
+                            query = query.eq(key, value)
+                    else:
+                        query = query.eq(key, value)
             
             if modifiers:
                 for method_name, value in modifiers.items():

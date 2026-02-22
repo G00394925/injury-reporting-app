@@ -22,6 +22,9 @@ export default function AthleteDashScreen() {
     const [estimatedRecoveryDate, setEstimatedRecoveryDate] = useState(null);
     const [hasRecentEvent, setHasRecentEvent] = useState(false);
     const [daysSinceInjury, setDaysSinceInjury] = useState(0);
+    const [nextEventTitle, setNextEventTitle] = useState("No Upcoming Events")
+    const [nextEventDate, setNextEventDate] = useState(null)
+    const [nextEventTime, setNextEventTime] = useState(null)
 
     useFocusEffect(
         useCallback(() => {
@@ -53,6 +56,16 @@ export default function AthleteDashScreen() {
                         });
                         setHasRecentEvent(hasPastEvent);
                     }
+
+                    const nextEventResponse = await axios.get(`${API_BASE_URL}/api/events/get_next/${uuid}`)
+                    if (nextEventResponse.data) {
+                        setNextEventTitle(nextEventResponse.data["title"])
+                        setNextEventDate(nextEventResponse.data["date"])
+                        setNextEventTime(nextEventResponse.data["time"])
+                    } else {
+                        console.log(`No upcoming events for user ${uuid}`)
+                    }
+
                 } catch (error) {
                     console.error("Error fetching data:", error);
                 } finally {
@@ -184,8 +197,8 @@ export default function AthleteDashScreen() {
                             </View>
                             <View style={styles.noticeTextContainer}>
                                 <Text style={styles.noticeLabel}>Next Event</Text>
-                                <Text style={styles.noticeTitle}>Training Session</Text>
-                                <Text style={styles.noticeSubtext}>24th February - 18:00</Text>
+                                <Text style={styles.noticeTitle}>{nextEventTitle}</Text>
+                                <Text style={styles.noticeSubtext}>{nextEventDate} - {nextEventTime}</Text>
                             </View>
                             <Ionicons name="chevron-forward" size={24} color="#0000006c" />
                         </TouchableOpacity>
