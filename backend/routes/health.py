@@ -51,7 +51,8 @@ def health_report():
 
         # Update athlete's health status based on report data
         update_data = {
-            "status": proposed_status.value
+            "status": proposed_status.value,
+            "report_due": False
         }
 
         if proposed_status in [HealthStatus.AMBER, HealthStatus.RED]:
@@ -136,4 +137,27 @@ def get_status(user_id):
 
     except Exception as e:
         logger.error(f"Error retrieving health status for user {user_id}: {e}")
+        return jsonify(error=str(e)), 500
+
+
+@health_bp.route('/check_due/<user_id>', methods=['GET'])
+def check_report_due(user_id):
+    """
+    Checks database for a boolean value for whether a report by 
+    an athlete is due. Value is recurringly updated by a cron job.
+    
+    """
+    try:
+        response = db_service.fetch("athletes", filters={"id": user_id})
+        print(response)
+        if response and response.data:
+            due = response.data[0].get('report_due')
+            logger.info(f"Report due status for user {user_id}: {due}")
+            return jsonify(due), 200
+        else:
+            logger.warning(f"User of ID {user_id} not found.")
+            return jsonify(message="User not found"), 404
+        
+    except Exception as e:
+        logger.error(f"Error retrieving report_due value for user {user_id}: {e}")
         return jsonify(error=str(e)), 500

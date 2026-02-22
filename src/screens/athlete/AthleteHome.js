@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View, Image, ActivityIndicator, TouchableOpacity } from "react-native";
 import { Button, Card } from "@rneui/themed";
 import { useCallback, useState } from "react";
-import { CardTitle } from "@rneui/base/dist/Card/Card.Title";
 import { useAuth } from "../../context/AuthContext";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import axios from "axios";
@@ -25,6 +24,7 @@ export default function AthleteDashScreen() {
     const [nextEventTitle, setNextEventTitle] = useState("No Upcoming Events")
     const [nextEventDate, setNextEventDate] = useState(null)
     const [nextEventTime, setNextEventTime] = useState(null)
+    const [reportDue, setReportDue] = useState(false)
 
     useFocusEffect(
         useCallback(() => {
@@ -64,6 +64,17 @@ export default function AthleteDashScreen() {
                         setNextEventTime(nextEventResponse.data["time"])
                     } else {
                         console.log(`No upcoming events for user ${uuid}`)
+                    }
+
+                    // Check if a new report is due, thereby enabling the report button if true.
+                    try {
+                        console.log("Checking if report is due...");
+                        const reportDueResponse = await axios.get(`${API_BASE_URL}/api/health/check_due/${uuid}`);
+                        console.log("Report due response:", reportDueResponse.data);
+                        setReportDue(reportDueResponse.data);
+                    } catch (reportError) {
+                        console.error("Error fetching report due status:", reportError);
+                        setReportDue(false); // Default to false if request fails
                     }
 
                 } catch (error) {
@@ -109,6 +120,20 @@ export default function AthleteDashScreen() {
                             </View>
                         </Card>
 
+                        {/* Report Submission button */}
+                        {reportDue && (
+                            <TouchableOpacity style={styles.reportCard} onPress={() => {navigation.navigate("Report")}}>
+                                <View style={styles.noticeIconContainer}>
+                                    <MaterialIcons name="warning-amber" size={40} color="#000" />
+                                </View>
+                                <View style={styles.noticeTextContainer}>
+                                    <Text style={styles.noticeTitle}>Your daily report is due!</Text>
+                                    <Text style={styles.noticeSubtext}>Tap to submit your report</Text>
+                                </View>
+                                <Ionicons name="chevron-forward" size={24} color="#0000006c" />
+                            </TouchableOpacity>
+                        )}
+
                         {/* Notice card */}
                         <View style={[
                             styles.noticeCard,
@@ -140,7 +165,7 @@ export default function AthleteDashScreen() {
                             <View style={styles.noticeTextContainer}>
                                 <Text style={styles.noticeLabel}>Status</Text>
                                 <Text style={styles.noticeTitle}>{
-                                    healthStatus === "No training or competing" ? "Not training or competing"
+                                    healthStatus === "No training or competing" ? "No training or competing"
                                         : healthStatus === "No competing"
                                             ? "Training only"
                                             : "Ready to play"}
@@ -153,7 +178,7 @@ export default function AthleteDashScreen() {
                                 </Text>
                             </View>
                         </View>
-
+        
                         {/* Information/Status cards */}
                         <View style={styles.infoCardsContainer}>
                             <View style={styles.infoCard}>
@@ -203,26 +228,6 @@ export default function AthleteDashScreen() {
                             <Ionicons name="chevron-forward" size={24} color="#0000006c" />
                         </TouchableOpacity>
 
-                        {/* Report Submission button */}
-                        {hasRecentEvent && (
-                            <View style={styles.reportButtonContainer}>
-                                <Button
-                                    title="Submit Report"
-                                    buttonStyle={styles.reportButton}
-                                    containerStyle={{ width: "100%" }}
-                                    titleStyle={styles.reportButtonText}
-                                    onPress={() => navigation.navigate("Report")}
-                                    icon={
-                                        <MaterialCommunityIcons
-                                            name="clipboard-text"
-                                            size={20}
-                                            color="#ffffff"
-                                            style={{ marginRight: 8 }}
-                                        />
-                                    }
-                                />
-                            </View>
-                        )}
                     </ScrollView>
                 </>
             )}
@@ -293,6 +298,24 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: "#d8e5ff",
         borderRadius: 15,
+        marginTop: 20,
+        flexDirection: "row",
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 3
+    },
+    reportCard: {
+        padding: 20,
+        backgroundColor: "#ffffff",
+        borderRadius: 15,
+        borderWidth: 3,
+        borderColor: "#c5c5c5",
         marginTop: 20,
         flexDirection: "row",
         alignItems: "center",
