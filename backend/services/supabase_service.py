@@ -6,8 +6,8 @@ import logging
 
 class SupabaseService:
     """
-    Singleton service to create one and only one instance of a 
-    Supabase client. This client is used by AuthService and DatabaseService.
+    Singleton service to create a single instance of a Supabase client. 
+    This client is used by AuthService and DatabaseService.
     """ 
 
     _instance = None

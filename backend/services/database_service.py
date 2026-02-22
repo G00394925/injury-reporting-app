@@ -41,7 +41,7 @@ class DatabaseService:
             self.logger.error(f"Error inserting data into {table}: {e}")
             raise e
 
-    def fetch(self, table: str, filters: dict = None) -> dict:
+    def fetch(self, table: str, filters: dict = None, modifiers: dict = None) -> dict:
         """
         Fetch data from a specified table with optional filters.
 
@@ -62,6 +62,14 @@ class DatabaseService:
                 for key, value in filters.items():
                     query = query.eq(key, value)
             
+            if modifiers:
+                for method_name, value in modifiers.items():
+                    method = getattr(query, method_name, None)
+                    if method and callable(method):
+                        query = method(value)
+                    else:
+                        self.logger.warning(f"Method '{method_name}' not valid") 
+
             response = query.execute()
             self.logger.info(f"Data fetched from {table} with filters {filters}: {response}")
         
