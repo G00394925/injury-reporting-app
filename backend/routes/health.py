@@ -108,7 +108,6 @@ def get_status(user_id):
     """
     try:
         user = db_service.fetch("athletes", filters={"id": user_id})
-        days_last_injury = None
 
         if user.data:
             reports = db_service.fetch("reports", filters={"athlete_id": user_id})
@@ -116,10 +115,6 @@ def get_status(user_id):
             injury_date = user.data[0].get('injury_date')
             estimated_recovery_date = user.data[0].get('estimated_recovery_date')
             report_streak = user.data[0].get('report_streak')
-
-            if injury_date:
-                injury_datetime = datetime.fromisoformat(injury_date)
-                days_last_injury = (datetime.now(timezone.utc) - injury_datetime).days
     
             return jsonify(
                 user_id=user_id,
@@ -128,7 +123,6 @@ def get_status(user_id):
                 injury_date=injury_date,
                 estimated_recovery_date=estimated_recovery_date,
                 report_streak=report_streak,
-                days_last_injury=days_last_injury
             ), 200
         
         else:

@@ -20,7 +20,6 @@ export default function AthleteDashScreen() {
     const [injuryDate, setInjuryDate] = useState(null);
     const [estimatedRecoveryDate, setEstimatedRecoveryDate] = useState(null);
     const [hasRecentEvent, setHasRecentEvent] = useState(false);
-    const [daysSinceInjury, setDaysSinceInjury] = useState(0);
     const [futureEvents, setFutureEvents] = useState(0);
     const [nextEventTitle, setNextEventTitle] = useState("No Upcoming Events")
     const [nextEventDate, setNextEventDate] = useState(null)

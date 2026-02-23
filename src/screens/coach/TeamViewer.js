@@ -27,14 +27,7 @@ export default function TeamViewerScreen({ route }) {
                     return (
                         <View
                             key={athlete.athlete_id}
-                            style={[
-                                styles.athleteSlot, 
-                                {borderColor: 
-                                    athlete.health_status === "No training or competing" ? "#ff4d4d" : 
-                                    athlete.health_status === "No competing" ? "#ffb84d" : 
-                                    "#66cc66"
-                                }
-                            ]} 
+                            style={styles.athleteSlot} 
                         >
                             <Text style={styles.athleteNameText}>{athlete.name}</Text>
                             {athlete.health_status === "No training or competing" && (
@@ -94,30 +87,6 @@ const styles = StyleSheet.create({
         marginRight: 10,
         padding: 5,
     },
-    scheduleButton: {
-        backgroundColor: "rgb(29, 58, 223)",
-        padding: 18,
-        borderRadius: 12,
-        marginBottom: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'row',
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-    },
-    scheduleButtonText: {
-        color: "#ffffff",
-        fontSize: 16,
-        fontWeight: "bold",
-        fontFamily: "Rubik",
-        marginLeft: 10,
-        },
     noAthletesText: {
         textAlign: 'center',
         marginTop: 20,
@@ -128,16 +97,26 @@ const styles = StyleSheet.create({
     athleteSlot: {
         flexDirection: "row",
         justifyContent: "space-between",
-        padding: 15, 
+        padding: 20, 
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 3,
         borderWidth: 2,
-        borderRadius: 10,
+        borderRadius: 15,
+        borderColor: "#c4c4c4",
         marginBottom: 10,
-        backgroundColor: "#ebebebff"
+        backgroundColor: "#ffffff"
     },
     athleteNameText: {
         fontSize: 16,
         fontWeight: "bold",
         fontFamily: "Rubik",
+        color: "#1f2937"
     },
     athleteStatusText: {
         fontSize: 14,
