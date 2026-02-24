@@ -131,7 +131,7 @@ export default function ReportScreen() {
                     )}
                     { (answers.injured === "No" || answers.trained === "No") && (
                         <View>
-                            <Text style={styles.compactQuestionText}>Did you feel ill today?</Text>
+                            <Text style={styles.compactQuestionText}>Do you feel ill?</Text>
                             <MultiChoice
                                 options={["Yes", "No"]}
                                 value={answers.ill}

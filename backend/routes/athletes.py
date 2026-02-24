@@ -35,7 +35,10 @@ def get_team_details(athlete_id):
         team_id = athlete.data[0].get("team_id")
 
         if not team_id:
-            return jsonify(message="Athlete is not assigned to any team"), 404
+            return jsonify(
+                message="Athlete is not part of any team",
+                team_details=None
+            ), 200
 
         # Fetch team details
         response = db_service.fetch("teams", {"team_id": team_id})
@@ -82,3 +85,23 @@ def join_team():
     except Exception as e:
         logger.error(f"Error athlete joining team: {e}")
         return jsonify(message="Error joining team"), 500
+
+
+@athletes_bp.route('/leave_team/<athlete_id>', methods=['POST'])
+def leave_team(athlete_id):
+    try:
+
+        response = db_service.update("athletes",
+            data={"team_id": None},
+            filters={"id": athlete_id}
+        )
+
+        if response:
+            logger.info(f"Athlete {athlete_id} has left their team.")
+            return jsonify(message="Athlete successfully left the team"), 200
+        else:
+            logger.warning(f"Failed to update athlete {athlete_id} to leave their team.")
+            return jsonify(message="Failed to leave team"), 400
+    except Exception as e:
+        logger.error(f"Error athlete leaving team: {e}")
+        return jsonify(message="Error leaving team"), 500

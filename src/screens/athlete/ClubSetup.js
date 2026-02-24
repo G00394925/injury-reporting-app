@@ -46,24 +46,34 @@ export default function ClubSetup() {
             <View style={globalStyles.header}>
                 <Text style={globalStyles.headerText}>Choose Team</Text>
             </View>
-            <View style={globalStyles.contentContainer}>
-                {teams.map((team) => (
-                    <TouchableOpacity
-                        key={team.team_id}
-                        style={[styles.teamSlotInactive, selection === team.team_id && styles.teamSlotActive]}
-                        onPress={() => setSelection(team.team_id)}
-                    >
-                        <View style={styles.teamHeader}>
-                            <Text style={styles.teamText}>{team.team_name}</Text>
-                            <Text style={styles.sportText}>{team.sport}</Text>
-                        </View>
-                        <Text style={styles.coachText}>Coach: {team.coach_name}</Text>
-                    </TouchableOpacity>
-                ))}
-                <View style={styles.controls}>
-                    <Button title="Save Selection" onPress={() => handleSave(selection)} />
-
+            <View style={[globalStyles.contentContainer, {flex: 1}]}>
+                <View style={{flex: 1}}>
+                    {teams.map((team) => (
+                        <TouchableOpacity
+                            key={team.team_id}
+                            style={[styles.teamSlotInactive, selection === team.team_id && styles.teamSlotActive]}
+                            onPress={() => setSelection(team.team_id)}
+                        >
+                            <View style={styles.teamHeader}>
+                                <Text style={styles.teamText}>{team.team_name}</Text>
+                                <Text style={styles.sportText}>{team.sport}</Text>
+                            </View>
+                            <Text style={styles.coachText}>Coach: {team.coach_name}</Text>
+                        </TouchableOpacity>
+                    ))}
                 </View>
+                <TouchableOpacity 
+                    style={
+                        selection ? styles.saveSelectionButton : styles.saveSelectionButtonDisabled} 
+                    onPress={() => handleSave(selection)}
+                    disabled={!selection}
+                >
+                    <Text style={
+                        selection ? styles.saveSelectionButtonText : styles.saveSelectionButtonTextDisabled}
+                    >
+                        Save Selection
+                    </Text>
+                </TouchableOpacity>
             </View>
         </SafeAreaView>
     );
@@ -112,4 +122,33 @@ const styles = StyleSheet.create({
         color: "#1d3adfff",
         fontWeight: "500"
     },
+    saveSelectionButton: {
+        backgroundColor: "#a2d5ff",
+        borderColor: "#99b9ff",
+        padding: 15, 
+        borderRadius: 15,
+        marginBottom: 10,
+        alignItems: "center",
+        borderWidth: 2,
+    },
+    saveSelectionButtonText: {
+        fontFamily: "Rubik",
+        fontWeight: "bold",
+        fontSize: 18
+    },
+    saveSelectionButtonDisabled: {
+        backgroundColor: "#cccccc",
+        borderColor: "#cccccc",
+        padding: 15, 
+        borderRadius: 15,
+        marginBottom: 10,
+        alignItems: "center",
+        borderWidth: 2,
+    },
+    saveSelectionButtonTextDisabled: {
+        color: "#666666",
+        fontFamily: "Rubik",
+        fontWeight: "bold",
+        fontSize: 18
+    }
 })

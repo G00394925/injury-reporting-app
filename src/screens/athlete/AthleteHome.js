@@ -42,7 +42,6 @@ export default function AthleteDashScreen() {
                         setEstimatedRecoveryDate(statusResponse.data.estimated_recovery_date);
                         setConsecutiveReports(statusResponse.data.report_streak);
                         setNumReports(statusResponse.data.reports_count);
-                        setDaysSinceInjury(statusResponse.data.days_last_injury);
                         console.log("Fetched injury data successfully.")
                     }
 
@@ -71,7 +70,7 @@ export default function AthleteDashScreen() {
                     try {
                         console.log("Checking if report is due...");
                         const reportDueResponse = await axios.get(`${API_BASE_URL}/api/health/check_due/${uuid}`);
-                        console.log("Report due response:", reportDueResponse.data);
+                        console.log("Report due:", reportDueResponse.data);
                         setReportDue(reportDueResponse.data);
                     } catch (reportError) {
                         console.error("Error fetching report due status:", reportError);
