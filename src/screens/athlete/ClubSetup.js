@@ -84,15 +84,15 @@ const styles = StyleSheet.create({
         padding: 15,
         borderWidth: 1,
         borderColor: "#888888ff",
-        borderRadius: 5,
+        borderRadius: 15,
         marginBottom: 15,
         justifyContent: "flex-start"
     },
     teamSlotActive: {
         padding: 15,
-        borderWidth: 2,
+        borderWidth: 4,
         borderColor: "#001a79",
-        borderRadius: 5,
+        borderRadius: 15,
         marginBottom: 15,
         justifyContent: "flex-start"
     },
@@ -124,12 +124,12 @@ const styles = StyleSheet.create({
     },
     saveSelectionButton: {
         backgroundColor: "#a2d5ff",
-        borderColor: "#99b9ff",
+        borderColor: "#6897ff",
         padding: 15, 
         borderRadius: 15,
         marginBottom: 10,
         alignItems: "center",
-        borderWidth: 2,
+        borderWidth: 3,
     },
     saveSelectionButtonText: {
         fontFamily: "Rubik",

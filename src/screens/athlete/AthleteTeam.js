@@ -1,10 +1,9 @@
-import { Text, StyleSheet, View, Button, ActivityIndicator, TouchableOpacity, Modal } from "react-native";
+import { Text, StyleSheet, View, ActivityIndicator, TouchableOpacity, Modal } from "react-native";
 import { globalStyles } from "../../styles/globalStyles";
-import { Card } from "@rneui/base";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../context/AuthContext";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "../../config/api_config";
 

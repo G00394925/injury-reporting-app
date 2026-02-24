@@ -123,28 +123,37 @@ def fetch_athletes(team_id):
         if response:
             athletes = []
             healthy_athletes = 0
+            at_risk_athletes = 0
             injured_athletes = 0
+            reports_due = 0
 
             for athlete in response.data:
                 if athlete.get("status") == HealthStatus.GREEN:
                     healthy_athletes += 1
+                elif athlete.get("status") == HealthStatus.AMBER:
+                    at_risk_athletes += 1
                 elif athlete.get("status") == HealthStatus.RED:
                     injured_athletes += 1
-                    print("Injured boy")
+                
+                if athlete.get("report_due"):
+                    reports_due += 1
 
                 athletes.append({
                     "athlete_id": athlete.get("id"),
                     "name": db_service.fetch("users", filters={"id": athlete.get("id")}).data[0].get("name"),
-                    "health_status": athlete.get("status")
+                    "health_status": athlete.get("status"),
+                    "report_due": athlete.get("report_due")
                 })
 
             logger.info(f"Fetched athletes for team {team_id} successfully.")
-
+            
             return jsonify(
                 athletes=athletes,
                 num_athletes=len(athletes),
                 healthy_athletes=healthy_athletes,
-                injured_athletes=injured_athletes), 200
+                at_risk_athletes=at_risk_athletes,
+                injured_athletes=injured_athletes,
+                reports_due=reports_due), 200
 
     except Exception as e:
         logger.error(f"Error fetching athletes for team {team_id}: {e}")
