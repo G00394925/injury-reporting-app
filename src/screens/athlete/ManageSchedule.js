@@ -340,6 +340,7 @@ const styles = StyleSheet.create({
     actionsContainer: {
         marginTop: 10,
         marginBottom: 20,
+        paddingBottom: 20
     },
     actionButton: {
         backgroundColor: "#2038be",

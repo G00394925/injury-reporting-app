@@ -46,7 +46,7 @@ export default function ClubSetup() {
             <View style={globalStyles.header}>
                 <Text style={globalStyles.headerText}>Choose Team</Text>
             </View>
-            <View style={[globalStyles.contentContainer, {flex: 1}]}>
+            <View style={[globalStyles.contentContainer, {flex: 1, paddingBottom: 30}]}>
                 <View style={{flex: 1}}>
                     {teams.map((team) => (
                         <TouchableOpacity
