@@ -122,7 +122,10 @@ export default function AthleteDashScreen() {
                             <TouchableOpacity 
                                 style={styles.reportCard} 
                                 onPress={() => {
-                                    navigation.navigate("Report", {status: healthStatus})
+                                    navigation.navigate("Report", {
+                                        healthStatus: healthStatus,
+                                        recoveryDate: estimatedRecoveryDate
+                                    })
                                 }}
                             >
                                 <View style={styles.noticeIconContainer}>
@@ -233,7 +236,12 @@ export default function AthleteDashScreen() {
                         </TouchableOpacity>
 
                         {/* DEBUG */}
-                        <Button onPress={() => {navigation.navigate("Report", {status: healthStatus})}} />
+                        <Button onPress={() => {
+                            navigation.navigate("Report", {
+                                healthStatus: healthStatus,
+                                recoveryDate: estimatedRecoveryDate
+                            })
+                        }} />
                     </ScrollView>
                 </>
             )}

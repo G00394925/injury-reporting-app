@@ -6,7 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function ReportFinish({ route }) {
-    const {restriction, expected_outage, consulted} = route.params;
+    const {restriction, expected_outage, consulted, followup, availability} = route.params;
     const navigation = useNavigation();
 
     return (
@@ -21,26 +21,45 @@ export default function ReportFinish({ route }) {
                     </View>
                     <Text style={[styles.thankYouText, {fontSize: 18}]}>Thank you for your submission</Text>
                     <View style={styles.advisoryContainer}>
-                        {restriction === "Training & Competing" ? (
+                        {!followup ? (
                             <>
-                                <Text style={styles.advisoryText}>Based on your responses, it is recommended you refrain from any physical activity for the next </Text>
-                                <Text style={[styles.advisoryText, {color: "red", fontWeight: "bold", fontSize: 22}]}>{expected_outage}.</Text>
-                                <Text style={styles.advisoryText}>Please take as much rest as possible.
-                                    {consulted === "No" && 
-                                        <Text style={styles.advisoryText}> You should visit a healthcare professional to acquire a proper estimation of recovery time.</Text>
-                                    } You will be asked to check-in your health status on the expected recovery date.</Text>
-                            </>
-                        ) : restriction === "Competing Only" ? (
-                            <>
-                                <Text style={styles.advisoryText}>Based on your responses, you are cleared to continue training, but you should consider avoiding competition for at least</Text>
-                                <Text style={[styles.advisoryText, {color: "#e7ae04", fontWeight: "bold", fontSize: 22}]}>{expected_outage}.</Text>
-                                <Text style={styles.advisoryText}>Please take care to not overexert yourself during training, and keep an eye on your injuries so as to avoid worsening them.</Text>
+                                {restriction === "Training & Competing" ? (
+                                    <>
+                                        <Text style={styles.advisoryText}>Based on your responses, it is recommended you refrain from any physical activity for the next </Text>
+                                        <Text style={[styles.advisoryText, {color: "red", fontWeight: "bold", fontSize: 22}]}>{expected_outage}.</Text>
+                                        <Text style={styles.advisoryText}>Please take as much rest as possible.
+                                            {consulted === "No" && 
+                                                <Text style={styles.advisoryText}> You should visit a healthcare professional to acquire a proper estimation of recovery time.</Text>
+                                            } You will be asked to check-in your health status on the expected recovery date.</Text>
+                                    </>
+                                ) : restriction === "Competing Only" ? (
+                                    <>
+                                        <Text style={styles.advisoryText}>Based on your responses, you are cleared to continue training, but you should consider avoiding competition for at least</Text>
+                                        <Text style={[styles.advisoryText, {color: "#e7ae04", fontWeight: "bold", fontSize: 22}]}>{expected_outage}.</Text>
+                                        <Text style={styles.advisoryText}>Please take care to not overexert yourself during training, and keep an eye on your injuries so as to avoid worsening them.</Text>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Text style={styles.advisoryText}>Based on your responses, you are cleared to resume your training and competing as normal!</Text>
+                                        <Text style={styles.advisoryText}>Do continue to remain vigilant, you will be notified to submit another report after your next event.</Text>
+                                        <Text style={[styles.advisoryText, {color: "#1dd545", fontWeight: "bold", fontSize: 22}]}>Good luck!</Text>
+                                    </>
+                                )}
                             </>
                         ) : (
                             <>
-                                <Text style={styles.advisoryText}>Based on your responses, you are cleared to resume your training and competing as normal!</Text>
-                                <Text style={styles.advisoryText}>Do continue to remain vigilant, you will be notified to submit another report after your next event.</Text>
-                                <Text style={[styles.advisoryText, {color: "#1dd545", fontWeight: "bold", fontSize: 22}]}>Good luck!</Text>
+                                {availability === "Fully available" ? (
+                                    <>
+                                        <Text style={styles.advisoryText}>We're happy to hear of your recovery. You are cleared to resume all activities.</Text>
+                                        <Text style={styles.advisoryText}>Please take care to not over-exert yourself and keep vigilant when playing.</Text>
+                                        <Text style={[styles.advisoryText, {color: "#1dd545", fontWeight: "bold", fontSize: 22}]}>Good luck!</Text>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Text style={styles.advisoryText}>Thank you for providing an update on your injury. You should resume resting and avoid over-exerting yourself.</Text>
+                                        <Text style={styles.advisoryText}>Once your expected recovery date passes, you will be asked to provide another update on your injuries. Until then, take it easy.</Text>
+                                    </>
+                                )}
                             </>
                         )}
                     </View>

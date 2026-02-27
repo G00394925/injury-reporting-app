@@ -9,14 +9,17 @@ import { ScrollView, TextInput } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { getQuestions } from "../../config/reportQuestions/index";
+import { hslToRgb } from "@mui/material/styles";
 
 export default function ReportScreen({ route }) {
     const navigation = useNavigation();
     const { uuid } = useAuth();
-    const status = route.params;
+    const healthStatus = route.params?.healthStatus || "Healthy";
+    const recoveryDate = route.params?.recoveryDate || null;
+    
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
-    const [showHelpModal, setShowHelpModal] = useState(false);  // Modal showing definitions of injury onset types
+    const [showHelpModal, setShowHelpModal] = useState(false);
     const [injured, setInjured] = useState(false);
     const [ill, setIll] = useState(false);
     const [timeloss, setTimeLoss] = useState(false);
@@ -35,7 +38,12 @@ export default function ReportScreen({ route }) {
         consulted: null,
         missed_activity: null,
         expected_outage: null,
-        comments: ""
+        comments: "",
+        // Followup question answers
+        recovery_progress: null,
+        practitioner_contact: null,
+        availability: null,
+        expected_return: null,
     });
 
     const updateAnswer = (key, value) => {
@@ -46,15 +54,16 @@ export default function ReportScreen({ route }) {
     };
 
     const questions = getQuestions(
-        status, 
+        healthStatus, 
         updateAnswer,
         answers,
         setInjured,
         setIll,
         setConsulted,
         setTimeLoss,
-        setTrained
-    )
+        setTrained,
+        recoveryDate
+    );
 
     const availableQuestions = questions.filter(
         (q) => !q.condition || q.condition()
@@ -66,7 +75,7 @@ export default function ReportScreen({ route }) {
         }
         return true;
     };
-    
+
     // Submit health report to database
     const handleReportSubmission = async (answers) => {
         setIsLoading(true);
@@ -78,7 +87,8 @@ export default function ReportScreen({ route }) {
             injured: answers.injured === "Yes",
             ill: answers.ill === "Yes",
             consulted: answers.consulted === "Yes",
-            timeloss: answers.timeloss === "Yes"
+            timeloss: answers.timeloss === "Yes",
+            followup: healthStatus !== "Healthy"
         };
 
         try {
@@ -112,7 +122,12 @@ export default function ReportScreen({ route }) {
                 consulted: null,
                 missed_activity: null,
                 expected_outage: null,
-                comments: ""
+                comments: "",
+                // Followup question answers
+                recovery_progress: null,
+                practitioner_contact: null,
+                availability: null,
+                expected_return: null,
             });
         } catch (error) {
             console.error("Error submitting health report:", error);
@@ -121,7 +136,9 @@ export default function ReportScreen({ route }) {
             navigation.navigate("ReportFinish", {
                 restriction: answers.missed_activity,
                 expected_outage: answers.expected_outage,
-                consulted: answers.consulted
+                consulted: answers.consulted,
+                followup: healthStatus !== "Healthy",
+                availability: answers.availability
             });
         }
     };
