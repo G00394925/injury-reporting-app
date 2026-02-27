@@ -35,7 +35,6 @@ export default function AthleteDashScreen() {
                 try {
                     // Fetch health status
                     const statusResponse = await axios.get(`${API_BASE_URL}/api/health/status/${uuid}`);
-                    
                     if (statusResponse) {
                         setHealthStatus(statusResponse.data.health_status);
                         setInjuryDate(statusResponse.data.injury_date);
@@ -76,14 +75,12 @@ export default function AthleteDashScreen() {
                         console.error("Error fetching report due status:", reportError);
                         setReportDue(false); // Default to false if request fails
                     }
-
                 } catch (error) {
                     console.error("Error fetching data:", error);
                 } finally {
                     setLoading(false);
                 }
             };
-
             fetchData();
         }, [uuid])
     );
@@ -122,7 +119,12 @@ export default function AthleteDashScreen() {
 
                         {/* Report Submission button */}
                         {reportDue && (
-                            <TouchableOpacity style={styles.reportCard} onPress={() => {navigation.navigate("Report")}}>
+                            <TouchableOpacity 
+                                style={styles.reportCard} 
+                                onPress={() => {
+                                    navigation.navigate("Report", {status: healthStatus})
+                                }}
+                            >
                                 <View style={styles.noticeIconContainer}>
                                     <MaterialIcons name="warning-amber" size={40} color="#000" />
                                 </View>
@@ -223,11 +225,15 @@ export default function AthleteDashScreen() {
                             <View style={styles.noticeTextContainer}>
                                 <Text style={styles.noticeLabel}>Next Event</Text>
                                 <Text style={styles.noticeTitle}>{nextEventTitle}</Text>
-                                <Text style={styles.noticeSubtext}>{nextEventDate} - {nextEventTime}</Text>
+                                {nextEventDate && nextEventTime && (
+                                    <Text style={styles.noticeSubtext}>{nextEventDate} - {nextEventTime}</Text>
+                                )}
                             </View>
                             <Ionicons name="chevron-forward" size={24} color="#0000006c" />
                         </TouchableOpacity>
 
+                        {/* DEBUG */}
+                        <Button onPress={() => {navigation.navigate("Report", {status: healthStatus})}} />
                     </ScrollView>
                 </>
             )}

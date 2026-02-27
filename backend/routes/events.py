@@ -113,8 +113,16 @@ def get_next_event(athlete_id):
                 return jsonify(message="No event found with given date and time")
         
         else:
-            logger.info("No event found")
-            return jsonify(message="No event found"), 404
+            next_event = {
+                "title": "No upcoming events",
+                "date": None,
+                "time": None,
+                "total_future_events": 0
+            }
+            
+            logger.info("No upcoming events")
+            return jsonify(next_event), 200
+    
     except Exception as e:
         logger.error(f"Error fetching most recent event for user {athlete_id}: {e}")
         return jsonify(error=str(e)), 500
