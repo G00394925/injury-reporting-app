@@ -72,10 +72,10 @@ const styles = StyleSheet.create({
     container: {
         width: "100%",
         alignItems: "center",
-        paddingVertical: 20,
+        paddingVertical: 20
     },
     iconContainer: {
-        marginBottom: 45,
+        marginBottom: 45
     },
     sliderContainer: {
         padding: 30,
@@ -83,36 +83,36 @@ const styles = StyleSheet.create({
         alignContent: "center",
         width: CONTAINER_WIDTH,
         borderRadius: 10,
-        alignItems: "center",
+        alignItems: "center"
     },
     sliderHeading: {
         fontSize: 14,
         fontWeight: "bold",
         marginBottom: 10,
-        fontFamily: "Rubik",
+        fontFamily: "Rubik"
     },
     valueText: {
         fontSize: 32,
         fontWeight: "bold",
         fontFamily: "Rubik",
-        marginBottom: 10,
+        marginBottom: 10
     },
     labelsContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
         width: SLIDER_WIDTH,
-        paddingHorizontal: 5,
+        paddingHorizontal: 5
     },
     labelText: {
         fontSize: 12,
         color: "#555",
-        fontFamily: "Rubik",
+        fontFamily: "Rubik"
     },
     rpe_label: {
         fontSize: 18,
         fontWeight: "bold",
         marginTop: 10,
         fontFamily: "Rubik",
-        textAlign: "center",
-    },
+        textAlign: "center"
+    }
 });

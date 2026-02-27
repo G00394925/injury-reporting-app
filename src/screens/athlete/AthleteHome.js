@@ -21,10 +21,10 @@ export default function AthleteDashScreen() {
     const [estimatedRecoveryDate, setEstimatedRecoveryDate] = useState(null);
     const [hasRecentEvent, setHasRecentEvent] = useState(false);
     const [futureEvents, setFutureEvents] = useState(0);
-    const [nextEventTitle, setNextEventTitle] = useState("No Upcoming Events")
-    const [nextEventDate, setNextEventDate] = useState(null)
-    const [nextEventTime, setNextEventTime] = useState(null)
-    const [reportDue, setReportDue] = useState(false)
+    const [nextEventTitle, setNextEventTitle] = useState("No Upcoming Events");
+    const [nextEventDate, setNextEventDate] = useState(null);
+    const [nextEventTime, setNextEventTime] = useState(null);
+    const [reportDue, setReportDue] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
@@ -34,45 +34,66 @@ export default function AthleteDashScreen() {
 
                 try {
                     // Fetch health status
-                    const statusResponse = await axios.get(`${API_BASE_URL}/api/health/status/${uuid}`);
+                    const statusResponse = await axios.get(
+                        `${API_BASE_URL}/api/health/status/${uuid}`
+                    );
                     if (statusResponse) {
                         setHealthStatus(statusResponse.data.health_status);
                         setInjuryDate(statusResponse.data.injury_date);
-                        setEstimatedRecoveryDate(statusResponse.data.estimated_recovery_date);
-                        setConsecutiveReports(statusResponse.data.report_streak);
+                        setEstimatedRecoveryDate(
+                            statusResponse.data.estimated_recovery_date
+                        );
+                        setConsecutiveReports(
+                            statusResponse.data.report_streak
+                        );
                         setNumReports(statusResponse.data.reports_count);
-                        console.log("Fetched injury data successfully.")
+                        console.log("Fetched injury data successfully.");
                     }
 
                     // Fetch events and check if any have passed
-                    const eventsResponse = await axios.get(`${API_BASE_URL}/api/events/get/${uuid}`);
+                    const eventsResponse = await axios.get(
+                        `${API_BASE_URL}/api/events/get/${uuid}`
+                    );
                     if (eventsResponse.data && eventsResponse.data.length > 0) {
                         const now = new Date();
-                        const hasPastEvent = eventsResponse.data.some(event => {
-                            const eventDateTime = new Date(`${event.event_date}T${event.end_time}`);
-                            return eventDateTime < now;
-                        });
+                        const hasPastEvent = eventsResponse.data.some(
+                            (event) => {
+                                const eventDateTime = new Date(
+                                    `${event.event_date}T${event.end_time}`
+                                );
+                                return eventDateTime < now;
+                            }
+                        );
                         setHasRecentEvent(hasPastEvent);
                     }
 
-                    const nextEventResponse = await axios.get(`${API_BASE_URL}/api/events/get_next/${uuid}`)
+                    const nextEventResponse = await axios.get(
+                        `${API_BASE_URL}/api/events/get_next/${uuid}`
+                    );
                     if (nextEventResponse.data) {
-                        setFutureEvents(nextEventResponse.data["total_future_events"])
-                        setNextEventTitle(nextEventResponse.data["title"])
-                        setNextEventDate(nextEventResponse.data["date"])
-                        setNextEventTime(nextEventResponse.data["time"])
+                        setFutureEvents(
+                            nextEventResponse.data["total_future_events"]
+                        );
+                        setNextEventTitle(nextEventResponse.data["title"]);
+                        setNextEventDate(nextEventResponse.data["date"]);
+                        setNextEventTime(nextEventResponse.data["time"]);
                     } else {
-                        console.log(`No upcoming events for user ${uuid}`)
+                        console.log(`No upcoming events for user ${uuid}`);
                     }
 
                     // Check if a new report is due, thereby enabling the report button if true.
                     try {
                         console.log("Checking if report is due...");
-                        const reportDueResponse = await axios.get(`${API_BASE_URL}/api/health/check_due/${uuid}`);
+                        const reportDueResponse = await axios.get(
+                            `${API_BASE_URL}/api/health/check_due/${uuid}`
+                        );
                         console.log("Report due:", reportDueResponse.data);
                         setReportDue(reportDueResponse.data);
                     } catch (reportError) {
-                        console.error("Error fetching report due status:", reportError);
+                        console.error(
+                            "Error fetching report due status:",
+                            reportError
+                        );
                         setReportDue(false); // Default to false if request fails
                     }
                 } catch (error) {
@@ -92,98 +113,128 @@ export default function AthleteDashScreen() {
             ) : (
                 <>
                     <View style={globalStyles.header}>
-                        <Text style={globalStyles.headerText}>Hello {userData?.name}</Text>
+                        <Text style={globalStyles.headerText}>
+                            Hello {userData?.name}
+                        </Text>
                     </View>
-                    <ScrollView 
+                    <ScrollView
                         style={globalStyles.contentContainer}
                         contentContainerStyle={{ paddingBottom: 100 }}
                     >
-                        
                         {/* Traffic light status indicators */}
                         <Card containerStyle={styles.lightsCard}>
                             <View style={styles.lightsContainer}>
                                 <Image
                                     style={styles.light}
-                                    source={healthStatus === "No training or competing" ? require("../../../assets/RedLightOn.png") : require("../../../assets/RedLightOff.png")}
+                                    source={
+                                        healthStatus ===
+                                        "No training or competing"
+                                            ? require("../../../assets/RedLightOn.png")
+                                            : require("../../../assets/RedLightOff.png")
+                                    }
                                 />
                                 <Image
                                     style={styles.light}
-                                    source={healthStatus === "No competing" ? require("../../../assets/AmberLightOn.png") : require("../../../assets/AmberLightOff.png")}
+                                    source={
+                                        healthStatus === "No competing"
+                                            ? require("../../../assets/AmberLightOn.png")
+                                            : require("../../../assets/AmberLightOff.png")
+                                    }
                                 />
                                 <Image
                                     style={styles.light}
-                                    source={healthStatus === "Healthy" ? require("../../../assets/GreenLightOn.png") : require("../../../assets/GreenLightOff.png")}
+                                    source={
+                                        healthStatus === "Healthy"
+                                            ? require("../../../assets/GreenLightOn.png")
+                                            : require("../../../assets/GreenLightOff.png")
+                                    }
                                 />
                             </View>
                         </Card>
 
                         {/* Report Submission button */}
                         {reportDue && (
-                            <TouchableOpacity 
-                                style={styles.reportCard} 
+                            <TouchableOpacity
+                                style={styles.reportCard}
                                 onPress={() => {
                                     navigation.navigate("Report", {
                                         healthStatus: healthStatus,
                                         recoveryDate: estimatedRecoveryDate
-                                    })
+                                    });
                                 }}
                             >
                                 <View style={styles.noticeIconContainer}>
-                                    <MaterialIcons name="warning-amber" size={40} color="#000" />
+                                    <MaterialIcons
+                                        name="warning-amber"
+                                        size={40}
+                                        color="#000"
+                                    />
                                 </View>
                                 <View style={styles.noticeTextContainer}>
-                                    <Text style={styles.noticeTitle}>Your daily report is due!</Text>
-                                    <Text style={styles.noticeSubtext}>Tap to submit your report</Text>
+                                    <Text style={styles.noticeTitle}>
+                                        Your daily report is due!
+                                    </Text>
+                                    <Text style={styles.noticeSubtext}>
+                                        Tap to submit your report
+                                    </Text>
                                 </View>
-                                <Ionicons name="chevron-forward" size={24} color="#0000006c" />
+                                <Ionicons
+                                    name="chevron-forward"
+                                    size={24}
+                                    color="#0000006c"
+                                />
                             </TouchableOpacity>
                         )}
 
                         {/* Notice card */}
-                        <View style={[
-                            styles.noticeCard,
-                            healthStatus === "Healthy"
-                                ? styles.noticeCardGreen
-                                : healthStatus === "No competing"
-                                    ? styles.noticeCardAmber
-                                    : styles.noticeCardRed
-                        ]}>
+                        <View
+                            style={[
+                                styles.noticeCard,
+                                healthStatus === "Healthy"
+                                    ? styles.noticeCardGreen
+                                    : healthStatus === "No competing"
+                                      ? styles.noticeCardAmber
+                                      : styles.noticeCardRed
+                            ]}
+                        >
                             <View style={styles.noticeIconContainer}>
                                 <MaterialCommunityIcons
                                     name={
                                         healthStatus === "Healthy"
                                             ? "check-circle"
                                             : healthStatus === "No competing"
-                                                ? "alert-circle"
-                                                : "close-circle"
+                                              ? "alert-circle"
+                                              : "close-circle"
                                     }
                                     size={40}
                                     color={
                                         healthStatus === "Healthy"
                                             ? "#10b981"
                                             : healthStatus === "No competing"
-                                                ? "#f59e0b"
-                                                : "#ef4444"
+                                              ? "#f59e0b"
+                                              : "#ef4444"
                                     }
                                 />
                             </View>
                             <View style={styles.noticeTextContainer}>
                                 <Text style={styles.noticeLabel}>Status</Text>
-                                <Text style={styles.noticeTitle}>{
-                                    healthStatus === "No training or competing" ? "No training or competing"
+                                <Text style={styles.noticeTitle}>
+                                    {healthStatus === "No training or competing"
+                                        ? "No training or competing"
                                         : healthStatus === "No competing"
-                                            ? "Training only"
-                                            : "Ready to play"}
+                                          ? "Training only"
+                                          : "Ready to play"}
                                 </Text>
-                                <Text style={styles.noticeSubtext}>{
-                                    healthStatus === "No training or competing" ? "Rest and recovery needed"
+                                <Text style={styles.noticeSubtext}>
+                                    {healthStatus === "No training or competing"
+                                        ? "Rest and recovery needed"
                                         : healthStatus === "No competing"
-                                            ? "Cleared for training activities"
-                                            : "Fully cleared for all activities"}
+                                          ? "Cleared for training activities"
+                                          : "Fully cleared for all activities"}
                                 </Text>
                             </View>
                         </View>
-        
+
                         {/* Information/Status cards */}
                         <View style={styles.infoCardsContainer}>
                             <View style={styles.infoCard}>
@@ -193,8 +244,12 @@ export default function AthleteDashScreen() {
                                     color="#6366f1"
                                     style={styles.cardIcon}
                                 />
-                                <Text style={styles.cardValue}>{numReports}</Text>
-                                <Text style={styles.cardLabel}>Total Reports</Text>
+                                <Text style={styles.cardValue}>
+                                    {numReports}
+                                </Text>
+                                <Text style={styles.cardLabel}>
+                                    Total Reports
+                                </Text>
                             </View>
 
                             <View style={styles.infoCard}>
@@ -204,8 +259,12 @@ export default function AthleteDashScreen() {
                                     color="#10b981"
                                     style={styles.cardIcon}
                                 />
-                                <Text style={styles.cardValue}>{futureEvents}</Text>
-                                <Text style={styles.cardLabel}>Planned Events</Text>
+                                <Text style={styles.cardValue}>
+                                    {futureEvents}
+                                </Text>
+                                <Text style={styles.cardLabel}>
+                                    Planned Events
+                                </Text>
                             </View>
 
                             <View style={styles.infoCard}>
@@ -215,33 +274,58 @@ export default function AthleteDashScreen() {
                                     color="#f59e0b"
                                     style={styles.cardIcon}
                                 />
-                                <Text style={styles.cardValue}>{consecutiveReports}</Text>
-                                <Text style={styles.cardLabel}>Consecutive Submitted Reports</Text>
+                                <Text style={styles.cardValue}>
+                                    {consecutiveReports}
+                                </Text>
+                                <Text style={styles.cardLabel}>
+                                    Consecutive Submitted Reports
+                                </Text>
                             </View>
                         </View>
 
                         {/* Next Event Card */}
-                        <TouchableOpacity style={styles.eventCard} onPress={() => {navigation.navigate("Schedule")}}>
+                        <TouchableOpacity
+                            style={styles.eventCard}
+                            onPress={() => {
+                                navigation.navigate("Schedule");
+                            }}
+                        >
                             <View style={styles.noticeIconContainer}>
-                                <MaterialIcons name="sports-soccer" size={40} color="#1963ca"/>
+                                <MaterialIcons
+                                    name="sports-soccer"
+                                    size={40}
+                                    color="#1963ca"
+                                />
                             </View>
                             <View style={styles.noticeTextContainer}>
-                                <Text style={styles.noticeLabel}>Next Event</Text>
-                                <Text style={styles.noticeTitle}>{nextEventTitle}</Text>
+                                <Text style={styles.noticeLabel}>
+                                    Next Event
+                                </Text>
+                                <Text style={styles.noticeTitle}>
+                                    {nextEventTitle}
+                                </Text>
                                 {nextEventDate && nextEventTime && (
-                                    <Text style={styles.noticeSubtext}>{nextEventDate} - {nextEventTime}</Text>
+                                    <Text style={styles.noticeSubtext}>
+                                        {nextEventDate} - {nextEventTime}
+                                    </Text>
                                 )}
                             </View>
-                            <Ionicons name="chevron-forward" size={24} color="#0000006c" />
+                            <Ionicons
+                                name="chevron-forward"
+                                size={24}
+                                color="#0000006c"
+                            />
                         </TouchableOpacity>
 
                         {/* DEBUG */}
-                        <Button onPress={() => {
-                            navigation.navigate("Report", {
-                                healthStatus: healthStatus,
-                                recoveryDate: estimatedRecoveryDate
-                            })
-                        }} />
+                        <Button
+                            onPress={() => {
+                                navigation.navigate("Report", {
+                                    healthStatus: healthStatus,
+                                    recoveryDate: estimatedRecoveryDate
+                                });
+                            }}
+                        />
                     </ScrollView>
                 </>
             )}
@@ -260,32 +344,32 @@ const styles = StyleSheet.create({
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
-            height: 2,
+            height: 2
         },
         shadowOpacity: 0.1,
         shadowRadius: 8,
         elevation: 3,
-        borderLeftWidth: 5,
+        borderLeftWidth: 5
     },
     noticeCardGreen: {
         borderLeftColor: "#10b981",
-        backgroundColor: "#f0fdf4",
+        backgroundColor: "#f0fdf4"
     },
     noticeCardAmber: {
         borderLeftColor: "#f59e0b",
-        backgroundColor: "#fffbeb",
+        backgroundColor: "#fffbeb"
     },
     noticeCardRed: {
         borderLeftColor: "#ef4444",
-        backgroundColor: "#fef2f2",
+        backgroundColor: "#fef2f2"
     },
     noticeIconContainer: {
         marginRight: 15,
         alignItems: "center",
-        justifyContent: "center",
+        justifyContent: "center"
     },
     noticeTextContainer: {
-        flex: 1,
+        flex: 1
     },
     noticeLabel: {
         fontSize: 12,
@@ -294,19 +378,19 @@ const styles = StyleSheet.create({
         textTransform: "uppercase",
         letterSpacing: 0.5,
         fontFamily: "Rubik",
-        marginBottom: 4,
+        marginBottom: 4
     },
     noticeTitle: {
         fontSize: 20,
         fontWeight: "bold",
         color: "#1f2937",
         fontFamily: "Rubik",
-        marginBottom: 4,
+        marginBottom: 4
     },
     noticeSubtext: {
         fontSize: 14,
         color: "#6b7280",
-        fontFamily: "Rubik",
+        fontFamily: "Rubik"
     },
     eventCard: {
         padding: 20,
@@ -350,11 +434,11 @@ const styles = StyleSheet.create({
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
-            height: 2,
+            height: 2
         },
         shadowOpacity: 0.1,
         shadowRadius: 8,
-        elevation: 3,
+        elevation: 3
     },
     lightsContainer: {
         flexDirection: "row",
@@ -372,7 +456,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         width: "100%",
         marginTop: 25,
-        gap: 12,
+        gap: 12
     },
     infoCard: {
         flex: 1,
@@ -383,34 +467,34 @@ const styles = StyleSheet.create({
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
-            height: 2,
+            height: 2
         },
         shadowOpacity: 0.08,
         shadowRadius: 8,
         elevation: 3,
         borderWidth: 1,
-        borderColor: "#f3f4f6",
+        borderColor: "#f3f4f6"
     },
     cardIcon: {
-        marginBottom: 8,
+        marginBottom: 8
     },
     cardValue: {
         fontSize: 28,
         fontWeight: "bold",
         color: "#1f2937",
         fontFamily: "Rubik",
-        marginBottom: 4,
+        marginBottom: 4
     },
     cardLabel: {
         fontSize: 12,
         color: "#6b7280",
         fontFamily: "Rubik",
         textAlign: "center",
-        lineHeight: 16,
+        lineHeight: 16
     },
     reportButtonContainer: {
         marginTop: 25,
-        width: "100%",
+        width: "100%"
     },
     reportButton: {
         backgroundColor: "#6366f1",
@@ -419,16 +503,16 @@ const styles = StyleSheet.create({
         shadowColor: "#6366f1",
         shadowOffset: {
             width: 0,
-            height: 4,
+            height: 4
         },
         shadowOpacity: 0.3,
         shadowRadius: 8,
-        elevation: 6,
+        elevation: 6
     },
     reportButtonText: {
         color: "#ffffff",
         fontWeight: "bold",
         fontSize: 16,
-        fontFamily: "Rubik",
-    },
+        fontFamily: "Rubik"
+    }
 });
