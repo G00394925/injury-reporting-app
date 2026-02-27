@@ -34,7 +34,6 @@ export default function ClubSetup() {
                 team_id: team_id,
             });
             console.log("Team joined successfully:", response.data);
-
             navigation.goBack();
         } catch (error) {
             console.error("Error joining team:", error);

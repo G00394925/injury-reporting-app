@@ -39,7 +39,6 @@ export default function AthleteTeamScreen() {
         }, [uuid])
     )
  
-    
     const handleTeamLeave = async () => {
         try {
             const response = await axios.post(`${API_BASE_URL}/api/athletes/leave_team/${uuid}`,)
