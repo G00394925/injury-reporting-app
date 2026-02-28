@@ -274,16 +274,6 @@ export default function AthleteDashScreen() {
               </View>
               <Ionicons name="chevron-forward" size={24} color="#0000006c" />
             </TouchableOpacity>
-
-            {/* DEBUG */}
-            <Button
-              onPress={() => {
-                navigation.navigate("Report", {
-                  healthStatus: healthStatus,
-                  recoveryDate: estimatedRecoveryDate
-                });
-              }}
-            />
           </ScrollView>
         </>
       )}

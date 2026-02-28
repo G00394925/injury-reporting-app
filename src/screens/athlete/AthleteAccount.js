@@ -1,14 +1,17 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Touchable } from 'react-native';
 import { useState } from 'react';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '@rneui/base';
 import { globalStyles } from '../../styles/globalStyles';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 export default function AthleteAccountScreen() {
+  const [showConfirmation, setShowConfirmation] = useState(false)
   const { userData, logout } = useAuth();
+  const navigation = useNavigation();
 
   return (
     <SafeAreaView style={globalStyles.container} edges={["top"]}>
@@ -53,7 +56,10 @@ export default function AthleteAccountScreen() {
           </View>
           <Ionicons name="chevron-forward" size={26} color="#0000006c" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.settingButton}>
+        <TouchableOpacity 
+          style={styles.settingButton}
+          onPress={() => (navigation.navigate("Report"))}
+        >
           <View style={styles.settingIconContainer}>
             <MaterialIcons name="assignment" size={21} />
           </View>
@@ -64,7 +70,7 @@ export default function AthleteAccountScreen() {
         </TouchableOpacity>
         <TouchableOpacity 
           style={[styles.settingButton, {backgroundColor: "#ffd8d8"}]}
-          onPress={logout}
+          onPress={() => setShowConfirmation(true)}
         >
           <View style={styles.settingIconContainer}>
             <MaterialIcons name="logout" size={21} color="red"/>
@@ -82,6 +88,37 @@ export default function AthleteAccountScreen() {
           </View>
         </TouchableOpacity>
       </View>
+      <Modal 
+        visible={showConfirmation}
+        animationType='fade'
+        transparent={true}
+        statusBarTranslucent={true}
+        onRequestClose={() => setShowConfirmation(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>
+                Are you sure you wish to logout?
+              </Text>
+            </View>
+            <View style={styles.modalBody}>
+              <TouchableOpacity
+                style={styles.modalConfirmButton}
+                onPress={logout}
+                >
+                  <Text style={styles.modalButtonText}>Logout</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.modalCancelButton}
+                onPress={() => setShowConfirmation(false)}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -135,5 +172,64 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     alignItems: "center",
     justifyContent: "center"
+  },
+  modalOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 15,
+    width: "90%",
+    maxHeight: "80%",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 20
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    fontFamily: "Rubik",
+    color: "#333"
+  },
+  modalBody: {
+    padding: 15,
+    flexDirection: "row",
+    justifyContent: "space-evenly"
+  },
+  modalConfirmButton: {
+    backgroundColor: "#ff8d8d",
+    padding: 15,
+    borderRadius: 15,
+    width: "45%",
+    alignItems: "center"
+  },
+  modalCancelButton: {
+    backgroundColor: "#cccccc",
+    padding: 15,
+    borderRadius: 15,
+    width: "45%",
+    alignItems: "center"
+  },
+  modalButtonText: {
+    fontFamily: "Rubik",
+    fontSize: 16
   }
 })
