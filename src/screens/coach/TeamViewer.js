@@ -23,9 +23,30 @@ export default function TeamViewerScreen({ route }) {
                 const response = await axios.get(
                     `${API_BASE_URL}/api/teams/get_athletes/${team.team_id}`
                 );
-                console.log("Response data:", response.data);
+                console.log("Fetched athletes successfully");
 
-                const athletes = response.data.athletes.map((athlete) => {
+                // Fetch time since last report for each athlete
+                const athleteLastReport = await Promise.all(
+                    response.data.athletes.map(async (athlete) => {
+                        try {
+                            const timeResponse = await axios.get(
+                                `${API_BASE_URL}/api/health/get_recent_report/${athlete.athlete_id}`
+                            );
+                            return {
+                                ...athlete,
+                                timeSinceReport: timeResponse.data || "No report submitted"
+                            };
+                        } catch (error) {
+                            console.error(`Error fetching most recent report for athlete ${athlete.athlete_id}:`, error);
+                            return {
+                                ...athlete,
+                                timeSinceReport: "No report data"
+                            }
+                        }
+                    })
+                )
+                
+                const athletes = athleteLastReport.map((athlete) => {
                     return (
                         <View
                             key={athlete.athlete_id}
@@ -56,7 +77,7 @@ export default function TeamViewerScreen({ route }) {
                                 </Text>
                                 
                                 <Text style={styles.athleteLastReport}>
-                                    Last report: 3 days ago
+                                    Last report: {athlete.timeSinceReport}
                                 </Text>
                             </View>
                         </View>
@@ -135,6 +156,7 @@ const styles = StyleSheet.create({
     athleteDetailsContainer: {
         flexDirection: "column",
         justifyContent: "space-between",
+        alignItems: "flex-end"
     },
     athleteNameText: {
         fontSize: 18,

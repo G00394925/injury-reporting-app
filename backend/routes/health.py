@@ -78,7 +78,7 @@ def health_report():
                 return jsonify(error="Failed to update health status"), 500
             
             # Insert health report into database
-            report_insert_data = {
+            submission_data = {
                 "athlete_id": report_data['user'],
                 "injured": report_data['answers'].get('injured'),
                 "ill": report_data['answers'].get('ill'),
@@ -88,8 +88,9 @@ def health_report():
                 "injury_onset": report_data['answers'].get('injury_onset'),
                 "consulted": report_data['answers'].get('consulted'),
                 "comments": report_data['answers'].get('comments'),
+                "follow_up": False
             }
-            db_service.insert("reports", data=report_insert_data)
+            db_service.insert("reports", data=submission_data)
 
             logger.info("Inserted new report to database")
             return jsonify(message="Health report submitted successfully"), 201
@@ -103,15 +104,37 @@ def health_report():
                 }
                 db_service.update("athletes", data=update_data, filters={"id": report_data['user']})
             else:
-                expected_return = int(re.split(r'[+\s]+', report_data['answers'].get('expected_return'))[0])
-                estimated_recovery_date = (datetime.now() + timedelta(days=expected_return)).isoformat()
+                # New expected return date
+                if report_data['answers'].get('expected_return'):    
+                    expected_return = int(re.split(r'[+\s]+', report_data['answers'].get('expected_return'))[0])
+                    estimated_recovery_date = (datetime.now() + timedelta(days=expected_return)).isoformat()
 
-                update_data = {
-                    "report_due": False,
-                    "status": report_data['answers'].get('availability'),
-                    "estimated_recovery_date": estimated_recovery_date
-                }
+                    update_data = {
+                        "report_due": False,
+                        "status": report_data['answers'].get('availability'),
+                        "estimated_recovery_date": estimated_recovery_date
+                    }
+
+                # No return date submited, keep as is
+                else:
+                    update_data = {
+                        "report_due": False,
+                        "status": report_data['answers'].get('availability')
+                    }
+
                 db_service.update('athletes', data=update_data, filters={"id": report_data["user"]})
+            
+            # Insert into report table
+            submission_data = {
+                "athlete_id": report_data['user'],
+                "follow_up": True,
+                "recovery_progress": report_data['answers'].get('recovery_progress'),
+                "practitioner_contact": report_data['answers'].get('practitioner_contact'),
+                "new_availability": report_data['answers'].get('availability'),
+                "comments": report_data['answers'].get('availability')
+            }
+            db_service.insert("reports", data=submission_data)
+            
             return jsonify(message="Follow-up report submitted successfully"), 200
 
     except Exception as e:
@@ -166,14 +189,15 @@ def get_status(user_id):
 def check_report_due(user_id):
     """
     Checks database for a boolean value for whether a report by 
-    an athlete is due. Value is recurringly updated by a cron job.
-    
+    an athlete is due. Value is recurringly updated by a cron job.    
     """
+    
     try:
         response = db_service.fetch("athletes", filters={"id": user_id})
-        print(response)
+        
         if response and response.data:
             due = response.data[0].get('report_due')
+            
             logger.info(f"Report due status for user {user_id}: {due}")
             return jsonify(due), 200
         else:
@@ -182,4 +206,54 @@ def check_report_due(user_id):
         
     except Exception as e:
         logger.error(f"Error retrieving report_due value for user {user_id}: {e}")
+        return jsonify(error=str(e)), 500
+    
+
+@health_bp.route('/get_recent_report/<user_id>', methods=['GET'])
+def get_recent_report(user_id):
+    """
+    Acquires the most recent report and calculate the time difference 
+    between now and submission time.
+
+    Parameters:
+        user_id (uuid): The athlete to be queried
+
+    Returns:
+        JSON response with the time difference or error.
+    """
+    try:
+        response = db_service.fetch(
+            "reports", 
+            filters={"athlete_id": user_id},
+            modifiers={"order": {"column": "created_at", "desc": True}}
+        )
+        if response and response.data:
+            logger.info("Fetching most recent report for each athlete")
+            now = datetime.now()
+            recent = datetime.fromisoformat(response.data[0].get('created_at').replace('+00:00', ''))
+            time_since = ""
+
+            # Report submitted today - measure in hours/minutes
+            if now.date() == recent.date():
+                time_diff = now - recent
+                total_minutes = int(time_diff.total_seconds() / 60)
+
+                if total_minutes < 60:
+                    time_since = f"{total_minutes} minutes ago"
+                else:
+                    hours = total_minutes // 60
+                    time_since = f"{hours} hour{'s' if total_minutes != 1 else ''} ago"
+
+            # More than a day ago - measure in days
+            else:
+                time_since = f"{(now.date() - recent.date()).days} days ago"
+
+            logger.info(f"Fetched recent reports")
+            return jsonify(time_since), 200
+        else:
+            logger.warning(f"No reports for user {user_id}")
+            return jsonify(f"None submitted"), 200
+
+    except Exception as e:
+        logger.error(f"Error retrieving recent report for user {user_id}: {e}")
         return jsonify(error=str(e)), 500
