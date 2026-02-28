@@ -89,12 +89,18 @@ class DatabaseService:
                 for method_name, value in modifiers.items():
                     method = getattr(query, method_name, None)
                     if method and callable(method):
-                        query = method(value)
+                        # Handle multiple arguments (e.g., order column with desc=True)
+                        if isinstance(value, dict):
+                            query = method(**value)
+                        elif isinstance(value, (list, tuple)):
+                            query = method(*value)
+                        else:
+                            query = method(value)
                     else:
                         self.logger.warning(f"Method '{method_name}' not valid") 
 
             response = query.execute()
-            self.logger.info(f"Data fetched from {table} with filters {filters}: {response}")
+            self.logger.info(f"Data fetched from {table} with filters {filters}")
         
             return response
         
