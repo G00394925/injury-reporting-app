@@ -101,7 +101,7 @@ def login():
                     message="Login successful",
                     uuid=response.user.id,
                     user={
-                        "name": user_data.data[0].get('name', '').split()[0],
+                        "name": user_data.data[0].get('name'),
                         "email": email,
                         "user_type": user_data.data[0].get('role'),
                         "dob": user_data.data[0].get('dob'),

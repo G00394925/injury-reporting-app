@@ -104,7 +104,7 @@ export default function AthleteDashScreen() {
       ) : (
         <>
           <View style={globalStyles.header}>
-            <Text style={globalStyles.headerText}>Hello {userData?.name}</Text>
+            <Text style={globalStyles.headerText}>Hello {userData?.name.split(' ')[0]}</Text>
           </View>
           <ScrollView
             style={globalStyles.contentContainer}
