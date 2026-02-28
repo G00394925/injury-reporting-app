@@ -144,19 +144,10 @@ const styles = StyleSheet.create({
     athleteSlot: {
         flexDirection: "row",
         justifyContent: "space-between",
-        padding: 20,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 3,
+        padding: 15,
+        paddingVertical: 10,
         borderBottomWidth: 1,
-        borderRadius: 0,
-        borderColor: "#c4c4c4",
-        marginBottom: 0,
+        borderBottomColor: "#c4c4c4",
         backgroundColor: "#ffffff"
     },
     athleteDetailsContainer: {
@@ -180,7 +171,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontFamily: "Rubik",
         alignSelf: "flex-end",
-        color: "#6e6e6e"
+        color: "#6e6e6e",
+        marginTop: 10
 
     },
     iconContainer: {
