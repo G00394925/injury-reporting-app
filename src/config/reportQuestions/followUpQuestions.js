@@ -39,19 +39,6 @@ export const getFollowUpQuestions = (
 
     {
         index: 2,
-        text: "Did you train today?",
-        component: (
-            <MultiChoice
-                options={["Yes", "No"]}
-                value={answers.trained}
-                onValueChange={(value) => updateAnswer("trained", value)}
-            />
-        ),
-        validate: (answers) => answers.trained !== null
-    },
-
-    {
-        index: 3,
         text: "Have you been in contact with a healthcare professional about your injury?",
         component: (
             <MultiChoice
@@ -67,7 +54,7 @@ export const getFollowUpQuestions = (
 
     // Update availability status
     {
-        index: 4,
+        index: 3,
         text: "What is your current availability?",
         component: (
             <MultiChoice
@@ -85,7 +72,7 @@ export const getFollowUpQuestions = (
 
     // Expected recovery update (if improving)
     {
-        index: 5,
+        index: 4,
         text: "When do you expect to return to full availability? (Skip if no change in estimation)",
         subtext: recoveryDate ? (
             <Text style={{ fontStyle: "italic" }}>
@@ -115,7 +102,7 @@ export const getFollowUpQuestions = (
 
     // Additional comments
     {
-        index: 6,
+        index: 5,
         text: "Additional comments or updates",
         subtext: "Optional",
         component: (
