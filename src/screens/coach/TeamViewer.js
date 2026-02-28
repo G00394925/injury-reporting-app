@@ -45,6 +45,12 @@ export default function TeamViewerScreen({ route }) {
                         }
                     })
                 )
+
+                athleteLastReport.sort((a, b) => {
+                    const surnameA = a.name.split(' ').pop()
+                    const surnameB = b.name.split(' ').pop()
+                    return surnameA.localeCompare(surnameB)
+                })
                 
                 const athletes = athleteLastReport.map((athlete) => {
                     return (
@@ -104,7 +110,7 @@ export default function TeamViewerScreen({ route }) {
                 </TouchableOpacity>
                 <Text style={globalStyles.headerText}>{team.team_name}</Text>
             </View>
-            <View style={globalStyles.contentContainer}>
+            <ScrollView style={globalStyles.contentContainer}>
                 {loading ? (
                     <ActivityIndicator size="large" color="#001a79" />
                 ) : (
@@ -118,7 +124,7 @@ export default function TeamViewerScreen({ route }) {
                         )}
                     </ScrollView>
                 )}
-            </View>
+            </ScrollView>
         </SafeAreaView>
     );
 }
