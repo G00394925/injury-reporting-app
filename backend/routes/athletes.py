@@ -89,19 +89,28 @@ def join_team():
 
 @athletes_bp.route('/leave_team/<athlete_id>', methods=['POST'])
 def leave_team(athlete_id):
-    try:
+    """
+    Handles team exit for a given athlete. Updates team_id to None
+    on the database.
 
+    Parameters:
+        athlete_id (uuid): Associated athlete for team removal.
+
+    Returns:
+        message (json): Message indicating success or failure.
+    """
+    try:
         response = db_service.update("athletes",
             data={"team_id": None},
             filters={"id": athlete_id}
         )
-
         if response:
             logger.info(f"Athlete {athlete_id} has left their team.")
             return jsonify(message="Athlete successfully left the team"), 200
         else:
             logger.warning(f"Failed to update athlete {athlete_id} to leave their team.")
             return jsonify(message="Failed to leave team"), 400
+    
     except Exception as e:
         logger.error(f"Error athlete leaving team: {e}")
         return jsonify(message="Error leaving team"), 500

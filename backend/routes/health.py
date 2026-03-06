@@ -190,8 +190,14 @@ def get_status(user_id):
 @health_bp.route('/check_due/<user_id>', methods=['GET'])
 def check_report_due(user_id):
     """
-    Checks database for a boolean value for whether a report by 
-    an athlete is due. Value is recurringly updated by a cron job.    
+    Checks database for a boolean value for whether a report by an athlete is 
+    due. Value is recurringly updated by a cron job on Supabase.
+
+    Parameters:
+        user_id (uuid): User to be queried.
+
+    Returns:
+        JSON object with boolean value or message.    
     """
     
     try:

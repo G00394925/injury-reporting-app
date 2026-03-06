@@ -46,7 +46,15 @@ def create_event():
 
 @events_bp.route('/get/<athlete_id>', methods=['GET'])
 def get_events(athlete_id):
-    
+    """
+    Fetches all event data associated with the given athlete_id.
+
+    Parameters:
+        athlete_id (uuid): Athlete's uuid used as a filter.
+
+    Returns:
+        events (json): Events data or message.
+    """
     try:
         response = db_service.fetch("events", filters={"athlete_id": athlete_id})
 
@@ -76,6 +84,15 @@ def get_events(athlete_id):
 
 @events_bp.route('/get_next/<athlete_id>', methods=['GET'])
 def get_next_event(athlete_id):
+    """
+    Fetches the next upcoming event associated with the given athlete id.
+
+    Parameters:
+        athlete_id (uuid): Athlete's uuid used as a filter.
+
+    Returns: 
+        next_event (json): Event data or message.
+    """
     try:
         today = datetime.now().strftime('%Y-%m-%d')
         response = db_service.fetch("events", 
