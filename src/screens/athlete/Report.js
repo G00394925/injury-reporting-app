@@ -272,12 +272,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#ffffffff",
     borderRadius: 10,
-    marginTop: -8,
     marginBottom: -10
   },
   content: {
     flexGrow: 1,
-    paddingVertical: 30
+    paddingVertical: 5
   },
   questionContainer: {
     paddingHorizontal: 20,

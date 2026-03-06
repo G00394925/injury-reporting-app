@@ -6,7 +6,7 @@ const { width: screenWidth } = Dimensions.get("window");
 const CONTAINER_WIDTH = screenWidth * 0.9;
 const SLIDER_WIDTH = CONTAINER_WIDTH - 60;
 
-export default function RpeSlider({ value, onValueChange }) {
+export default function RpeSlider({ value, onValueChange, labels, title }) {
   const getColor = () => {
     // Calculate RGB value relative to slider value
     const interpolate = (start, end) => {
@@ -14,7 +14,7 @@ export default function RpeSlider({ value, onValueChange }) {
       return Math.ceil((1 - k) * start + k * end) % 256;
     };
 
-    let r = interpolate(0, 255);
+    let r = interpolate(75, 255);
     let g = interpolate(200, 0);
     let b = 0;
     return `rgb(${r}, ${g}, ${b})`;
@@ -29,11 +29,11 @@ export default function RpeSlider({ value, onValueChange }) {
   };
 
   const getLabel = () => {
-    if (value <= 2) return "Very Light / None";
-    if (value <= 4) return "Light";
-    if (value <= 6) return "Moderate";
-    if (value <= 8) return "Intense";
-    return "Very Intense";
+    if (value <= 2) return labels[0];
+    if (value <= 4) return labels[1];
+    if (value <= 6) return labels[2];
+    if (value <= 8) return labels[3];
+    return labels[4];
   };
 
   return (
@@ -42,7 +42,7 @@ export default function RpeSlider({ value, onValueChange }) {
         <MaterialIcons name={getIcon()} size={120} color={getColor()} />
       </View>
       <View style={styles.sliderContainer}>
-        <Text style={styles.sliderHeading}>Rate your perceived pain level</Text>
+        <Text style={styles.sliderHeading}>{title}</Text>
         <Slider
           style={{ width: SLIDER_WIDTH, height: 40 }}
           minimumValue={1}

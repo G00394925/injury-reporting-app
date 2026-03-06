@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     elevation: 3
   },
   optionButtonCompact: {
-    paddingVertical: 25,
+    paddingVertical: 15,
     justifyContent: "center",
     borderRadius: 45,
     flex: 1

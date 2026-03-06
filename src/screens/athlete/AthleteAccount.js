@@ -7,6 +7,7 @@ import { Button } from '@rneui/base';
 import { globalStyles } from '../../styles/globalStyles';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default function AthleteAccountScreen() {
   const [showConfirmation, setShowConfirmation] = useState(false)
@@ -18,7 +19,7 @@ export default function AthleteAccountScreen() {
       <View style={globalStyles.header}>
         <Text style={globalStyles.headerText}>Your Account</Text>
       </View>
-      <View style={globalStyles.contentContainer}>
+      <ScrollView style={[globalStyles.contentContainer, {paddingBottom: 100}]}>
         <Text style={styles.sectionTitle}>Personal Information</Text>
         <View style={styles.accountInfoContainer}>
           <View style={styles.accountInfoCard}>
@@ -87,7 +88,7 @@ export default function AthleteAccountScreen() {
             <Text style={[styles.settingText, {color: "red"}]}>Delete Account</Text>
           </View>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
       <Modal 
         visible={showConfirmation}
         animationType='fade'

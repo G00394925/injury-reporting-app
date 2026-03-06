@@ -162,10 +162,12 @@ def get_status(user_id):
             injury_date = user.data[0].get('injury_date')
             report_streak = user.data[0].get('report_streak')
             date_obj = user.data[0].get('estimated_recovery_date')
-
-            estimated_recovery_date = date_obj.split('T')[0]
-            estimated_recovery_date = datetime.strptime(estimated_recovery_date, '%Y-%m-%d')
-            estimated_recovery_date = estimated_recovery_date.strftime("%d %B")
+            
+            estimated_recovery_date = None
+            if date_obj:
+                estimated_recovery_date = date_obj.split('T')[0]
+                estimated_recovery_date = datetime.strptime(estimated_recovery_date, '%Y-%m-%d')
+                estimated_recovery_date = estimated_recovery_date.strftime("%d %B")
 
             return jsonify(
                 user_id=user_id,
