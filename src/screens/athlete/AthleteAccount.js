@@ -1,24 +1,30 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Touchable } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { useState } from 'react';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from '../../context/AuthContext';
-import { Button } from '@rneui/base';
 import { globalStyles } from '../../styles/globalStyles';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default function AthleteAccountScreen() {
   const [showConfirmation, setShowConfirmation] = useState(false)
   const { userData, logout } = useAuth();
   const navigation = useNavigation();
 
+  if (!userData) {
+    return null
+  }
+
   return (
     <SafeAreaView style={globalStyles.container} edges={["top"]}>
       <View style={globalStyles.header}>
         <Text style={globalStyles.headerText}>Your Account</Text>
       </View>
-      <View style={globalStyles.contentContainer}>
+      <ScrollView 
+        style={globalStyles.contentContainer}
+        contentContainerStyle={{ paddingBottom: 100 }}
+        >
         <Text style={styles.sectionTitle}>Personal Information</Text>
         <View style={styles.accountInfoContainer}>
           <View style={styles.accountInfoCard}>
@@ -87,7 +93,7 @@ export default function AthleteAccountScreen() {
             <Text style={[styles.settingText, {color: "red"}]}>Delete Account</Text>
           </View>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
       <Modal 
         visible={showConfirmation}
         animationType='fade'
@@ -230,6 +236,7 @@ const styles = StyleSheet.create({
   },
   modalButtonText: {
     fontFamily: "Rubik",
-    fontSize: 16
+    fontSize: 16,
+    fontWeight: 'bold'
   }
 })
