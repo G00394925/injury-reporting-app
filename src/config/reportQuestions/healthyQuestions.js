@@ -6,7 +6,6 @@ import { View, Text, TextInput, StyleSheet } from "react-native";
 
 export const getHealthyQuestions = ( updateAnswer, answers, setInjured, setIll, setConsulted, setTimeLoss, setTrained ) => [
   // List of Questions for report
-
   {
     index: 0,
     component: (
@@ -68,6 +67,8 @@ export const getHealthyQuestions = ( updateAnswer, answers, setInjured, setIll, 
         )}
       </View>
     ),
+
+    // Assert that all required questions have been answered before enabling 'Next' button 
     validate: (answers, state) => {
       if (answers.trained === null) return false;
       if (answers.trained === "Yes") {
@@ -100,6 +101,8 @@ export const getHealthyQuestions = ( updateAnswer, answers, setInjured, setIll, 
       />
     ),
     validate: (answers) => answers.injury_onset !== null,
+
+    // Only show this question if the following condition is met
     condition: () => answers.injured === "Yes"
   },
   {
@@ -175,13 +178,24 @@ export const getHealthyQuestions = ( updateAnswer, answers, setInjured, setIll, 
         {answers.consulted === "Yes" && answers.timeloss === "Yes" && (
           <View>
             <Text style={styles.compactQuestionText}>
-              What activities were you advised to avoid?
+              What activities will you be avoiding?
             </Text>
             <MultiChoice
               options={["Competing Only", "Training & Competing"]}
               value={answers.missed_activity}
               compact={true}
               onValueChange={(value) => updateAnswer("missed_activity", value)}
+            />
+          </View>
+        )}
+        {answers.consulted === "Yes" && answers.timeloss === "Yes" && (
+          <View>
+            <Text style={styles.compactQuestionText}>
+              How long do you expect to be out?
+            </Text>
+            <DaysPicker
+              value={answers.expected_outage}
+              onValueChange={(value) => updateAnswer("expected_outage", value)}
             />
           </View>
         )}
@@ -197,57 +211,76 @@ export const getHealthyQuestions = ( updateAnswer, answers, setInjured, setIll, 
         answers.missed_activity === null
       )
         return false;
+      if (
+        answers.consulted === "Yes" &&
+        answers.timeloss === "Yes" &&
+        answers.expected_outage === null
+      ) 
+        return false;  
       return true;
     },
     condition: () => answers.injured === "Yes" || answers.ill === "Yes"
   },
   {
     index: 5,
-    text: "Do you expect to miss any training or games due to this injury?",
     component: (
-      <MultiChoice
-        options={["Yes", "No", "Unsure"]}
-        value={answers.timeloss}
-        onValueChange={(value) => updateAnswer("timeloss", value)}
-      />
+      <View style={styles.compactContainer}>
+        <View>
+          <Text style={styles.compactQuestionText}>
+            Do you expect to miss any activities?
+          </Text>
+          <MultiChoice
+            compact={true}
+            options={["Yes", "No"]}
+            value={answers.timeloss}
+            onValueChange={(value) => updateAnswer("timeloss", value)}
+          />
+        </View>
+
+        {answers.timeloss === "Yes" && (
+          <View>
+            <Text style={styles.compactQuestionText}>
+              What activities will you be avoiding?
+            </Text>
+            <MultiChoice
+              compact={true}
+              options={["Competing Only", "Training & Competing"]}
+              value={answers.missed_activity}
+              onValueChange={(value) => updateAnswer("missed_activity", value)}
+            />
+          </View>
+        )}
+
+        {answers.timeloss === "Yes" && answers.missed_activity && (
+          <View>
+            <Text style={styles.compactQuestionText}>
+              How much time do you need?
+            </Text>
+            <DaysPicker
+              value={answers.expected_outage}
+              onValueChange={(value) => {updateAnswer("expected_outage", value)}}
+            />
+          </View>
+        )}
+      </View>
     ),
-    validate: (answers) => answers.timeloss !== null,
+    validate: (answers) => {
+      if (answers.timeloss === null) return false;
+      if (answers.timeloss && answers.missed_activity === null) return false
+      if (
+        answers.timeloss && 
+        answers.missed_activity && 
+        answers.expected_outage === null
+      )
+        return false
+      return true
+    },
     condition: () =>
       (answers.injured === "Yes" || answers.ill === "Yes") &&
       answers.consulted !== "Yes"
   },
   {
     index: 6,
-    text: "What activities will you be avoiding?",
-    component: (
-      <MultiChoice
-        options={["Competing Only", "Training & Competing"]}
-        value={answers.missed_activity}
-        onValueChange={(value) => updateAnswer("missed_activity", value)}
-      />
-    ),
-    validate: (answers) => answers.missed_activity !== null,
-    condition: () =>
-      (answers.injured === "Yes" || answers.ill === "Yes") &&
-      answers.consulted !== "Yes" &&
-      answers.timeloss === "Yes"
-  },
-  {
-    index: 7,
-    text: "For how long do you expect to be out?",
-    component: (
-      <DaysPicker
-        value={answers.expected_outage}
-        onValueChange={(value) => updateAnswer("expected_outage", value)}
-      />
-    ),
-    validate: (answers) => answers.expected_outage !== null,
-    condition: () =>
-      (answers.injured === "Yes" || answers.ill === "Yes") &&
-      answers.timeloss === "Yes"
-  },
-  {
-    index: 8,
     text: "Have you any additional notes or comments?",
     component: (
       <View style={styles.commentBoxContainer}>
@@ -309,7 +342,7 @@ const styles = StyleSheet.create({
     width: "100%"
   },
   compactQuestionText: {
-    fontSize: 22,
+    fontSize: 20,
     marginHorizontal: 20,
     marginBottom: 20,
     fontWeight: "bold",

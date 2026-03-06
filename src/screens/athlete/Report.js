@@ -276,7 +276,8 @@ const styles = StyleSheet.create({
   },
   content: {
     flexGrow: 1,
-    paddingVertical: 5
+    paddingVertical: 5,
+    paddingBottom: 50
   },
   questionContainer: {
     paddingHorizontal: 20,

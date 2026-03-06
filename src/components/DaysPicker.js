@@ -12,6 +12,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 export default function DaysPicker({ value, onValueChange }) {
   const [modalVisible, setModalVisible] = useState(false);
 
+	// Create options (1-30 days) followed by '30+ days' option
   const options = [
     ...Array.from({ length: 30 }, (_, i) => ({
       label: `${i + 1} day${i + 1 > 1 ? 's' : ''}`,
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
   },
   selector: {
     width: "100%",
-    paddingVertical: 20,
+    paddingVertical: 8,
     paddingHorizontal: 25,
     borderRadius: 45,
     backgroundColor: "#ffffff",
