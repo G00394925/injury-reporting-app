@@ -1,23 +1,28 @@
 import { useCallback, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Modal, TouchableOpacity, ActivityIndicator } from "react-native";
 import { globalStyles } from "../../styles/globalStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CalendarContainer, CalendarHeader, CalendarBody } from "@howljs/calendar-kit";
 import calendarTheme from "../../styles/calendar_theme";
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { API_BASE_URL } from "../../config/api_config";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 
 export default function CoachDashScreen() {
   const { uuid, userData } = useAuth();
+  const navigation = useNavigation();
   const [healthy, setHealthy] = useState(0);
   const [atRisk, setAtRisk] = useState(0);
   const [injured, setInjured] = useState(0);
   const [reportsSubmitted, setReportsSubmitted] = useState(0);
   const [athletesNotReported, setAthletesNotReported] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [teams, setTeams] = useState([]);
+  const [activeTeam, setActiveTeam] = useState(0);
+  const [showTeamPicker, setShowTeamPicker] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -28,27 +33,12 @@ export default function CoachDashScreen() {
           const teamResponse = await axios.get(
             `${API_BASE_URL}/api/teams/coach_teams/${uuid}`
           );
-          if (teamResponse && teamResponse.data) {
-            // Acquire athlete data for team.
-            try {
-              const athletesResponse = await axios.get(
-                `${API_BASE_URL}/api/teams/get_athletes/${teamResponse.data.teams[0].team_id}`
-              );
-              if (athletesResponse && athletesResponse.data) {
-                setHealthy(athletesResponse.data.healthy_athletes);
-                setAtRisk(athletesResponse.data.at_risk_athletes);
-                setInjured(athletesResponse.data.injured_athletes);
-                setAthletesNotReported(athletesResponse.data.reports_due);
-                setReportsSubmitted(
-                  athletesResponse.data.num_athletes -
-                    athletesResponse.data.reports_due
-                );
-              } else {
-                console.log("No athlete data received");
-              }
-            } catch (error) {
-              console.error("Error fetching athlete data for team:", error);
-            }
+          if (teamResponse && teamResponse.data && teamResponse.data.teams.length > 0) {
+            console.log("TEAM DATA: ", teamResponse.data.teams)
+            const fetchedTeams = teamResponse.data.teams;
+            setTeams(fetchedTeams);
+            // Use the fetched data directly instead of waiting for state update
+            await loadTeamData(fetchedTeams, activeTeam);
           }
         } catch (error) {
           console.error("Error fetching team data:", error);
@@ -59,6 +49,40 @@ export default function CoachDashScreen() {
       fetchData();
     }, [uuid])
   );
+
+  const loadTeamData = async (teamsData, teamIndex) => {
+    // Acquire athlete data for team.
+    try {
+      // Safety check to ensure team exists
+      if (!teamsData || teamsData.length === 0 || !teamsData[teamIndex]) {
+        console.log("No team data available");
+        return;
+      }
+      
+      console.log("TEAMS : ", teamsData)
+      const athletesResponse = await axios.get(
+        `${API_BASE_URL}/api/teams/get_athletes/${teamsData[teamIndex].team_id}`
+      );
+      if (athletesResponse && athletesResponse.data) {
+        setHealthy(athletesResponse.data.healthy_athletes);
+        setAtRisk(athletesResponse.data.at_risk_athletes);
+        setInjured(athletesResponse.data.injured_athletes);
+        setAthletesNotReported(athletesResponse.data.reports_due);
+        setReportsSubmitted(
+          athletesResponse.data.num_athletes -
+          athletesResponse.data.reports_due
+        );
+      } else {
+        console.log("No athlete data received");
+      }
+    } catch (error) {
+      console.error("Error fetching athlete data for team:", error);
+    }
+  };
+
+  const setTeamFocus = async (teamIndex) => {
+    await loadTeamData(teams, teamIndex);
+  };
 
   return (
     <SafeAreaView style={globalStyles.container} edges={["top"]}>
@@ -72,7 +96,7 @@ export default function CoachDashScreen() {
       ) : (
         <>
           <ScrollView style={globalStyles.contentContainer}>
-            <TouchableOpacity style={styles.noticeCard}>
+            <TouchableOpacity style={styles.noticeCard} onPress={() => navigation.navigate("Team")}>
               <View style={styles.noticeIconContainer}>
                 <MaterialIcons name="warning-amber" size={40} color="#e9a803" />
               </View>
@@ -83,16 +107,25 @@ export default function CoachDashScreen() {
                 </Text>
               </View>
             </TouchableOpacity>
-            <Text
-              style={[
-                styles.componentTitle,
-                { marginTop: 20, marginBottom: 5 }
-              ]}
-            >
-              Team Overview
-            </Text>
+            <View style={styles.overviewHeaderContainer}>
+              <Text style={styles.componentTitle}>
+                Overview
+              </Text>
+              <View style={styles.line} />
+              <TouchableOpacity style={styles.changeTeamFocusButton} onPress={() => setShowTeamPicker(true)}>
+                <Text 
+                  style={styles.changeTeamFocusText}
+                  ellipsizeMode="tail"
+                  numberOfLines={1}
+                >
+                  {teams[activeTeam]?.team_name}
+                </Text>
+                <Ionicons name="chevron-down" size={11} />
+              </TouchableOpacity>
+
+            </View>
             <View style={styles.infoCardsContainer}>
-              <View style={styles.infoCard}>
+              <TouchableOpacity style={styles.infoCard} onPress={() => navigation.navigate("Team")}>
                 <MaterialCommunityIcons
                   name="check-circle"
                   size={28}
@@ -101,8 +134,8 @@ export default function CoachDashScreen() {
                 />
                 <Text style={styles.cardValue}>{healthy}</Text>
                 <Text style={styles.cardLabel}>Healthy</Text>
-              </View>
-              <View style={styles.infoCard}>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.infoCard} onPress={() => navigation.navigate("Team")}>
                 <MaterialCommunityIcons
                   name="alert-circle"
                   size={28}
@@ -111,8 +144,8 @@ export default function CoachDashScreen() {
                 />
                 <Text style={styles.cardValue}>{atRisk}</Text>
                 <Text style={styles.cardLabel}>At Risk</Text>
-              </View>
-              <View style={styles.infoCard}>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.infoCard} onPress={() => navigation.navigate("Team")}>
                 <MaterialCommunityIcons
                   name="close-circle"
                   size={28}
@@ -121,10 +154,10 @@ export default function CoachDashScreen() {
                 />
                 <Text style={styles.cardValue}>{injured}</Text>
                 <Text style={styles.cardLabel}>Injured</Text>
-              </View>
+              </TouchableOpacity>
             </View>
             <View style={styles.infoCardsContainer}>
-              <View style={styles.infoCard}>
+              <TouchableOpacity style={styles.infoCard} onPress={() => navigation.navigate("Team")}>
                 <MaterialCommunityIcons
                   name="calendar-check"
                   size={28}
@@ -133,8 +166,8 @@ export default function CoachDashScreen() {
                 />
                 <Text style={styles.cardValue}>{reportsSubmitted}</Text>
                 <Text style={styles.cardLabel}>Reports Submitted Today</Text>
-              </View>
-              <View style={styles.infoCard}>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.infoCard} onPress={() => navigation.navigate("Team")}>
                 <MaterialCommunityIcons
                   name="information-outline"
                   size={28}
@@ -145,7 +178,7 @@ export default function CoachDashScreen() {
                 <Text style={styles.cardLabel}>
                   Athletes Not Reported Today
                 </Text>
-              </View>
+              </TouchableOpacity>
             </View>
             <View style={styles.scheduleContainer}>
               <Text style={styles.componentTitle}>Team Schedule</Text>
@@ -169,11 +202,68 @@ export default function CoachDashScreen() {
           </ScrollView>
         </>
       )}
+      <Modal
+        visible={showTeamPicker}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => setShowTeamPicker(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Select Team</Text>
+              <TouchableOpacity onPress={() => setShowTeamPicker(false)}>
+                <MaterialIcons name="close" size={28} color="#333" />
+              </TouchableOpacity>
+            </View>
+            <ScrollView style={styles.scrollview}>
+              {teams.map((team, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.option} 
+                  onPress={() => {
+                    setActiveTeam(index);
+                    setTeamFocus(index);
+                    setShowTeamPicker(false);
+                  }}
+                >
+                  <Text style={styles.optionText}>{team.team_name}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  overviewHeaderContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+    marginBottom: 5
+  },
+  line: {
+    flex: 1,
+    height: 2,
+    marginHorizontal: 5,
+    backgroundColor: "#f0f0f0"
+  },
+  changeTeamFocusButton: {
+    flexDirection: "row",
+    padding: 7,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
+    alignItems: "center"
+  },
+  changeTeamFocusText: {
+    fontFamily: "Rubik",
+    fontWeight: "bold",
+    fontSize: 11,
+    marginRight: 5,
+  },
   infoCardsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -281,5 +371,53 @@ const styles = StyleSheet.create({
     borderColor: "#ccccccff",
     borderRadius: 10,
     marginBottom: 50
+  },
+  modalOverlay: {
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1
+  },
+  modalContent: {
+    backgroundColor: "#ffffff",
+    borderRadius: 25,
+    borderRadius: 25,
+    maxHeight: "70%",
+    width: "80%",
+    paddingBottom: 20
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eeeeee"
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    fontFamily: "Rubik",
+    color: "#333"
+  },
+  option: {
+    width: "100%",
+    paddingVertical: 18,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    backgroundColor: "#f5f5f5",
+    marginVertical: 5,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center"
+  },
+  optionText: {
+    fontSize: 16,
+    fontFamily: "Rubik",
+    color: "#333"
+  },
+  scrollview: {
+    paddingHorizontal: 20,
+    paddingTop: 10
   }
 });
