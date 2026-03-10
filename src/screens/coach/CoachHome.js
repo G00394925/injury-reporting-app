@@ -125,7 +125,10 @@ export default function CoachDashScreen() {
 
             </View>
             <View style={styles.infoCardsContainer}>
-              <TouchableOpacity style={styles.infoCard} onPress={() => navigation.navigate("Team")}>
+              <TouchableOpacity 
+                style={styles.infoCard} 
+                onPress={() => navigation.navigate("TeamViewer", { team: teams[activeTeam] })}
+              >
                 <MaterialCommunityIcons
                   name="check-circle"
                   size={28}
@@ -135,7 +138,10 @@ export default function CoachDashScreen() {
                 <Text style={styles.cardValue}>{healthy}</Text>
                 <Text style={styles.cardLabel}>Healthy</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.infoCard} onPress={() => navigation.navigate("Team")}>
+              <TouchableOpacity 
+                style={styles.infoCard} 
+                onPress={() => navigation.navigate("TeamViewer", { team: teams[activeTeam] })}
+              >
                 <MaterialCommunityIcons
                   name="alert-circle"
                   size={28}
@@ -145,7 +151,10 @@ export default function CoachDashScreen() {
                 <Text style={styles.cardValue}>{atRisk}</Text>
                 <Text style={styles.cardLabel}>At Risk</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.infoCard} onPress={() => navigation.navigate("Team")}>
+              <TouchableOpacity 
+                style={styles.infoCard} 
+                onPress={() => navigation.navigate("TeamViewer", { team : teams[activeTeam] })}
+              >
                 <MaterialCommunityIcons
                   name="close-circle"
                   size={28}
@@ -157,7 +166,10 @@ export default function CoachDashScreen() {
               </TouchableOpacity>
             </View>
             <View style={styles.infoCardsContainer}>
-              <TouchableOpacity style={styles.infoCard} onPress={() => navigation.navigate("Team")}>
+              <TouchableOpacity 
+                style={styles.infoCard} 
+                onPress={() => navigation.navigate("TeamViewer", { team : teams[activeTeam] })}
+              >
                 <MaterialCommunityIcons
                   name="calendar-check"
                   size={28}
@@ -167,7 +179,10 @@ export default function CoachDashScreen() {
                 <Text style={styles.cardValue}>{reportsSubmitted}</Text>
                 <Text style={styles.cardLabel}>Reports Submitted Today</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.infoCard} onPress={() => navigation.navigate("Team")}>
+              <TouchableOpacity 
+                style={styles.infoCard} 
+                onPress={() => navigation.navigate("TeamViewer", { team : teams[activeTeam] })}
+              >
                 <MaterialCommunityIcons
                   name="information-outline"
                   size={28}
@@ -242,7 +257,7 @@ const styles = StyleSheet.create({
   overviewHeaderContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 10,
+    marginTop: 25,
     marginBottom: 5
   },
   line: {
