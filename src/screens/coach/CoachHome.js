@@ -29,15 +29,13 @@ export default function CoachDashScreen() {
       const fetchData = async () => {
         setLoading(true);
         try {
-          // Acquire team id
+          // Acquire coach teams
           const teamResponse = await axios.get(
             `${API_BASE_URL}/api/teams/coach_teams/${uuid}`
           );
           if (teamResponse && teamResponse.data && teamResponse.data.teams.length > 0) {
-            console.log("TEAM DATA: ", teamResponse.data.teams)
             const fetchedTeams = teamResponse.data.teams;
             setTeams(fetchedTeams);
-            // Use the fetched data directly instead of waiting for state update
             await loadTeamData(fetchedTeams, activeTeam);
           }
         } catch (error) {
@@ -53,13 +51,12 @@ export default function CoachDashScreen() {
   const loadTeamData = async (teamsData, teamIndex) => {
     // Acquire athlete data for team.
     try {
-      // Safety check to ensure team exists
+      // Ensure team exists
       if (!teamsData || teamsData.length === 0 || !teamsData[teamIndex]) {
         console.log("No team data available");
         return;
       }
-      
-      console.log("TEAMS : ", teamsData)
+
       const athletesResponse = await axios.get(
         `${API_BASE_URL}/api/teams/get_athletes/${teamsData[teamIndex].team_id}`
       );
@@ -86,15 +83,15 @@ export default function CoachDashScreen() {
 
   return (
     <SafeAreaView style={globalStyles.container} edges={["top"]}>
-      <View style={globalStyles.header}>
-        <Text style={[globalStyles.headerText, { alignContent: "flex-start" }]}>
-          Hello Macdarach
-        </Text>
-      </View>
       {loading ? (
-        <ActivityIndicator size="large" color="#fff" />
+        <ActivityIndicator style={globalStyles.spinner} size="large" color="#fff" />
       ) : (
         <>
+          <View style={globalStyles.header}>
+            <Text style={[globalStyles.headerText, { alignContent: "flex-start" }]}>
+              Hello Macdarach
+            </Text>
+          </View>
           <ScrollView style={globalStyles.contentContainer}>
             <TouchableOpacity style={styles.noticeCard} onPress={() => navigation.navigate("Team")}>
               <View style={styles.noticeIconContainer}>
@@ -113,7 +110,7 @@ export default function CoachDashScreen() {
               </Text>
               <View style={styles.line} />
               <TouchableOpacity style={styles.changeTeamFocusButton} onPress={() => setShowTeamPicker(true)}>
-                <Text 
+                <Text
                   style={styles.changeTeamFocusText}
                   ellipsizeMode="tail"
                   numberOfLines={1}
@@ -125,8 +122,8 @@ export default function CoachDashScreen() {
 
             </View>
             <View style={styles.infoCardsContainer}>
-              <TouchableOpacity 
-                style={styles.infoCard} 
+              <TouchableOpacity
+                style={styles.infoCard}
                 onPress={() => navigation.navigate("TeamViewer", { team: teams[activeTeam] })}
               >
                 <MaterialCommunityIcons
@@ -138,8 +135,8 @@ export default function CoachDashScreen() {
                 <Text style={styles.cardValue}>{healthy}</Text>
                 <Text style={styles.cardLabel}>Healthy</Text>
               </TouchableOpacity>
-              <TouchableOpacity 
-                style={styles.infoCard} 
+              <TouchableOpacity
+                style={styles.infoCard}
                 onPress={() => navigation.navigate("TeamViewer", { team: teams[activeTeam] })}
               >
                 <MaterialCommunityIcons
@@ -151,9 +148,9 @@ export default function CoachDashScreen() {
                 <Text style={styles.cardValue}>{atRisk}</Text>
                 <Text style={styles.cardLabel}>At Risk</Text>
               </TouchableOpacity>
-              <TouchableOpacity 
-                style={styles.infoCard} 
-                onPress={() => navigation.navigate("TeamViewer", { team : teams[activeTeam] })}
+              <TouchableOpacity
+                style={styles.infoCard}
+                onPress={() => navigation.navigate("TeamViewer", { team: teams[activeTeam] })}
               >
                 <MaterialCommunityIcons
                   name="close-circle"
@@ -166,9 +163,9 @@ export default function CoachDashScreen() {
               </TouchableOpacity>
             </View>
             <View style={styles.infoCardsContainer}>
-              <TouchableOpacity 
-                style={styles.infoCard} 
-                onPress={() => navigation.navigate("TeamViewer", { team : teams[activeTeam] })}
+              <TouchableOpacity
+                style={styles.infoCard}
+                onPress={() => navigation.navigate("TeamViewer", { team: teams[activeTeam] })}
               >
                 <MaterialCommunityIcons
                   name="calendar-check"
@@ -179,9 +176,9 @@ export default function CoachDashScreen() {
                 <Text style={styles.cardValue}>{reportsSubmitted}</Text>
                 <Text style={styles.cardLabel}>Reports Submitted Today</Text>
               </TouchableOpacity>
-              <TouchableOpacity 
-                style={styles.infoCard} 
-                onPress={() => navigation.navigate("TeamViewer", { team : teams[activeTeam] })}
+              <TouchableOpacity
+                style={styles.infoCard}
+                onPress={() => navigation.navigate("TeamViewer", { team: teams[activeTeam] })}
               >
                 <MaterialCommunityIcons
                   name="information-outline"
@@ -235,7 +232,7 @@ export default function CoachDashScreen() {
               {teams.map((team, index) => (
                 <TouchableOpacity
                   key={index}
-                  style={styles.option} 
+                  style={styles.option}
                   onPress={() => {
                     setActiveTeam(index);
                     setTeamFocus(index);

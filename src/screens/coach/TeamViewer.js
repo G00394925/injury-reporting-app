@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { API_BASE_URL } from "../../config/api_config";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
+import AthleteInfoSkeleton from "../../components/skeleton/AthleteInfoSkeleton";
 
 export default function TeamViewerScreen({ route }) {
   const { team } = route.params;
@@ -61,23 +62,21 @@ export default function TeamViewerScreen({ route }) {
               <View style={styles.iconContainer}>
                 <MaterialCommunityIcons
                   name={
-                    athlete.health_status === "Healthy"
-                      ? "check-circle"
-                      : athlete.health_status === "No competing"
-                        ? "alert-circle"
-                        : "close-circle"
+                    athlete.health_status === "Healthy" ? "check-circle"
+                    : athlete.health_status === "No competing" ? "alert-circle"
+                    : "close-circle"
                   }
                   size={50}
                   color={
-                    athlete.health_status === "Healthy"
-                      ? "#10b981"
-                      : athlete.health_status === "No competing"
-                        ? "#f59e0b"
-                        : "#ef4444"
+                    athlete.health_status === "Healthy" ? "#10b981"
+                    : athlete.health_status === "No competing" ? "#f59e0b"
+                    : "#ef4444"
                   }
                 />
               </View>
-              <View style={styles.athleteDetailsContainer}>
+              <TouchableOpacity 
+                style={styles.athleteDetailsContainer}
+                onPress={() => navigation.navigate("AthleteViewer", { athlete: athlete.athlete_id})}>
                 <Text style={styles.athleteNameText}>
                   {athlete.name}
                 </Text>
@@ -85,7 +84,7 @@ export default function TeamViewerScreen({ route }) {
                 <Text style={styles.athleteLastReport}>
                   Last report: {athlete.timeSinceReport}
                 </Text>
-              </View>
+              </TouchableOpacity>
             </View>
           );
         });
@@ -112,7 +111,14 @@ export default function TeamViewerScreen({ route }) {
       </View>
       <ScrollView style={globalStyles.contentContainer}>
         {loading ? (
-          <ActivityIndicator size="large" color="#001a79" />
+          <>
+            <AthleteInfoSkeleton />
+            <AthleteInfoSkeleton />
+            <AthleteInfoSkeleton />
+            <AthleteInfoSkeleton />
+            <AthleteInfoSkeleton />
+            <AthleteInfoSkeleton />
+          </>
         ) : (
           <ScrollView>
             {athleteItems.length > 0 ? (
@@ -160,12 +166,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontFamily: "Rubik",
     color: "#1f2937"
-  },
-  athleteStatusText: {
-    fontSize: 14,
-    fontFamily: "Rubik",
-    marginTop: 5,
-    color: "#555"
   },
   athleteLastReport: {
     fontSize: 16,

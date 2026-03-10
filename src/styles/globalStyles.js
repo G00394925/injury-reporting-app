@@ -27,5 +27,12 @@ export const globalStyles = StyleSheet.create({
     fontFamily: "Rubik",
     fontWeight: "bold",
     color: "#ffffffff"
-  }
+  },
+  spinner: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0
+  },
 });
