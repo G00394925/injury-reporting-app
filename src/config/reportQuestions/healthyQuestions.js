@@ -38,19 +38,7 @@ export const getHealthyQuestions = ( updateAnswer, answers, setInjured, setIll, 
             />
           </View>
         )}
-        {answers.injured === "Yes" && (
-          <View>
-            <Text style={styles.compactQuestionText}>
-              Is this a new or recurring injury?
-            </Text>
-            <MultiChoice
-              options={["New", "Recurring"]}
-              value={answers.injury_type}
-              compact={true}
-              onValueChange={(value) => updateAnswer("injury_type", value)}
-            />
-          </View>
-        )}
+
         {(answers.injured === "No" || answers.trained === "No") && (
           <View>
             <Text style={styles.compactQuestionText}>Do you feel ill?</Text>
@@ -73,8 +61,6 @@ export const getHealthyQuestions = ( updateAnswer, answers, setInjured, setIll, 
       if (answers.trained === null) return false;
       if (answers.trained === "Yes") {
         if (answers.injured === null) return false;
-        if (answers.injured === "Yes" && answers.injury_type === null)
-          return false;
       }
       if (
         (answers.trained === "No" || answers.injured === "No") &&
@@ -120,6 +106,27 @@ export const getHealthyQuestions = ( updateAnswer, answers, setInjured, setIll, 
   },
   {
     index: 3,
+    text: "Can you describe the type of injury?",
+    component: (
+        <MultiChoice
+          options={[
+            "Muscle Injury",
+            "Nerve Injury",
+            "Fracture",
+            "Joint Sprain",
+            "Abrasion",
+            "Laceration",
+            "Unknown"
+          ]}
+          value = {answers.injury_type}
+          onValueChange={(value) => {updateAnswer("injury_type", value)}}
+        />
+    ),
+    validate: (answers) => answers.injury_type !== null,
+    condition: () => answers.injured === "Yes"
+  },
+  {
+    index: 4,
     text: "Rate your current pain level.",
     subtext: null,
     component: 
@@ -141,7 +148,7 @@ export const getHealthyQuestions = ( updateAnswer, answers, setInjured, setIll, 
     validate: () => true
   },
   {
-    index: 4,
+    index: 5,
     component: (
       <View style={styles.compactContainer}>
         <View>
@@ -239,7 +246,7 @@ export const getHealthyQuestions = ( updateAnswer, answers, setInjured, setIll, 
     condition: () => answers.injured === "Yes" || answers.ill === "Yes"
   },
   {
-    index: 5,
+    index: 6,
     text: "Have you any additional notes or comments?",
     component: (
       <View style={styles.commentBoxContainer}>

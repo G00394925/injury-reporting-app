@@ -4,6 +4,7 @@ import logging
 from health_status import HealthStatus
 from datetime import datetime, timedelta, timezone
 import re
+from injury_codes import generate_code
 
 db_service = DatabaseService()
 health_bp = Blueprint('health', __name__)
@@ -26,7 +27,6 @@ def health_report():
         JSON response indicating success or failure of report submission.
     """
 
-
     try:
         report = request.get_json()
         report_data = {
@@ -41,6 +41,8 @@ def health_report():
         # Healthy athlete's submission
         if not followup:    
             proposed_status = HealthStatus.GREEN
+            injury_code = None
+            side = "N/A"
             
             if report_data['answers'].get('expected_outage'):
                 # Extract days from string 
@@ -52,6 +54,28 @@ def health_report():
                     proposed_status = HealthStatus.AMBER
                 elif restriction == "Training & Competing":
                     proposed_status = HealthStatus.RED
+
+            # Acquire injury location and type, generate injury code
+            if report_data['answers'].get('injured'):
+                injury_location = report_data['answers'].get('injury_location')
+                injury_type = report_data['answers'].get('injury_type')
+                
+                # Account for injuries that may occur on either left or right side
+                if injury_location and (injury_location.startswith("Left") or injury_location.startswith("Right")):
+                    split_str = injury_location.split(' ', 1)
+                    if len(split_str) == 2:
+                        side = split_str[0]
+                        location = split_str[1]
+                    else:
+                        location = split_str[0]
+                else:
+                    side = "N/A"
+                    location = injury_location
+                injury_code = generate_code(location, injury_type)
+
+            # Set code to M for illness cases
+            if report_data['answers'].get('ill'):
+                injury_code = 'M'
 
             # Update athlete's health status based on report data
             update_data = {
@@ -82,9 +106,9 @@ def health_report():
                 "athlete_id": report_data['user'],
                 "injured": report_data['answers'].get('injured'),
                 "ill": report_data['answers'].get('ill'),
-                "injury_type": report_data['answers'].get('injury_type'),
+                "injury_code": injury_code,
                 "timeloss": report_data['answers'].get('timeloss'),
-                "injury_location": report_data['answers'].get('injury_location'),
+                "injury_side": side,
                 "injury_onset": report_data['answers'].get('injury_onset'),
                 "consulted": report_data['answers'].get('consulted'),
                 "comments": report_data['answers'].get('comments'),
