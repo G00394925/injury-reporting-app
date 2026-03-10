@@ -64,7 +64,6 @@ export default function LoginScreen() {
       login(uuid, user);
 
       console.log("Login context updated successfully");
-      Alert.alert("Success", "Logged in successfully!");
     } catch (error) {
       console.log("=== LOGIN ERROR ===");
       console.error("Error type:", error.constructor.name);
