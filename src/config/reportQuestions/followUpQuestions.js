@@ -1,3 +1,4 @@
+import DaysPicker from "../../components/DaysPicker";
 import MultiChoice from "../../components/MultiChoice";
 import RpeSlider from "../../components/RPESlider";
 import { View, Text, TextInput, StyleSheet } from "react-native";
@@ -32,6 +33,8 @@ export const getFollowUpQuestions = (
       <RpeSlider
         value={answers.rpe}
         onValueChange={(value) => updateAnswer("rpe", value)}
+        title="Rate your current feeling."
+        labels={["Very Low", "Low", "Moderate", "High", "Very High"]}
       />
     ),
     validate: () => true
@@ -42,17 +45,29 @@ export const getFollowUpQuestions = (
     text: "Have you been in contact with a healthcare professional about your injury?",
     component: (
       <MultiChoice
-        options={["Yes", "No, but I plan to", "No"]}
+        options={["Healthcare Professional", "No, but I plan to", "No"]}
         value={answers.practitioner_contact}
         onValueChange={(value) => updateAnswer("practitioner_contact", value)}
       />
     ),
     validate: (answers) => answers.practitioner_contact !== null
   },
+  {
+    index: 3,
+    text: "Have you been following the treatment plan/injury protocol provided?",
+    component: (
+        <MultiChoice
+        options={["Yes", "No"]}
+        value={answers.protocol_adherence}
+        onValueChange={(value) => updateAnswer("protocol_adherence", value)}
+      />
+    ),
+    validate: (answers) => answers.protocol_adherence !== null
+  },
 
   // Update availability status
   {
-    index: 3,
+    index: 4,
     text: "What is your current availability?",
     component: (
       <MultiChoice
@@ -70,7 +85,7 @@ export const getFollowUpQuestions = (
 
   // Expected recovery update (if improving)
   {
-    index: 4,
+    index: 5,
     text: "When do you expect to return to full availability? (Skip if no change in estimation)",
     subtext: recoveryDate ? (
       <Text style={{ fontStyle: "italic" }}>
@@ -79,15 +94,7 @@ export const getFollowUpQuestions = (
       </Text>
     ) : null,
     component: (
-      <MultiChoice
-        options={[
-          "1 day",
-          "3 days",
-          "7 days",
-          "14 days",
-          "21 days",
-          "30+ days"
-        ]}
+      <DaysPicker
         value={answers.expected_return}
         onValueChange={(value) => updateAnswer("expected_return", value)}
       />
@@ -98,7 +105,7 @@ export const getFollowUpQuestions = (
 
   // Additional comments
   {
-    index: 5,
+    index: 6,
     text: "Additional comments or updates",
     subtext: "Optional",
     component: (
