@@ -175,7 +175,24 @@ export const getHealthyQuestions = ( updateAnswer, answers, setInjured, setIll, 
           </View>
         )}
 
-        {answers.consulted === "Yes" && answers.timeloss === "Yes" && (
+        {answers.consulted === "No" && (
+            <View>
+            <Text style={styles.compactQuestionText}>
+                Do you expect to miss any activities?
+            </Text>
+            <MultiChoice
+                compact={true}
+                options={["Yes", "No"]}
+                value={answers.timeloss}
+                onValueChange={(value) => {
+                    updateAnswer("timeloss", value);
+                    setTimeLoss(value === "Yes");
+                }}
+            />
+            </View>
+        )}
+
+        {answers.timeloss === "Yes" && (
           <View>
             <Text style={styles.compactQuestionText}>
               What activities will you be avoiding?
@@ -188,7 +205,7 @@ export const getHealthyQuestions = ( updateAnswer, answers, setInjured, setIll, 
             />
           </View>
         )}
-        {answers.consulted === "Yes" && answers.timeloss === "Yes" && (
+        {answers.timeloss === "Yes" && (
           <View>
             <Text style={styles.compactQuestionText}>
               How long do you expect to be out?
@@ -203,16 +220,16 @@ export const getHealthyQuestions = ( updateAnswer, answers, setInjured, setIll, 
     ),
     validate: (answers) => {
       if (answers.consulted === null) return false;
-      if (answers.consulted === "Yes" && answers.timeloss === null)
+      if (answers.consulted && answers.timeloss === null)
         return false;
       if (
-        answers.consulted === "Yes" &&
+        answers.consulted &&
         answers.timeloss === "Yes" &&
         answers.missed_activity === null
       )
         return false;
       if (
-        answers.consulted === "Yes" &&
+        answers.consulted &&
         answers.timeloss === "Yes" &&
         answers.expected_outage === null
       ) 
@@ -223,64 +240,6 @@ export const getHealthyQuestions = ( updateAnswer, answers, setInjured, setIll, 
   },
   {
     index: 5,
-    component: (
-      <View style={styles.compactContainer}>
-        <View>
-          <Text style={styles.compactQuestionText}>
-            Do you expect to miss any activities?
-          </Text>
-          <MultiChoice
-            compact={true}
-            options={["Yes", "No"]}
-            value={answers.timeloss}
-            onValueChange={(value) => updateAnswer("timeloss", value)}
-          />
-        </View>
-
-        {answers.timeloss === "Yes" && (
-          <View>
-            <Text style={styles.compactQuestionText}>
-              What activities will you be avoiding?
-            </Text>
-            <MultiChoice
-              compact={true}
-              options={["Competing Only", "Training & Competing"]}
-              value={answers.missed_activity}
-              onValueChange={(value) => updateAnswer("missed_activity", value)}
-            />
-          </View>
-        )}
-
-        {answers.timeloss === "Yes" && answers.missed_activity && (
-          <View>
-            <Text style={styles.compactQuestionText}>
-              How much time do you need?
-            </Text>
-            <DaysPicker
-              value={answers.expected_outage}
-              onValueChange={(value) => {updateAnswer("expected_outage", value)}}
-            />
-          </View>
-        )}
-      </View>
-    ),
-    validate: (answers) => {
-      if (answers.timeloss === null) return false;
-      if (answers.timeloss && answers.missed_activity === null) return false
-      if (
-        answers.timeloss && 
-        answers.missed_activity && 
-        answers.expected_outage === null
-      )
-        return false
-      return true
-    },
-    condition: () =>
-      (answers.injured === "Yes" || answers.ill === "Yes") &&
-      answers.consulted !== "Yes"
-  },
-  {
-    index: 6,
     text: "Have you any additional notes or comments?",
     component: (
       <View style={styles.commentBoxContainer}>

@@ -45,7 +45,7 @@ export default function ReportFinish({ route }) {
                         { color: "red", fontWeight: "bold", fontSize: 22 }
                       ]}
                     >
-                      {expected_outage}.
+                      {expected_outage} days.
                     </Text>
                     <Text style={styles.advisoryText}>
                       Please take as much rest as possible.
@@ -73,7 +73,7 @@ export default function ReportFinish({ route }) {
                         { color: "#e7ae04", fontWeight: "bold", fontSize: 22 }
                       ]}
                     >
-                      {expected_outage}.
+                      {expected_outage} days.
                     </Text>
                     <Text style={styles.advisoryText}>
                       Please take care to not overexert yourself during
