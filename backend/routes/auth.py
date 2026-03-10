@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from services.auth_service import AuthService
 from services.database_service import DatabaseService
 import logging
+from datetime import datetime
 
 auth_bp = Blueprint('auth', __name__)
 auth_service = AuthService()
@@ -96,7 +97,13 @@ def login():
             try:
                 # Fetch user data from database
                 user_data = db_service.fetch("users", {"id": response.user.id})
-
+                db_service.update("users", 
+                    data={
+                        "num_logins": user_data.data[0].get('num_logins') + 1,
+                        "last_login": datetime.now().isoformat()
+                    },
+                    filters={"id": response.user.id}
+                )
                 return jsonify(
                     message="Login successful",
                     uuid=response.user.id,
