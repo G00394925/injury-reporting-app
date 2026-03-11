@@ -6,11 +6,14 @@ import { API_BASE_URL } from "../../config/api_config";
 import { useAuth } from "../../context/AuthContext";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import SkeletonText from "../../components/skeleton/SkeletonText";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function TeamManagerScreen() {
   const navigation = useNavigation();
   const { uuid, userData } = useAuth();
   const [teamItems, setTeamItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -56,7 +59,7 @@ export default function TeamManagerScreen() {
               }}
             >
               <View style={styles.teamHeader}>
-                <Text style={styles.teamText}>{team.team_name}</Text>
+                <Text style={styles.teamText}>{team.team_name}<Ionicons style={styles.chevronContainer} name="chevron-forward" size={20} /></Text>
                 <Text style={styles.sportText}>{team.sport}</Text>
               </View>
               <Text style={styles.playerCountText}>{team.players} Players</Text>
@@ -68,8 +71,10 @@ export default function TeamManagerScreen() {
         });
 
         setTeamItems(teams);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching teams:", error);
+        setLoading(false);
       }
     };
 
@@ -82,16 +87,27 @@ export default function TeamManagerScreen() {
         <Text style={globalStyles.headerText}>Team Manager</Text>
       </View>
       <View style={globalStyles.contentContainer}>
-        {teamItems}
+        {loading ? (
+          <>
+            <View style={{marginBottom: 15}}><SkeletonText width={"100%"} height={125} borderRadius={25} /></View>
+            <View style={{marginBottom: 15}}><SkeletonText width={"100%"} height={125} borderRadius={25} /></View>
+            <View style={{marginBottom: 15}}><SkeletonText width={"100%"} height={125} borderRadius={25} /></View>
+            <View style={{marginBottom: 15}}><SkeletonText width={"100%"} height={125} borderRadius={25} /></View>
+          </>
+        ) : (
+          <>
+            {teamItems}
 
-        <TouchableOpacity
-          style={styles.newTeamButton}
-          onPress={() => {
-            navigation.navigate("TeamCreator");
-          }}
-        >
-          <Text>Create new team</Text>
-        </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.newTeamButton}
+              onPress={() => {
+                navigation.navigate("TeamCreator");
+              }}
+              >
+              <Text>Create new team</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -100,10 +116,11 @@ export default function TeamManagerScreen() {
 const styles = StyleSheet.create({
   teamSlot: {
     padding: 15,
-    borderWidth: 1,
-    borderColor: "#1d3adfff",
-    borderRadius: 10,
+    borderLeftWidth: 4,
+    borderLeftColor: "#1d3adfff",
+    borderRadius: 25,
     marginBottom: 15,
+    backgroundColor: "#d8f4ff",
     justifyContent: "flex-start"
   },
   teamText: {
@@ -115,7 +132,7 @@ const styles = StyleSheet.create({
   },
   playerCountText: {
     fontSize: 14,
-    marginTop: 15,
+    marginTop: 10,
     fontFamily: "Rubik",
     alignSelf: "flex-start",
     verticalAlign: "bottom"
@@ -144,5 +161,10 @@ const styles = StyleSheet.create({
     borderColor: "#969696ff",
     borderStyle: "dashed",
     borderRadius: 10
+  },
+  chevronContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    color: "#a1a1a1"
   }
 });
