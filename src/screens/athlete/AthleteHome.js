@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Image, ActivityIndicator, TouchableOpacity } from "react-native";
-import { Button, Card } from "@rneui/themed";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { Card } from "@rneui/themed";
 import { useCallback, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";

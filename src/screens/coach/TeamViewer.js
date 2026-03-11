@@ -76,7 +76,7 @@ export default function TeamViewerScreen({ route }) {
               </View>
               <TouchableOpacity 
                 style={styles.athleteDetailsContainer}
-                onPress={() => navigation.navigate("AthleteViewer", { athlete: athlete.athlete_id})}>
+                onPress={() => navigation.navigate("AthleteViewer", { athlete: athlete})}>
                 <Text style={styles.athleteNameText}>
                   {athlete.name}
                 </Text>
