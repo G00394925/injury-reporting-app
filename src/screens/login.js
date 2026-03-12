@@ -33,7 +33,6 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     console.log("=== LOGIN ATTEMPT START ===");
     console.log("Email:", email);
-    console.log("API_BASE_URL:", API_BASE_URL);
 
     if (!validateForm()) {
       console.log("ERROR: Missing email or password");
@@ -45,7 +44,6 @@ export default function LoginScreen() {
 
     try {
       const url = `${API_BASE_URL}/api/auth/login`;
-      console.log("Making request to:", url);
 
       const payload = {
         email: email,

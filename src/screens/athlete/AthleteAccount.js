@@ -53,7 +53,9 @@ export default function AthleteAccountScreen() {
           </View>
           <Ionicons name="chevron-forward" size={26} color="#0000006c" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.settingButton}>
+        <TouchableOpacity 
+          style={styles.settingButton}
+          onPress={() => (navigation.navigate("ResetPassword"))}>
           <View style={styles.settingIconContainer}>
             <MaterialIcons name="password" size={21} />
           </View>

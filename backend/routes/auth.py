@@ -122,3 +122,34 @@ def login():
     except Exception as e:
         logger.error(f"Error during login: {e}")
         return jsonify(error=str(e)), 500
+
+
+@auth_bp.route('/change_password', methods=['POST'])
+def update_password():
+    credentials = request.get_json()
+    old_password = credentials.get('old_password')
+    new_password = credentials.get('new_password')
+
+    try:
+        if not old_password or not new_password:
+            return jsonify(error="Both old and new passwords are required"), 400
+        
+        # Sign in with old password to verify it is correct before updating
+        verify = auth_service.sign_in(
+            email=credentials.get('email'),
+            password=old_password
+        )
+
+        if not verify:
+            return jsonify(message="Old password is incorrect"), 400
+        else:
+          # Update user's password
+          response = auth_service.update_password(
+              email=credentials.get('email'),
+              new_password=new_password
+          )
+          return response
+
+    except Exception as e:
+        logger.error(f"Error updating password: {e}")
+        return jsonify(error=str(e)), 500

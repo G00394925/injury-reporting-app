@@ -23,6 +23,7 @@ import TeamViewerScreen from "./src/screens/coach/TeamViewer";
 import ManageScheduleScreen from "./src/screens/athlete/ManageSchedule";
 import ReportFinish from "./src/screens/athlete/ReportFinish";
 import AthleteViewerScreen from "./src/screens/coach/AthleteViewer";
+import ResetPasswordScreen from "./src/screens/ResetPassword";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -121,10 +122,11 @@ function AppNavigator() {
           </>
         ) : (
           <>
-            <Stack.Screen name="AthleteMain" component={AthleteTabNavigator} />
+            <Stack.Screen name="MainApp" component={AthleteTabNavigator} />
             <Stack.Screen name="Report" component={ReportScreen} />
             <Stack.Screen name="ClubSetup" component={ClubSetup} />
             <Stack.Screen name="ReportFinish" component={ReportFinish} />
+            <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
           </>
         )}
       </Stack.Navigator>

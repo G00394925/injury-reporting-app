@@ -1,3 +1,5 @@
+from flask import jsonify
+
 from services.supabase_service import SupabaseService
 import logging
 
@@ -67,3 +69,17 @@ class AuthService:
         except Exception as e:
             self.logger.error(f"Error signing in user {email}: {e}")
             raise e
+        
+    def update_password(self, email: str, new_password: str) -> dict:
+        try:
+            self.logger.info(f"Password update attempt for {email}")
+            response = self.supabase.auth.update_user(
+                {"password": new_password}
+            )
+
+            self.logger.info(f"Password updated successfully for {email}")
+            return jsonify(message="Password updated successfully"), 200
+        except Exception as e:
+            self.logger.error(f"Error updating password for {email}: {e}")
+            raise e
+
