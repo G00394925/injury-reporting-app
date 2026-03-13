@@ -16,6 +16,7 @@ export default function ConfirmRegistrationScreen({ route }) {
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
 
+  // Check if code entered is valid
   const handleConfirm = async () => {
     setLoading(true)
     try {
@@ -28,6 +29,18 @@ export default function ConfirmRegistrationScreen({ route }) {
       setErrors({ general: "Code was invalid. Please try again."})
     } finally {
       setLoading(false)
+    }
+  }
+
+  // Send additional One-Time Passcode if requested
+  const handleSendOTP = async () => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/api/auth/send_otp`, {
+        email: email
+      })
+      console.log("Sending OTP to ", email)
+    } catch (error) {
+      console.error(error)
     }
   }
 
@@ -73,6 +86,13 @@ export default function ConfirmRegistrationScreen({ route }) {
           >
             <Text style={{color: "#fff", fontFamily: "Rubik", fontSize: 20}}>Confirm</Text>
           </TouchableOpacity>
+          
+          <Button
+            title="Not there? Send another code"
+            type="clear"
+            onPress={handleSendOTP}
+            containerStyle={{ marginTop: 15 }} 
+          />
         </View>
       </View>
     </SafeAreaView>

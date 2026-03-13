@@ -46,9 +46,14 @@ class DatabaseService:
         Fetch data from a specified table with optional filters.
 
         Args:
-            table: Name of the table to fetch from
-            filters: Dictionary of filters to apply (e.g., {"id": "123"} or {"date": "gte.2026-01-01"})
-                    Supports operators: gte, lte, gt, lt, neq (e.g., "gte.value")
+            table (str): Name of the table to fetch from
+            filters (dict): 
+                Filters to apply (e.g., {"id": "123"} or {"date": "gte.2026-01-01"})
+                Supports operators: gte, lte, gt, lt, neq (e.g., "gte.value")
+                (default None)
+            modifiers (dict):
+                Additional modifiers for the query (e.g, order column with desc=True).
+                (default None) 
 
         Returns:
             Response containing the fetched data

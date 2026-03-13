@@ -11,7 +11,6 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-
   const navigation = useNavigation();
   const { login } = useAuth();
 
@@ -25,7 +24,6 @@ export default function LoginScreen() {
     if (!password) {
       issues.password = "Password is required";
     }
-
     setErrors(issues);
     return Object.keys(issues).length === 0;
   };
@@ -38,28 +36,24 @@ export default function LoginScreen() {
       console.log("ERROR: Missing email or password");
       return;
     }
-
     setLoading(true);
     setErrors({});
 
     try {
       const url = `${API_BASE_URL}/api/auth/login`;
-
       const payload = {
         email: email,
         password: password
       };
-
       const response = await axios.post(url, payload, {
         timeout: 10000,
         headers: {
           "Content-Type": "application/json"
         }
       });
-      console.log("RESPONSE: ", response.data.verified)
+
       if (!response.data.verified) {
-        console.log("Verified == False")
-        navigation.navigate("ConfirmRegistration", email)
+        navigation.navigate("ConfirmRegistration", { email })
       } else {
         // Save user data to context
         const { uuid, user } = response.data;

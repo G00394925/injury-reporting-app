@@ -132,6 +132,13 @@ def login():
 
 @auth_bp.route('/change_password', methods=['POST'])
 def update_password():
+    """
+    Change password for a given requesting user. Verifies old credentials
+    are correct before updating.
+    
+    Returns:
+        JSON response indicating success for failure.
+    """
     credentials = request.get_json()
     old_password = credentials.get('old_password')
     new_password = credentials.get('new_password')
@@ -160,9 +167,39 @@ def update_password():
         logger.error(f"Error updating password: {e}")
         return jsonify(error=str(e)), 500
     
+    
+@auth_bp.route('/send_otp', methods=['POST'])
+def send_otp():
+    """
+    Send an additional One-Time passcode to the user's email if 
+    requested. 
+    
+    Returns:
+        JSON resposne indicating success or failure.
+    """
+    data = request.get_json()
+    email = data.get("email")
+    
+    if not email:
+        return jsonify(error="Email is required")
+    
+    try:
+        response = auth_service.send_otp(email=email)
+        return jsonify(message="OTP send successfully"), 200
+    except Exception as e:
+        logger.error(f"Error sending OTP: {e}")
+        return jsonify(error=str(e)), 400
+
 
 @auth_bp.route('/verify_otp', methods=['POST'])
 def verify_otp():
+    """
+    Checks if the entered OTP matches with what was sent 
+    to the user's email.
+    
+    Returns:
+        JSON response indicating success or failure.
+    """
     data = request.get_json()
     email = data.get('email')
     token = data.get('token')
