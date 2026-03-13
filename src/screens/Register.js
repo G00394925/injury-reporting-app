@@ -80,7 +80,6 @@ export default function RegisterScreen() {
   // Handle registration and add user to database
   const handleSubmission = async () => {
     if (!validateForm()) {
-      Alert.alert("Form Error", "Please correct the errors in the form.");
       return;
     }
 
@@ -104,9 +103,8 @@ export default function RegisterScreen() {
 
       console.log("Registration Response:", response.data);
 
-      await login(response.data.uuid, response.data.user);
+      navigation.navigate("ConfirmRegistration", { email: email });
 
-      Alert.alert("Success", "Account created successfully!");
     } catch (error) {
       console.error("Registration Error:", error);
       const errorMessage =

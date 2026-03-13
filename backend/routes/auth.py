@@ -153,3 +153,17 @@ def update_password():
     except Exception as e:
         logger.error(f"Error updating password: {e}")
         return jsonify(error=str(e)), 500
+    
+
+@auth_bp.route('/verify_otp', methods=['POST'])
+def verify_otp():
+    data = request.get_json()
+    email = data.get('email')
+    token = data.get('token')
+
+    try:
+        response = auth_service.verify_otp(email=email, token=token)
+        return jsonify(message="OTP verified successfully"), 200
+    except Exception as e:
+        logger.error(f"Error verifying OTP: {e}")
+        return jsonify(error=str(e)), 400

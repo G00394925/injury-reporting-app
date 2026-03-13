@@ -83,3 +83,17 @@ class AuthService:
             self.logger.error(f"Error updating password for {email}: {e}")
             raise e
 
+
+    def verify_otp(self, email: str, token: str) -> dict:
+        try:
+            self.logger.info(f"OTP verification attempt for {email}")
+            response = self.supabase.auth.verify_otp({
+              "email": email,
+              "token": token,
+              "type": "email"
+            })
+            self.logger.info(f"OTP successfully verified for {email}")
+            return response
+        except Exception as e:
+          self.logger.error(f"Error verifying OTP for {email} {e}")
+          raise e

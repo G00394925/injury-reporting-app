@@ -146,7 +146,7 @@ export default function ReportFinish({ route }) {
             titleStyle={{ fontFamily: "Rubik", color: "#ffffffff" }}
             buttonStyle={styles.dashboardButton}
             containerStyle={{ width: "90%" }}
-            onPress={() => navigation.navigate("AthleteMain")}
+            onPress={() => navigation.navigate("MainApp")}
           />
         </View>
       </View>

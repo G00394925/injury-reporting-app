@@ -7,7 +7,7 @@ import { View, Text, TextInput, StyleSheet } from "react-native";
 import { Button } from "@rneui/themed"
 
 export default function ResetPasswordScreen() {
-  const { uuid, userData, login } = useAuth();
+  const { uuid, userData } = useAuth();
   const [oldPass, setOldPass] = useState("");
   const [newPass, setNewPass] = useState("");
   const [confirmPass, setConfirmPass] = useState("");

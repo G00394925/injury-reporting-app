@@ -24,6 +24,7 @@ import ManageScheduleScreen from "./src/screens/athlete/ManageSchedule";
 import ReportFinish from "./src/screens/athlete/ReportFinish";
 import AthleteViewerScreen from "./src/screens/coach/AthleteViewer";
 import ResetPasswordScreen from "./src/screens/ResetPassword";
+import ConfirmRegistrationScreen from "./src/screens/ConfirmRegistration"
 
 SplashScreen.preventAutoHideAsync();
 
@@ -112,6 +113,7 @@ function AppNavigator() {
           <>
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="ConfirmRegistration" component={ConfirmRegistrationScreen} />
           </>
         ) : userType === "Coach" ? (
           <>

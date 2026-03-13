@@ -167,6 +167,11 @@ export default function LoginScreen() {
           handleLogin();
         }}
       />
+
+      <Button
+        title="DEBUG: Registration Complete Screen"
+        onPress={() => navigation.navigate("ConfirmRegistration")}
+      />
     </View>
   );
 }
