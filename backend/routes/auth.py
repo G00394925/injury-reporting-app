@@ -54,6 +54,7 @@ def register():
                     "email": user_data["email"],
                     "dob": user_data["dob"],
                     "role": user_data["user_type"],
+                    "email_verified": False
                 })
 
                 logger.info(
@@ -88,6 +89,12 @@ def login():
 
         logger.info(f"Login attempt for: {email}")
 
+        # Fetch user data from database
+        user_data = db_service.fetch("users", {"email": email})
+
+        if not user_data.data[0].get("email_verified"):
+            return jsonify(message="Email not verified", verified=False), 200
+                
         response = auth_service.sign_in(
             email=email,
             password=password
@@ -95,8 +102,6 @@ def login():
 
         if response:
             try:
-                # Fetch user data from database
-                user_data = db_service.fetch("users", {"id": response.user.id})
                 db_service.update("users", 
                     data={
                         "num_logins": user_data.data[0].get('num_logins') + 1,
@@ -112,7 +117,8 @@ def login():
                         "email": email,
                         "user_type": user_data.data[0].get('role'),
                         "dob": user_data.data[0].get('dob'),
-                    }
+                    },
+                    verified=True
                 )
             except Exception as e:
                 logger.error(
@@ -163,6 +169,11 @@ def verify_otp():
 
     try:
         response = auth_service.verify_otp(email=email, token=token)
+        if response:
+            db_service.update("users",
+                data={"email_verified": True},
+                filters={"email": email}
+            )
         return jsonify(message="OTP verified successfully"), 200
     except Exception as e:
         logger.error(f"Error verifying OTP: {e}")

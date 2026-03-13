@@ -56,12 +56,17 @@ export default function LoginScreen() {
           "Content-Type": "application/json"
         }
       });
+      console.log("RESPONSE: ", response.data.verified)
+      if (!response.data.verified) {
+        console.log("Verified == False")
+        navigation.navigate("ConfirmRegistration", email)
+      } else {
+        // Save user data to context
+        const { uuid, user } = response.data;
+        login(uuid, user);
+        console.log("Login context updated successfully");
+      }
 
-      // Save user data to context
-      const { uuid, user } = response.data;
-      login(uuid, user);
-
-      console.log("Login context updated successfully");
     } catch (error) {
       console.log("=== LOGIN ERROR ===");
       console.error("Error type:", error.constructor.name);
