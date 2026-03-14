@@ -236,7 +236,7 @@ export default function ReportScreen({ route }) {
         <TouchableOpacity
           onPress={() =>
             currentQuestionIndex === 0
-              ? navigation.navigate("AthleteMain")
+              ? navigation.navigate("MainApp")
               : setCurrentQuestionIndex(currentQuestionIndex - 1)
           }
         >
