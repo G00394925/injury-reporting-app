@@ -14,8 +14,7 @@ import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import { AuthProvider, useAuth } from "./src/context/AuthContext";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
-import AthleteAccountScreen from "./src/screens/athlete/AthleteAccount";
-import CoachAccountScreen from "./src/screens/coach/CoachAccount";
+import AccountScreen from "./src/screens/Account";
 import ClubSetup from "./src/screens/athlete/ClubSetup";
 import TeamManagerScreen from "./src/screens/coach/TeamManager";
 import TeamCreatorScreen from "./src/screens/coach/TeamCreator";
@@ -62,7 +61,7 @@ function AthleteTabNavigator() {
       <Tab.Screen name="Dashboard" component={AthleteDashScreen} />
       <Tab.Screen name="Schedule" component={ManageScheduleScreen} />
       <Tab.Screen name="Team" component={AthleteTeamScreen} />
-      <Tab.Screen name="Account" component={AthleteAccountScreen} />
+      <Tab.Screen name="Account" component={AccountScreen} />
     </Tab.Navigator>
   );
 }
@@ -93,7 +92,7 @@ function CoachTabNavigator() {
     >
       <Tab.Screen name="Dashboard" component={CoachDashScreen} />
       <Tab.Screen name="Team" component={TeamManagerScreen} />
-      <Tab.Screen name="Account" component={CoachAccountScreen} />
+      <Tab.Screen name="Account" component={AccountScreen} />
     </Tab.Navigator>
   );
 }

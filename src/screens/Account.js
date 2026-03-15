@@ -1,19 +1,19 @@
-import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
-import { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Modal } from "react-native";
+import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuth } from '../../context/AuthContext';
-import { globalStyles } from '../../styles/globalStyles';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { useAuth } from "../context/AuthContext";
+import { globalStyles } from "../styles/globalStyles";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { ScrollView } from "react-native-gesture-handler";
 
-export default function AthleteAccountScreen() {
-  const [showConfirmation, setShowConfirmation] = useState(false)
+export default function AccountScreen() {
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const { userData, logout } = useAuth();
   const navigation = useNavigation();
 
   if (!userData) {
-    return null
+    return null;
   }
 
   return (
@@ -21,16 +21,16 @@ export default function AthleteAccountScreen() {
       <View style={globalStyles.header}>
         <Text style={globalStyles.headerText}>Your Account</Text>
       </View>
-      <ScrollView 
+      <ScrollView
         style={globalStyles.contentContainer}
         contentContainerStyle={{ paddingBottom: 100 }}
-        >
+      >
         <Text style={styles.sectionTitle}>Personal Information</Text>
         <View style={styles.accountInfoContainer}>
           <View style={styles.accountInfoCard}>
             <Text style={styles.infoTitleText}>Name</Text>
             <Text style={styles.infoDetailText}>{userData.name}</Text>
-          </View>    
+          </View>
           <View style={styles.accountInfoCard}>
             <Text style={styles.infoTitleText}>Email</Text>
             <Text style={styles.infoDetailText}>{userData.email}</Text>
@@ -48,57 +48,64 @@ export default function AthleteAccountScreen() {
           <View style={styles.settingIconContainer}>
             <MaterialIcons name="border-color" size={21} />
           </View>
-          <View style={{flex: 1}}>
+          <View style={{ flex: 1 }}>
             <Text style={styles.settingText}>Update details</Text>
           </View>
           <Ionicons name="chevron-forward" size={26} color="#0000006c" />
         </TouchableOpacity>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.settingButton}
-          onPress={() => (navigation.navigate("ResetPassword"))}>
+          onPress={() => navigation.navigate("ResetPassword")}
+        >
           <View style={styles.settingIconContainer}>
             <MaterialIcons name="password" size={21} />
           </View>
-          <View style={{flex: 1}}>
+          <View style={{ flex: 1 }}>
             <Text style={styles.settingText}>Change Password</Text>
           </View>
           <Ionicons name="chevron-forward" size={26} color="#0000006c" />
         </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.settingButton}
-          onPress={() => (navigation.navigate("Report"))}
-        >
-          <View style={styles.settingIconContainer}>
-            <MaterialIcons name="assignment" size={21} />
-          </View>
-          <View style={{flex: 1}}>
-            <Text style={styles.settingText}>Submit Additional Report</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={26} color="#0000006c" />
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.settingButton, {backgroundColor: "#ffd8d8"}]}
+        {userData.user_type === "Athlete" && (
+          <TouchableOpacity
+            style={styles.settingButton}
+            onPress={() => navigation.navigate("Report")}
+          >
+            <View style={styles.settingIconContainer}>
+              <MaterialIcons name="assignment" size={21} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.settingText}>Submit Additional Report</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={26} color="#0000006c" />
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity
+          style={[styles.settingButton, { backgroundColor: "#ffd8d8" }]}
           onPress={() => setShowConfirmation(true)}
         >
           <View style={styles.settingIconContainer}>
-            <MaterialIcons name="logout" size={21} color="red"/>
+            <MaterialIcons name="logout" size={21} color="red" />
           </View>
-          <View style={{flex: 1}}>
-            <Text style={[styles.settingText, {color: 'red'}]}>Log Out</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.settingText, { color: "red" }]}>Log Out</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.settingButton, {backgroundColor: "#ffd8d8"}]}>
+        <TouchableOpacity
+          style={[styles.settingButton, { backgroundColor: "#ffd8d8" }]}
+        >
           <View style={styles.settingIconContainer}>
             <MaterialIcons name="delete-forever" size={21} color="red" />
           </View>
-          <View style={{flex: 1}}>
-            <Text style={[styles.settingText, {color: "red"}]}>Delete Account</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.settingText, { color: "red" }]}>
+              Delete Account
+            </Text>
           </View>
         </TouchableOpacity>
       </ScrollView>
-      <Modal 
+      <Modal
         visible={showConfirmation}
-        animationType='fade'
+        animationType="fade"
         transparent={true}
         statusBarTranslucent={true}
         onRequestClose={() => setShowConfirmation(false)}
@@ -114,10 +121,10 @@ export default function AthleteAccountScreen() {
               <TouchableOpacity
                 style={styles.modalConfirmButton}
                 onPress={logout}
-                >
-                  <Text style={styles.modalButtonText}>Logout</Text>
+              >
+                <Text style={styles.modalButtonText}>Logout</Text>
               </TouchableOpacity>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.modalCancelButton}
                 onPress={() => setShowConfirmation(false)}
               >
@@ -167,7 +174,7 @@ const styles = StyleSheet.create({
     fontFamily: "Rubik",
     fontSize: 16,
     marginTop: 5,
-    color: "#4e4e4e",
+    color: "#4e4e4e"
   },
   sectionTitle: {
     fontFamily: "Rubik",
@@ -239,6 +246,6 @@ const styles = StyleSheet.create({
   modalButtonText: {
     fontFamily: "Rubik",
     fontSize: 16,
-    fontWeight: 'bold'
+    fontWeight: "bold"
   }
-})
+});
