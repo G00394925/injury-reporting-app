@@ -137,3 +137,17 @@ class AuthService:
         except Exception as e:
           self.logger.error(f"Error verifying OTP for {email} {e}")
           raise e
+
+    def delete_account(self, uuid: str):
+        
+        try:
+            self.logger.info(f"User {uuid} has requested the deletion of their account")
+            response = self.supabase.auth.admin.delete_user(
+                uuid
+            )
+            if response:
+                self.logger.info("Account has been deleted.")
+                return response
+        except Exception as e:
+            self.logger.error(f"Error deleting account for user {uuid}: {e}")
+            raise e

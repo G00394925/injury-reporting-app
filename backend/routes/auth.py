@@ -215,3 +215,21 @@ def verify_otp():
     except Exception as e:
         logger.error(f"Error verifying OTP: {e}")
         return jsonify(error=str(e)), 400
+    
+
+@auth_bp.route('/delete_account', methods=['POST'])
+def delete_account():
+    data = request.get_json()
+    uuid = data.get('uuid')
+
+    try:
+        response = auth_service.delete_account(uuid)
+        if response:
+            db_service.delete("users", {"id": uuid})
+            logger.info("Account deleted by auth service")
+            return jsonify(message="Account deleted by auth service"), 200
+        else:
+            return jsonify(error="No response from server")
+    except Exception as e:
+        logger.error(f"Error deleting account: {e}")
+        return jsonify(error=str(e)), 500

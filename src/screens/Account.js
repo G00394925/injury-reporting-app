@@ -6,14 +6,34 @@ import { globalStyles } from "../styles/globalStyles";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
+import axios from 'axios'
+import { API_BASE_URL } from "../config/api_config";
+
 
 export default function AccountScreen() {
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const { userData, logout } = useAuth();
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const { uuid, userData, logout } = useAuth();
   const navigation = useNavigation();
 
   if (!userData) {
     return null;
+  }
+
+  const deleteAccount = async () => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/api/auth/delete_account`, {
+        uuid: uuid
+      })
+      
+      if (response) {
+        console.log("Account deleted!")
+        setShowDeleteConfirmation(false);
+        logout();
+      }
+    } catch {
+      console.error("Account deletion failed: ", error)
+    }
   }
 
   return (
@@ -92,6 +112,7 @@ export default function AccountScreen() {
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.settingButton, { backgroundColor: "#ffd8d8" }]}
+          onPress={() => setShowDeleteConfirmation()}
         >
           <View style={styles.settingIconContainer}>
             <MaterialIcons name="delete-forever" size={21} color="red" />
@@ -103,6 +124,7 @@ export default function AccountScreen() {
           </View>
         </TouchableOpacity>
       </ScrollView>
+      
       <Modal
         visible={showConfirmation}
         animationType="fade"
@@ -127,6 +149,42 @@ export default function AccountScreen() {
               <TouchableOpacity
                 style={styles.modalCancelButton}
                 onPress={() => setShowConfirmation(false)}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={showDeleteConfirmation}
+        animationType="fade"
+        transparent={true}
+        statusBarTranslucent={true}
+        onRequestClose={() => setShowDeleteConfirmation(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>
+                WARNING
+              </Text>
+            </View>
+              <Text style={styles.warningText}>
+                This action is irreversible and will lead to the permanent removal of your account.
+                Are you absolutely certain you wish to proceed?
+              </Text>
+            <View style={styles.modalBody}>
+              <TouchableOpacity
+                style={styles.modalConfirmButton}
+                onPress={deleteAccount}
+              >
+                <Text style={styles.modalButtonText}>Yes, delete account</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalCancelButton}
+                onPress={() => setShowDeleteConfirmation(false)}
               >
                 <Text style={styles.modalButtonText}>Cancel</Text>
               </TouchableOpacity>
@@ -241,11 +299,22 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 15,
     width: "45%",
-    alignItems: "center"
+    alignItems: "center",
+    justifyContent: "center"
   },
   modalButtonText: {
     fontFamily: "Rubik",
     fontSize: 16,
-    fontWeight: "bold"
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  warningText: {
+    fontFamily: "Rubik",
+    fontSize: 18,
+    textAlign: "center",
+    fontWeight: "500",
+    marginHorizontal: 12,
+    marginBottom: 15,
+    color: "red"
   }
 });

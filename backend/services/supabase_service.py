@@ -1,4 +1,5 @@
 from supabase import Client, create_client
+from supabase.lib.client_options import ClientOptions
 from dotenv import load_dotenv
 import os
 import logging
@@ -39,6 +40,8 @@ class SupabaseService:
             assert self.key is not None, "SUPABASE_KEY is not set in environment variables."
             
             self.client: Client = create_client(self.url, self.key)
+            
+            self.admin_auth_client = self.client.auth.admin
         
         except AssertionError as e:
             raise RuntimeError(f"Supabase initialization error: {e}")
