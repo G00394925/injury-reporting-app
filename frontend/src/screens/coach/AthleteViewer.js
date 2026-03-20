@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { CalendarContainer, CalendarBody, CalendarHeader } from "@howljs/calendar-kit";
-import calendarTheme from "../../styles/calendar_theme";
+import calendarTheme from "../../styles/calendarTheme";
 import { globalStyles } from "../../styles/globalStyles";
 import { API_BASE_URL } from "../../config/apiConfig";
 import { Ionicons } from "@expo/vector-icons";

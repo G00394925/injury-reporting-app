@@ -17,7 +17,6 @@ import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import AccountScreen from "./src/screens/Account";
 import ClubSetup from "./src/screens/athlete/ClubSetup";
 import TeamManagerScreen from "./src/screens/coach/TeamManager";
-import TeamCreatorScreen from "./src/screens/coach/TeamCreator";
 import TeamViewerScreen from "./src/screens/coach/TeamViewer";
 import ManageScheduleScreen from "./src/screens/athlete/ManageSchedule";
 import ReportFinish from "./src/screens/athlete/ReportFinish";
@@ -117,7 +116,6 @@ function AppNavigator() {
         ) : userType === "Coach" ? (
           <>
             <Stack.Screen name="MainApp" component={CoachTabNavigator} />
-            <Stack.Screen name="TeamCreator" component={TeamCreatorScreen} />
             <Stack.Screen name="TeamViewer" component={TeamViewerScreen} />
             <Stack.Screen name="AthleteViewer" component={AthleteViewerScreen} />
           </>
