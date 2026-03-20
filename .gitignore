@@ -305,3 +305,5 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,flask
+
+injury-reporting-app-firebase-adminsdk-fbsvc-b71d1dce86.json

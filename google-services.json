@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "795427876974",
+    "project_id": "injury-reporting-app",
+    "storage_bucket": "injury-reporting-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:795427876974:android:58e8942a930c38590e367f",
+        "android_client_info": {
+          "package_name": "com.anonymous.injuryreportingapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvdNkDL7YIC1H9T4feGhM2vxO_m1JIbuI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
