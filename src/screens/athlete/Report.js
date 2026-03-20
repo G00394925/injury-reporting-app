@@ -176,15 +176,15 @@ export default function ReportScreen({ route }) {
         onRequestClose={() => setShowHelpModal(false)}
         statusBarTranslucent={true}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Onset types</Text>
+        <View style={globalStyles.modalOverlay}>
+          <View style={globalStyles.modalContent}>
+            <View style={globalStyles.modalHeader}>
+              <Text style={globalStyles.modalTitle}>Onset types</Text>
               <TouchableOpacity onPress={() => setShowHelpModal(false)}>
                 <Ionicons name="close-outline" size={24} color="#333" />
               </TouchableOpacity>
             </View>
-            <ScrollView style={styles.modalBody}>
+            <ScrollView style={globalStyles.modalBody}>
               <Text
                 style={{
                   fontSize: 16,
@@ -329,46 +329,5 @@ const styles = StyleSheet.create({
   },
   navButtonDisabled: {
     color: "#d4d4d49d"
-  },
-  modalOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center"
-  },
-  modalContent: {
-    backgroundColor: "#ffffff",
-    borderRadius: 15,
-    width: "90%",
-    maxHeight: "80%",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 8
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0"
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    fontFamily: "Rubik",
-    color: "#333"
-  },
-  modalBody: {
-    padding: 20
   }
 });

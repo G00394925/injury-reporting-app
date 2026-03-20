@@ -257,10 +257,10 @@ export default function ManageScheduleScreen() {
         statusBarTranslucent={true}
         navigationBarTranslucent={true}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>
+        <View style={globalStyles.modalOverlay}>
+          <View style={globalStyles.modalContent}>
+            <View style={globalStyles.modalHeader}>
+              <Text style={globalStyles.modalTitle}>
                 Add{" "}
                 {eventType === "training" ? "Training Session" : "Match/Game"}
               </Text>
@@ -269,18 +269,18 @@ export default function ManageScheduleScreen() {
               </TouchableOpacity>
             </View>
 
-            <ScrollView style={styles.modalBody}>
-              <Text style={styles.inputLabel}>Event Title</Text>
+            <ScrollView style={globalStyles.modalBody}>
+              <Text style={globalStyles.modalInputLabel}>Event Title</Text>
               <TextInput
-                style={styles.input}
+                style={globalStyles.modalInput}
                 placeholder="Enter event name"
                 value={eventTitle}
                 onChangeText={setEventTitle}
               />
 
-              <Text style={styles.inputLabel}>Date</Text>
-              <TouchableOpacity onPress={showDatePicker} style={styles.input}>
-                <Text style={styles.inputText}>{formatDate(eventDate)}</Text>
+              <Text style={globalStyles.modalInputLabel}>Date</Text>
+              <TouchableOpacity onPress={showDatePicker} style={globalStyles.modalInput}>
+                <Text style={globalStyles.modalInputText}>{formatDate(eventDate)}</Text>
               </TouchableOpacity>
 
               <DateTimePickerModal
@@ -291,13 +291,13 @@ export default function ManageScheduleScreen() {
                 date={eventDate}
               />
 
-              <Text style={styles.inputLabel}>Event Time</Text>
+              <Text style={globalStyles.modalInputLabel}>Event Time</Text>
               <View style={styles.timePickerContainer}>
                 <TouchableOpacity
                   onPress={showStartTimePicker}
-                  style={[styles.input, styles.timeInput]}
+                  style={[globalStyles.modalInput, styles.timeInput]}
                 >
-                  <Text style={styles.inputText}>
+                  <Text style={globalStyles.modalInputText}>
                     {formatTime(eventStartTime)}
                   </Text>
                 </TouchableOpacity>
@@ -306,9 +306,9 @@ export default function ManageScheduleScreen() {
 
                 <TouchableOpacity
                   onPress={showEndTimePicker}
-                  style={[styles.input, styles.timeInput]}
+                  style={[globalStyles.modalInput, styles.timeInput]}
                 >
-                  <Text style={styles.inputText}>
+                  <Text style={globalStyles.modalInputText}>
                     {formatTime(eventEndTime)}
                   </Text>
                 </TouchableOpacity>
@@ -333,7 +333,7 @@ export default function ManageScheduleScreen() {
               />
             </ScrollView>
 
-            <View style={styles.modalFooter}>
+            <View style={globalStyles.modalFooter}>
               <TouchableOpacity
                 style={styles.cancelButton}
                 onPress={closeModal}
@@ -409,66 +409,6 @@ const styles = StyleSheet.create({
     fontFamily: "Rubik",
     marginLeft: 10
   },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center"
-  },
-  modalContent: {
-    backgroundColor: "#ffffff",
-    borderRadius: 15,
-    width: "90%",
-    maxHeight: "80%",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 8
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0"
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    fontFamily: "Rubik",
-    color: "#333"
-  },
-  modalBody: {
-    padding: 20
-  },
-  inputLabel: {
-    fontSize: 14,
-    fontWeight: "600",
-    fontFamily: "Rubik",
-    color: "#333",
-    marginBottom: 8,
-    marginTop: 10
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#d0d0d0",
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    fontFamily: "Rubik",
-    backgroundColor: "#f9f9f9",
-    justifyContent: "center"
-  },
-  inputText: {
-    fontSize: 16,
-    fontFamily: "Rubik",
-    color: "#333"
-  },
   timePickerContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -482,13 +422,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginHorizontal: 10,
     fontFamily: "Rubik"
-  },
-  modalFooter: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 20,
-    borderTopWidth: 1,
-    borderTopColor: "#e0e0e0"
   },
   cancelButton: {
     flex: 1,
