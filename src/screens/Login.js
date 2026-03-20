@@ -4,7 +4,7 @@ import { Button } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
-import { API_BASE_URL } from "../config/api_config";
+import { API_BASE_URL } from "../config/apiConfig";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { globalStyles } from "../styles/globalStyles";
 import { MaterialIcons } from "@expo/vector-icons";
-import { API_BASE_URL } from "../config/api_config";
+import { API_BASE_URL } from "../config/apiConfig";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 

@@ -2,7 +2,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, View, StyleSheet, TouchableOpacity, Modal } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { globalStyles } from "../../styles/globalStyles";
-import { API_BASE_URL } from "../../config/api_config";
+import { API_BASE_URL } from "../../config/apiConfig";
 import { useAuth } from "../../context/AuthContext";
 import { useEffect, useState } from "react";
 import axios from "axios";

@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, ScrollView, Modal, TouchableOpacity, ActivityIn
 import { globalStyles } from "../../styles/globalStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CalendarContainer, CalendarHeader, CalendarBody } from "@howljs/calendar-kit";
-import calendarTheme from "../../styles/calendar_theme";
+import calendarTheme from "../../styles/calendarTheme";
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import { API_BASE_URL } from "../../config/api_config";
+import { API_BASE_URL } from "../../config/apiConfig";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";

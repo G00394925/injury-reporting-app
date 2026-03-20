@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { API_BASE_URL } from "../../config/api_config";
+import { API_BASE_URL } from "../../config/apiConfig";
 import axios from "axios";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { globalStyles } from "../../styles/globalStyles";

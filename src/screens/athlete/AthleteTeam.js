@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../context/AuthContext";
 import { useCallback, useState } from "react";
 import axios from "axios";
-import { API_BASE_URL } from "../../config/api_config";
+import { API_BASE_URL } from "../../config/apiConfig";
 
 export default function AthleteTeamScreen() {
   const navigation = useNavigation();

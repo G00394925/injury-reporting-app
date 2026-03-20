@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { API_BASE_URL } from "../../config/api_config";
+import { API_BASE_URL } from "../../config/apiConfig";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import AthleteInfoSkeleton from "../../components/skeleton/AthleteInfoSkeleton";

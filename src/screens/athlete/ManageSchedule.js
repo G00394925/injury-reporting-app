@@ -3,11 +3,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, TextInput, Alert } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { CalendarContainer, CalendarHeader, CalendarBody } from "@howljs/calendar-kit";
-import calendarTheme from "../../styles/calendar_theme";
+import calendarTheme from "../../styles/calendarTheme";
 import { globalStyles } from "../../styles/globalStyles";
 import { useState, useEffect, useCallback } from "react";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { API_BASE_URL } from "../../config/api_config";
+import { API_BASE_URL } from "../../config/apiConfig";
 import axios from "axios";
 
 export default function ManageScheduleScreen() {

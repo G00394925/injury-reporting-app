@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
-import { API_BASE_URL } from "../config/api_config";
+import { API_BASE_URL } from "../config/apiConfig";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 import { Button } from "@rneui/themed"
 

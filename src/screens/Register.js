@@ -6,7 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { KeyboardAvoidingView } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import { API_BASE_URL } from "../config/api_config";
+import { API_BASE_URL } from "../config/apiConfig";
 import { useAuth } from "../context/AuthContext";
 
 export default function RegisterScreen() {

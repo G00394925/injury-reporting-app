@@ -7,7 +7,7 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
 import axios from 'axios'
-import { API_BASE_URL } from "../config/api_config";
+import { API_BASE_URL } from "../config/apiConfig";
 
 
 export default function AccountScreen() {

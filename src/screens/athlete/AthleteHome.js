@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import axios from "axios";
-import { API_BASE_URL } from "../../config/api_config";
+import { API_BASE_URL } from "../../config/apiConfig";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { globalStyles } from "../../styles/globalStyles";
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";

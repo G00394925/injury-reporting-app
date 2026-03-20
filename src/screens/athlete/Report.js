@@ -3,7 +3,7 @@ import { useNavigation } from "@react-navigation/native";
 import { globalStyles } from "../../styles/globalStyles";
 import { useState } from "react";
 import axios from "axios";
-import { API_BASE_URL } from "../../config/api_config";
+import { API_BASE_URL } from "../../config/apiConfig";
 import { useAuth } from "../../context/AuthContext";
 import { ScrollView, TextInput } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";

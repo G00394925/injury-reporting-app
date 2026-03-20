@@ -5,7 +5,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-nati
 import { CalendarContainer, CalendarBody, CalendarHeader } from "@howljs/calendar-kit";
 import calendarTheme from "../../styles/calendar_theme";
 import { globalStyles } from "../../styles/globalStyles";
-import { API_BASE_URL } from "../../config/api_config";
+import { API_BASE_URL } from "../../config/apiConfig";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
