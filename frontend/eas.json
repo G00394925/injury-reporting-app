@@ -7,15 +7,21 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "node": "22.14.0"
+      "node": "22.14.0",
+      "environment": "development",
+      "env": {
+        "GOOGLE_SERVICES_JSON": "@GOOGLE_SERVICES_JSON"
+      }
     },
     "preview": {
       "distribution": "internal",
-      "node": "22.14.0"
+      "node": "22.14.0",
+      "environment": "preview"
     },
     "production": {
       "autoIncrement": true,
-      "node": "22.14.0"
+      "node": "22.14.0",
+      "environment": "production" 
     }
   },
   "submit": {

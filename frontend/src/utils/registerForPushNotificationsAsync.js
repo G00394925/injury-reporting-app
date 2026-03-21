@@ -5,12 +5,13 @@ import { Platform } from "react-native";
 
 export async function registerForPushNotificationsAsync() {
 	if (Platform.OS === "android") {
-		await Notifications.setNotificationChannelAsync("default", {
+		const channelInfo = await Notifications.setNotificationChannelAsync("default", {
 			name: "default",
 			importance: Notifications.AndroidImportance.MAX,
 			vibrationPattern: [0, 250, 250, 250],
-			lightColor: "#FF231F7C"
+			lightColor: "#FF231F7C",
 		});
+		console.log(channelInfo)
 	}
 
 	if (Device.isDevice) {

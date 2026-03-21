@@ -309,3 +309,6 @@ pyrightconfig.json
 injury-reporting-app-firebase-adminsdk-fbsvc-b71d1dce86.json
 
 google-services.json
+
+credentials/
+credentials.json

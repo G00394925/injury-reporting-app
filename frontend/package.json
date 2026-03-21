@@ -25,7 +25,7 @@
     "@rneui/base": "^4.0.0-rc.8",
     "@rneui/themed": "^4.0.0-rc.8",
     "axios": "^1.13.2",
-    "expo": "^54.0.31",
+    "expo": "~54.0.33",
     "expo-constants": "~18.0.13",
     "expo-dev-client": "~6.0.20",
     "expo-device": "~8.0.10",

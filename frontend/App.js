@@ -23,6 +23,7 @@ import ReportFinish from "./src/screens/athlete/ReportFinish";
 import AthleteViewerScreen from "./src/screens/coach/AthleteViewer";
 import ResetPasswordScreen from "./src/screens/ResetPassword";
 import ConfirmRegistrationScreen from "./src/screens/ConfirmRegistration"
+import { usePushNotifications } from "./src/hooks/usePushNotifications";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -97,6 +98,7 @@ function CoachTabNavigator() {
 }
 
 function AppNavigator() {
+  usePushNotifications();
   const { isAuthenticated, userData } = useAuth();
   const userType = userData?.user_type; // 'Athlete' or 'Coach'
 
@@ -138,18 +140,18 @@ export default function App() {
     Rubik: require("./assets/fonts/Rubik-VariableFont_wght.ttf"),
     ...MaterialIcons.font
   });
-
+  
   // Load fonts first, then hide splash screen
   useEffect(() => {
     if (fontsLoaded) {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
-
+  
   if (!fontsLoaded) {
     return null;
   }
-
+  
   return (
     <AuthProvider>
       <AppNavigator />
