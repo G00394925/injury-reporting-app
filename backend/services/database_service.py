@@ -34,14 +34,14 @@ class DatabaseService:
         try:
             response = self.supabase.table(table).insert(data).execute()
             self.logger.info(f"Data inserted into {table}: {response}")
-        
+
             return response
-        
+
         except Exception as e:
             self.logger.error(f"Error inserting data into {table}: {e}")
             raise e
 
-    def fetch(self, table: str, filters: dict = None, modifiers: dict = None) -> dict:
+    def fetch(self, table: str, filters: dict = None, modifiers: dict = None, select: str = "*") -> dict:
         """
         Fetch data from a specified table with optional filters.
 
@@ -53,7 +53,8 @@ class DatabaseService:
                 (default None)
             modifiers (dict):
                 Additional modifiers for the query (e.g, order column with desc=True).
-                (default None) 
+                (default None)
+            select (str): Columns to be retrieved. (default "*")
 
         Returns:
             Response containing the fetched data
@@ -62,8 +63,8 @@ class DatabaseService:
             Exception: If fetch operation fails
         """
         try:
-            query = self.supabase.table(table).select("*")
-            
+            query = self.supabase.table(table).select(select)
+
             if filters:
                 for key, value in filters.items():
                     # Check if value contains an operator prefix
@@ -75,7 +76,7 @@ class DatabaseService:
                             'lt': 'lt',    # less than
                             'neq': 'neq'   # not equal
                         }
-                        
+
                         parts = value.split('.', 1)
                         if len(parts) == 2 and parts[0] in operator_map:
                             operator = parts[0]
@@ -89,7 +90,7 @@ class DatabaseService:
                             query = query.eq(key, value)
                     else:
                         query = query.eq(key, value)
-            
+
             if modifiers:
                 for method_name, value in modifiers.items():
                     method = getattr(query, method_name, None)
@@ -102,15 +103,20 @@ class DatabaseService:
                         else:
                             query = method(value)
                     else:
-                        self.logger.warning(f"Method '{method_name}' not valid") 
+                        self.logger.warning(
+                            f"Method '{method_name}' not valid")
 
             response = query.execute()
-            self.logger.info(f"Data fetched from {table} with filters {filters}")
-        
+            self.logger.info(
+                f"Data fetched from {table} with filters {filters}")
+            
+            self.logger.info(f"DATA: {response.data}")
+
             return response
-        
+
         except Exception as e:
-            self.logger.error(f"Error fetching data from {table} with filters {filters}: {e}")
+            self.logger.error(
+                f"Error fetching data from {table} with filters {filters}: {e}")
             raise e
 
     def update(self, table: str, data: dict, filters: dict) -> dict:
@@ -130,15 +136,15 @@ class DatabaseService:
         """
         try:
             query = self.supabase.table(table).update(data)
-            
+
             for key, value in filters.items():
                 query = query.eq(key, value)
-            
+
             response = query.execute()
             self.logger.info(f"Data updated in {table}: {response}")
-        
+
             return response
-        
+
         except Exception as e:
             self.logger.error(f"Error updating data in {table}: {e}")
             raise e
@@ -159,10 +165,10 @@ class DatabaseService:
         """
         try:
             query = self.supabase.table(table).delete()
-            
+
             for key, value in filters.items():
                 query = query.eq(key, value)
-            
+
             response = query.execute()
             self.logger.info(f"Data deleted from {table}: {response}")
             return response
