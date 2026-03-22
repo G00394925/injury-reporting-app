@@ -26,7 +26,7 @@ class SchedulerService:
             self.scheduler.shutdown()
             logger.info("Scheduler stopped")
 
-    def schedule_daily_reminders(self, hour: int = 15, minute: int = 36):
+    def schedule_daily_reminders(self, hour: int = 18, minute: int = 0):
         """
         Schedule a notification to be sent to athletes who have not submitted a report
         for the day at the specified time.

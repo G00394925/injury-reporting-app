@@ -12,7 +12,7 @@ import { getQuestions } from "../../config/reportQuestions/index";
 
 export default function ReportScreen({ route }) {
   const navigation = useNavigation();
-  const { uuid } = useAuth();
+  const { uuid, userData } = useAuth();
   const healthStatus = route.params?.healthStatus || "Healthy";
   const recoveryDate = route.params?.recoveryDate || null;
 
@@ -100,6 +100,7 @@ export default function ReportScreen({ route }) {
 
       const response = await axios.post(`${API_BASE_URL}/api/health/report`, {
         user_id: uuid,
+        user_data: userData,
         answers_list: formattedAnswers
       });
       console.log("Health Report Response:", response.data);

@@ -47,8 +47,7 @@ class DatabaseService:
 
         Args:
             table (str): Name of the table to fetch from
-            filters (dict): 
-                Filters to apply (e.g., {"id": "123"} or {"date": "gte.2026-01-01"})
+            filters (dict): Filters to apply (e.g., {"id": "123"} or {"date": "gte.2026-01-01"})
                 Supports operators: gte, lte, gt, lt, neq (e.g., "gte.value")
                 (default None)
             modifiers (dict):

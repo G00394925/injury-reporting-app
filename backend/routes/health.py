@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from services.database_service import DatabaseService
+from services.notification_service import NotificationService
 import logging
 from health_status import HealthStatus
 from datetime import datetime, timedelta, timezone
@@ -7,6 +8,8 @@ import re
 from injury_codes import generate_code
 
 db_service = DatabaseService()
+notification_service = NotificationService()
+
 health_bp = Blueprint('health', __name__)
 
 logging.basicConfig(
@@ -31,6 +34,7 @@ def health_report():
         report = request.get_json()
         report_data = {
             "user": report.get('user_id'),
+            "user_data": report.get('user_data'),
             "answers": report.get('answers_list'),
         }
         # Check if this is an injury follow up report
@@ -45,21 +49,55 @@ def health_report():
             injury_code = None
             side = "N/A"
 
-            if report_data['answers'].get('expected_outage'):
-                # Extract days from string
-                outage_days = int(
-                    re.split(r'[+\s]+', report_data['answers'].get('expected_outage'))[0])
-                restriction = report_data['answers'].get('missed_activity')
-                estimated_recovery_date = (
-                    datetime.now() + timedelta(days=outage_days)).isoformat()
-
-                if restriction == "Competing Only":
-                    proposed_status = HealthStatus.AMBER
-                elif restriction == "Training & Competing":
-                    proposed_status = HealthStatus.RED
-
             # Acquire injury location and type, generate injury code
             if report_data['answers'].get('injured'):
+                if report_data['answers'].get('expected_outage'):
+
+                    # Extract days from string
+                    outage_days = int(
+                        re.split(r'[+\s]+', report_data['answers'].get('expected_outage'))[0])
+                    restriction = report_data['answers'].get('missed_activity')
+                    estimated_recovery_date = (
+                        datetime.now() + timedelta(days=outage_days)).isoformat()
+
+                    if restriction == "Competing Only":
+                        proposed_status = HealthStatus.AMBER
+                    elif restriction == "Training & Competing":
+                        proposed_status = HealthStatus.RED
+
+                    # Fetch coach associated with athlete's team
+                    athlete_response = db_service.fetch(
+                        table="athletes",
+                        filters={"id": report_data['user']},
+                        select="team_id"
+                    )
+
+                    if athlete_response and athlete_response.data:
+                        team_id = athlete_response.data[0].get('team_id')
+
+                        team_response = db_service.fetch(
+                            table="teams",
+                            filters={"team_id": team_id},
+                            select="coach_id"
+                        )
+
+                        if team_response and team_response.data:
+                            coach_id = team_response.data[0].get('coach_id')
+
+                            coach_response = db_service.fetch(
+                                table="users",
+                                filters={"id": coach_id},
+                                select="push_token"
+                            )
+                        # Notify coach of athlete's injury
+                        if coach_response and coach_response.data:
+                            push_token = coach_response.data[0].get("push_token")
+                            notification_service.send_notification(
+                                push_token=push_token,
+                                title="An athlete is injured!",
+                                body=f"{report_data.get('user_data').get('name')} suffered an injury and is expecting absence. Tap to view more details."
+                            )
+
                 injury_location = report_data['answers'].get('injury_location')
                 injury_type = report_data['answers'].get('injury_type')
 
