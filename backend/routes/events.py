@@ -13,6 +13,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 @events_bp.route('/new', methods=['POST'])
 def create_event():
     """
@@ -56,7 +57,8 @@ def get_events(athlete_id):
         events (json): Events data or message.
     """
     try:
-        response = db_service.fetch("events", filters={"athlete_id": athlete_id})
+        response = db_service.fetch(
+            "events", filters={"athlete_id": athlete_id})
 
         if response:
             events = []
@@ -76,11 +78,11 @@ def get_events(athlete_id):
         else:
             logger.error(f"No events found for user {athlete_id}")
             return jsonify(error="No events found"), 404
-        
+
     except Exception as e:
         logger.error(f"Error fetching events for user {athlete_id}: {e}")
         return jsonify(error=str(e)), 500
-    
+
 
 @events_bp.route('/get_next/<athlete_id>', methods=['GET'])
 def get_next_event(athlete_id):
@@ -95,8 +97,9 @@ def get_next_event(athlete_id):
     """
     try:
         today = datetime.now().strftime('%Y-%m-%d')
-        response = db_service.fetch("events", 
-                                    filters={"athlete_id": athlete_id, "event_date": f"gte.{today}"}, 
+        response = db_service.fetch("events",
+                                    filters={"athlete_id": athlete_id,
+                                             "event_date": f"gte.{today}"},
                                     modifiers={"order": "event_date"})
 
         if response and response.data:
@@ -115,7 +118,7 @@ def get_next_event(athlete_id):
                 date_obj = datetime.strptime(date, '%Y-%m-%d')
                 time_obj = datetime.strptime(time, '%H:%M:%S')
 
-                # Format date objects and return 
+                # Format date objects and return
                 next_event = {
                     "title": event.get("title"),
                     "date": date_obj.strftime("%d %B"),
@@ -128,7 +131,7 @@ def get_next_event(athlete_id):
             else:
                 logger.info(f"No event found with given time and date")
                 return jsonify(message="No event found with given date and time")
-        
+
         else:
             next_event = {
                 "title": "No upcoming events",
@@ -136,10 +139,11 @@ def get_next_event(athlete_id):
                 "time": None,
                 "total_future_events": 0
             }
-            
+
             logger.info("No upcoming events")
             return jsonify(next_event), 200
-    
+
     except Exception as e:
-        logger.error(f"Error fetching most recent event for user {athlete_id}: {e}")
+        logger.error(
+            f"Error fetching most recent event for user {athlete_id}: {e}")
         return jsonify(error=str(e)), 500

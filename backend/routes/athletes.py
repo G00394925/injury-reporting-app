@@ -31,7 +31,7 @@ def get_team_details(athlete_id):
 
         if not athlete or not athlete.data:
             return jsonify(message="Athlete not found"), 404
-        
+
         team_id = athlete.data[0].get("team_id")
 
         if not team_id:
@@ -45,19 +45,21 @@ def get_team_details(athlete_id):
 
         if response:
             # Fetch coach id for their name and return team details
-            coach = db_service.fetch("users", {"id": response.data[0].get("coach_id")})
+            coach = db_service.fetch(
+                "users", {"id": response.data[0].get("coach_id")})
             team_details = {
                 "sport": response.data[0].get("sport"),
                 "team_name": response.data[0].get("team_name"),
                 "coach": coach.data[0].get("name") if coach and coach.data else None,
             }
             return jsonify(team_details=team_details), 200
-        
+
         else:
             return jsonify(message="No team found for the given athlete ID"), 404
-        
+
     except Exception as e:
-        logger.error(f"Error fetching team details for athlete {athlete_id}: {e}")
+        logger.error(
+            f"Error fetching team details for athlete {athlete_id}: {e}")
         return jsonify(message="Error fetching team details"), 500
 
 
@@ -74,14 +76,15 @@ def join_team():
         req = request.get_json()
 
         response = db_service.update("athletes",
-            data={"team_id": req.get("team_id")},
-            filters={"id": req.get("athlete_id")}
-        )
+                                     data={"team_id": req.get("team_id")},
+                                     filters={"id": req.get("athlete_id")}
+                                     )
 
         if response:
-            logger.info(f"Athlete {req.get('athlete_id')} joined team {req.get('team_id')}")
+            logger.info(
+                f"Athlete {req.get('athlete_id')} joined team {req.get('team_id')}")
             return jsonify(message="Athlete successfully joined the team"), 200
-        
+
     except Exception as e:
         logger.error(f"Error athlete joining team: {e}")
         return jsonify(message="Error joining team"), 500
@@ -101,16 +104,17 @@ def leave_team(athlete_id):
     """
     try:
         response = db_service.update("athletes",
-            data={"team_id": None},
-            filters={"id": athlete_id}
-        )
+                                     data={"team_id": None},
+                                     filters={"id": athlete_id}
+                                     )
         if response:
             logger.info(f"Athlete {athlete_id} has left their team.")
             return jsonify(message="Athlete successfully left the team"), 200
         else:
-            logger.warning(f"Failed to update athlete {athlete_id} to leave their team.")
+            logger.warning(
+                f"Failed to update athlete {athlete_id} to leave their team.")
             return jsonify(message="Failed to leave team"), 400
-    
+
     except Exception as e:
         logger.error(f"Error athlete leaving team: {e}")
         return jsonify(message="Error leaving team"), 500

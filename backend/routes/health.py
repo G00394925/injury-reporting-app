@@ -33,22 +33,25 @@ def health_report():
             "user": report.get('user_id'),
             "answers": report.get('answers_list'),
         }
-        followup = report_data['answers'].get('followup')  # Check if this is an injury follow up report
+        # Check if this is an injury follow up report
+        followup = report_data['answers'].get('followup')
         logger.info(f"Received new health report: {report_data}")
 
         estimated_recovery_date = None
-    
+
         # Healthy athlete's submission
-        if not followup:    
+        if not followup:
             proposed_status = HealthStatus.GREEN
             injury_code = None
             side = "N/A"
-            
+
             if report_data['answers'].get('expected_outage'):
-                # Extract days from string 
-                outage_days = int(re.split(r'[+\s]+', report_data['answers'].get('expected_outage'))[0])
+                # Extract days from string
+                outage_days = int(
+                    re.split(r'[+\s]+', report_data['answers'].get('expected_outage'))[0])
                 restriction = report_data['answers'].get('missed_activity')
-                estimated_recovery_date = (datetime.now() + timedelta(days=outage_days)).isoformat()
+                estimated_recovery_date = (
+                    datetime.now() + timedelta(days=outage_days)).isoformat()
 
                 if restriction == "Competing Only":
                     proposed_status = HealthStatus.AMBER
@@ -59,7 +62,7 @@ def health_report():
             if report_data['answers'].get('injured'):
                 injury_location = report_data['answers'].get('injury_location')
                 injury_type = report_data['answers'].get('injury_type')
-                
+
                 # Account for injuries that may occur on either left or right side
                 if injury_location and (injury_location.startswith("Left") or injury_location.startswith("Right")):
                     split_str = injury_location.split(' ', 1)
@@ -87,20 +90,22 @@ def health_report():
                 update_data["injury_date"] = datetime.now().isoformat()
                 if estimated_recovery_date:
                     update_data["estimated_recovery_date"] = estimated_recovery_date
-            
+
             else:
                 # Clear injury data if status is green
                 update_data["estimated_recovery_date"] = None
 
             try:
                 # Update athlete's health status in the database
-                db_service.update("athletes", data=update_data, filters={"id": report_data['user']})
-                logger.info(f"Updated athlete's status: Recovery date: {estimated_recovery_date}, Proposed status: {proposed_status.value}")
+                db_service.update("athletes", data=update_data, filters={
+                                  "id": report_data['user']})
+                logger.info(
+                    f"Updated athlete's status: Recovery date: {estimated_recovery_date}, Proposed status: {proposed_status.value}")
 
             except Exception as e:
                 logger.error(f"Error updating athlete's health status: {e}")
                 return jsonify(error="Failed to update health status"), 500
-            
+
             # Insert health report into database
             submission_data = {
                 "athlete_id": report_data['user'],
@@ -126,12 +131,15 @@ def health_report():
                     "status": HealthStatus.GREEN,
                     "report_due": False
                 }
-                db_service.update("athletes", data=update_data, filters={"id": report_data['user']})
+                db_service.update("athletes", data=update_data, filters={
+                                  "id": report_data['user']})
             else:
                 # New expected return date
-                if report_data['answers'].get('expected_return'):    
-                    expected_return = int(re.split(r'[+\s]+', report_data['answers'].get('expected_return'))[0])
-                    estimated_recovery_date = (datetime.now() + timedelta(days=expected_return)).isoformat()
+                if report_data['answers'].get('expected_return'):
+                    expected_return = int(
+                        re.split(r'[+\s]+', report_data['answers'].get('expected_return'))[0])
+                    estimated_recovery_date = (
+                        datetime.now() + timedelta(days=expected_return)).isoformat()
 
                     update_data = {
                         "report_due": False,
@@ -146,8 +154,9 @@ def health_report():
                         "status": report_data['answers'].get('availability')
                     }
 
-                db_service.update('athletes', data=update_data, filters={"id": report_data["user"]})
-            
+                db_service.update('athletes', data=update_data, filters={
+                                  "id": report_data["user"]})
+
             # Insert into report table
             submission_data = {
                 "athlete_id": report_data['user'],
@@ -158,7 +167,7 @@ def health_report():
                 "comments": report_data['answers'].get('availability')
             }
             db_service.insert("reports", data=submission_data)
-            
+
             return jsonify(message="Follow-up report submitted successfully"), 200
 
     except Exception as e:
@@ -181,17 +190,20 @@ def get_status(user_id):
         user = db_service.fetch("athletes", filters={"id": user_id})
 
         if user.data:
-            reports = db_service.fetch("reports", filters={"athlete_id": user_id})
+            reports = db_service.fetch(
+                "reports", filters={"athlete_id": user_id})
             health_status_value = user.data[0].get('status')
             injury_date = user.data[0].get('injury_date')
             report_streak = user.data[0].get('report_streak')
             date_obj = user.data[0].get('estimated_recovery_date')
-            
+
             estimated_recovery_date = None
             if date_obj:
                 estimated_recovery_date = date_obj.split('T')[0]
-                estimated_recovery_date = datetime.strptime(estimated_recovery_date, '%Y-%m-%d')
-                estimated_recovery_date = estimated_recovery_date.strftime("%d %B")
+                estimated_recovery_date = datetime.strptime(
+                    estimated_recovery_date, '%Y-%m-%d')
+                estimated_recovery_date = estimated_recovery_date.strftime(
+                    "%d %B")
 
             return jsonify(
                 user_id=user_id,
@@ -201,7 +213,7 @@ def get_status(user_id):
                 estimated_recovery_date=estimated_recovery_date,
                 report_streak=report_streak,
             ), 200
-        
+
         else:
             logger.warning(f"User of ID {user_id} not found.")
             return jsonify(message="User not found"), 404
@@ -223,23 +235,24 @@ def check_report_due(user_id):
     Returns:
         JSON object with boolean value or message.    
     """
-    
+
     try:
         response = db_service.fetch("athletes", filters={"id": user_id})
-        
+
         if response and response.data:
             due = response.data[0].get('report_due')
-            
+
             logger.info(f"Report due status for user {user_id}: {due}")
             return jsonify(due), 200
         else:
             logger.warning(f"User of ID {user_id} not found.")
             return jsonify(message="User not found"), 404
-        
+
     except Exception as e:
-        logger.error(f"Error retrieving report_due value for user {user_id}: {e}")
+        logger.error(
+            f"Error retrieving report_due value for user {user_id}: {e}")
         return jsonify(error=str(e)), 500
-    
+
 
 @health_bp.route('/get_recent_report/<user_id>', methods=['GET'])
 def get_recent_report(user_id):
@@ -255,14 +268,15 @@ def get_recent_report(user_id):
     """
     try:
         response = db_service.fetch(
-            "reports", 
+            "reports",
             filters={"athlete_id": user_id},
             modifiers={"order": {"column": "created_at", "desc": True}}
         )
         if response and response.data:
             logger.info("Fetching most recent report for each athlete")
             now = datetime.now()
-            recent = datetime.fromisoformat(response.data[0].get('created_at').replace('+00:00', ''))
+            recent = datetime.fromisoformat(
+                response.data[0].get('created_at').replace('+00:00', ''))
             time_since = ""
 
             # Report submitted today - measure in hours/minutes

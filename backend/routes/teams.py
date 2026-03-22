@@ -13,6 +13,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 @teams_bp.route('/get_teams', methods=['GET'])
 def get_teams():
     """
@@ -28,9 +29,11 @@ def get_teams():
         if response:
             teams = []
             for team in response.data:
-                coach_data = db_service.fetch("users", filters={"id": team.get("coach_id")})
-                coach_name = coach_data.data[0].get("name") if coach_data and coach_data.data else None
-                
+                coach_data = db_service.fetch(
+                    "users", filters={"id": team.get("coach_id")})
+                coach_name = coach_data.data[0].get(
+                    "name") if coach_data and coach_data.data else None
+
                 teams.append({
                     "team_id": team.get("team_id"),
                     "team_name": team.get("team_name"),
@@ -62,14 +65,15 @@ def fetch_coach_teams(coach_id):
         if response:
             teams = []
             for team in response.data:
-                players = db_service.fetch("athletes", filters={"team_id": team.get("team_id")})
+                players = db_service.fetch(
+                    "athletes", filters={"team_id": team.get("team_id")})
                 teams.append({
                     "team_id": team.get("team_id"),
                     "team_name": team.get("team_name"),
                     "sport": team.get("sport"),
                     "players": len(players.data)
                 })
-            logger.info(f"Fetched teams for coach {coach_id} successfully.")    
+            logger.info(f"Fetched teams for coach {coach_id} successfully.")
             return jsonify(teams=teams), 200
 
     except Exception as e:
@@ -134,7 +138,7 @@ def fetch_athletes(team_id):
                     at_risk_athletes += 1
                 elif athlete.get("status") == HealthStatus.RED:
                     injured_athletes += 1
-                
+
                 if athlete.get("report_due"):
                     reports_due += 1
 
@@ -146,7 +150,7 @@ def fetch_athletes(team_id):
                 })
 
             logger.info(f"Fetched athletes for team {team_id} successfully.")
-            
+
             return jsonify(
                 athletes=athletes,
                 num_athletes=len(athletes),

@@ -15,6 +15,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 @auth_bp.route('/register', methods=['POST'])
 def register():
     """
@@ -94,7 +95,7 @@ def login():
 
         if not user_data.data[0].get("email_verified"):
             return jsonify(message="Email not verified", verified=False), 200
-                
+
         response = auth_service.sign_in(
             email=email,
             password=password
@@ -102,13 +103,13 @@ def login():
 
         if response:
             try:
-                db_service.update("users", 
-                    data={
-                        "num_logins": user_data.data[0].get('num_logins') + 1,
-                        "last_login": datetime.now().isoformat()
-                    },
-                    filters={"id": response.user.id}
-                )
+                db_service.update("users",
+                                  data={
+                                      "num_logins": user_data.data[0].get('num_logins') + 1,
+                                      "last_login": datetime.now().isoformat()
+                                  },
+                                  filters={"id": response.user.id}
+                                  )
                 return jsonify(
                     message="Login successful",
                     uuid=response.user.id,
@@ -135,7 +136,7 @@ def update_password():
     """
     Change password for a given requesting user. Verifies old credentials
     are correct before updating.
-    
+
     Returns:
         JSON response indicating success for failure.
     """
@@ -146,7 +147,7 @@ def update_password():
     try:
         if not old_password or not new_password:
             return jsonify(error="Both old and new passwords are required"), 400
-        
+
         # Sign in with old password to verify it is correct before updating
         verify = auth_service.sign_in(
             email=credentials.get('email'),
@@ -156,33 +157,33 @@ def update_password():
         if not verify:
             return jsonify(message="Old password is incorrect"), 400
         else:
-          # Update user's password
-          response = auth_service.update_password(
-              email=credentials.get('email'),
-              new_password=new_password
-          )
-          return response
+            # Update user's password
+            response = auth_service.update_password(
+                email=credentials.get('email'),
+                new_password=new_password
+            )
+            return response
 
     except Exception as e:
         logger.error(f"Error updating password: {e}")
         return jsonify(error=str(e)), 500
-    
-    
+
+
 @auth_bp.route('/send_otp', methods=['POST'])
 def send_otp():
     """
     Send an additional One-Time passcode to the user's email if 
     requested. 
-    
+
     Returns:
         JSON resposne indicating success or failure.
     """
     data = request.get_json()
     email = data.get("email")
-    
+
     if not email:
         return jsonify(error="Email is required")
-    
+
     try:
         response = auth_service.send_otp(email=email)
         return jsonify(message="OTP send successfully"), 200
@@ -196,7 +197,7 @@ def verify_otp():
     """
     Checks if the entered OTP matches with what was sent 
     to the user's email.
-    
+
     Returns:
         JSON response indicating success or failure.
     """
@@ -208,14 +209,14 @@ def verify_otp():
         response = auth_service.verify_otp(email=email, token=token)
         if response:
             db_service.update("users",
-                data={"email_verified": True},
-                filters={"email": email}
-            )
+                              data={"email_verified": True},
+                              filters={"email": email}
+                              )
         return jsonify(message="OTP verified successfully"), 200
     except Exception as e:
         logger.error(f"Error verifying OTP: {e}")
         return jsonify(error=str(e)), 400
-    
+
 
 @auth_bp.route('/delete_account', methods=['POST'])
 def delete_account():
