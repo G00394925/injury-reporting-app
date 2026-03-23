@@ -108,9 +108,6 @@ class DatabaseService:
             response = query.execute()
             self.logger.info(
                 f"Data fetched from {table} with filters {filters}")
-            
-            self.logger.info(f"DATA: {response.data}")
-
             return response
 
         except Exception as e:

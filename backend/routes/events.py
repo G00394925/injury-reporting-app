@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from services.database_service import DatabaseService
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 db_service = DatabaseService()
 events_bp = Blueprint('events', __name__)
@@ -146,4 +146,61 @@ def get_next_event(athlete_id):
     except Exception as e:
         logger.error(
             f"Error fetching most recent event for user {athlete_id}: {e}")
+        return jsonify(error=str(e)), 500
+
+
+@events_bp.route('/team_events/<team_id>', methods=['GET'])
+def get_team_events(team_id):
+    """
+    Fetches all events for athletes on a given team within the next 3 days.
+
+    Args:
+        team_id (int): Teams's id used as a filter.
+
+    Returns:
+        events (json): Events data or message.
+    """
+
+    # Get all athletes from team
+    try:
+        athletes_response = db_service.fetch(
+            "athletes", filters={"team_id": team_id})
+        if athletes_response and athletes_response.data:
+            logger.info(f"Fetching events for team {team_id}")
+            events = []
+            for athlete in athletes_response.data:
+                athlete_id = athlete.get("id")
+
+                # Only acquire events occuring within the next 3 days
+                events_response = db_service.fetch(
+                    table="events",
+                    filters={
+                        "athlete_id": athlete_id,
+                        "event_date": f"gte.{datetime.now().strftime('%Y-%m-%d')}",
+                        "event_date": f"lte.{(datetime.now() + timedelta(days=3)).strftime('%Y-%m-%d')}"
+                    }
+                )
+                if events_response and events_response.data:
+                    logger.info(f"Fetched events for {athlete_id}")
+                    for event in events_response.data:
+                        events.append({
+                            "event_id": event.get("id"),
+                            "title": event.get("title"),
+                            "event_date": event.get("event_date"),
+                            "start_time": event.get("start_time"),
+                            "end_time": event.get("end_time"),
+                            "type": event.get("type"),
+                        })
+
+                else:
+                    logger.info(f"No events found for {athlete_id}")
+
+            logger.info(f"Fetched team events for team {team_id}")
+            return jsonify(team_events=events), 200
+        else:
+            logger.warning(f"No athletes found for team {team_id}")
+            return jsonify(message="No athletes found for the specified team"), 404
+
+    except Exception as e:
+        logger.error(f"Error fetching team events for team {team_id}: {e}")
         return jsonify(error=str(e)), 500

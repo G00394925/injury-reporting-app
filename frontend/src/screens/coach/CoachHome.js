@@ -1,26 +1,10 @@
 import { useCallback, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Modal,
-  TouchableOpacity,
-  ActivityIndicator
-} from "react-native";
+import { View, Text, StyleSheet, ScrollView, Modal, TouchableOpacity, ActivityIndicator } from "react-native";
 import { globalStyles } from "../../styles/globalStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  CalendarContainer,
-  CalendarHeader,
-  CalendarBody
-} from "@howljs/calendar-kit";
+import { CalendarContainer, CalendarHeader, CalendarBody } from "@howljs/calendar-kit";
 import calendarTheme from "../../styles/calendarTheme";
-import {
-  Ionicons,
-  MaterialCommunityIcons,
-  MaterialIcons
-} from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { API_BASE_URL } from "../../config/apiConfig";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
@@ -39,6 +23,7 @@ export default function CoachDashScreen() {
   const [athletesNotReported, setAthletesNotReported] = useState(0);
   const [loading, setLoading] = useState(false);
   const [teams, setTeams] = useState([]);
+  const [events, setEvents] = useState([]);
   const [activeTeam, setActiveTeam] = useState(0);
   const [showTeamPicker, setShowTeamPicker] = useState(false);
 
@@ -90,6 +75,8 @@ export default function CoachDashScreen() {
         setReportsSubmitted(
           athletesResponse.data.num_athletes - athletesResponse.data.reports_due
         );
+
+        getTeamEvents(teamsData[teamIndex].team_id);
       } else {
         console.log("No athlete data received");
       }
@@ -98,232 +85,282 @@ export default function CoachDashScreen() {
     }
   };
 
-  const setTeamFocus = async (teamIndex) => {
-    await loadTeamData(teams, teamIndex);
-  };
+  const getTeamEvents = async (team) => {
+    try {
+      const eventsResponse = await axios.get(
+        `${API_BASE_URL}/api/events/team_events/${team}`
+      );
+      if (eventsResponse && eventsResponse.data) {
+        console.log("Team events:", eventsResponse.data);
 
-  return (
-    <SafeAreaView style={globalStyles.container} edges={["top"]}>
-      <View style={globalStyles.header}>
-        <Text style={[globalStyles.headerText, { alignContent: "flex-start" }]}>
-          Hello Macdarach
-        </Text>
-      </View>
-      <ScrollView style={globalStyles.contentContainer}>
-        {loading ? (
-          <>
-            <SkeletonText height={125} borderRadius={15} />
+        const formattedEvents = eventsResponse.data.team_events.map(event => {
+          const eventDate = new Date(event.event_date);
+          const [startHour, startMinute] = event.start_time.split(":");
+          const [endHour, endMinute] = event.end_time.split(":");
+          const startDate = new Date(eventDate);
+          const endDate = new Date(eventDate);
+          startDate.setHours(parseInt(startHour), parseInt(startMinute), 0, 0);
+          endDate.setHours(parseInt(endHour), parseInt(endMinute), 0, 0);
 
-            <View style={{ marginTop: 45 }}>
-              <SkeletonText height={16} />
-            </View>
-            <View style={[styles.infoCardsContainer, { marginTop: 15 }]}>
-              <SkeletonText width={"30%"} height={120} borderRadius={15} />
-              <SkeletonText width={"30%"} height={120} borderRadius={15} />
-              <SkeletonText width={"30%"} height={120} borderRadius={15} />
-            </View>
-            <View style={[styles.infoCardsContainer, { marginTop: 25 }]}>
-              <SkeletonText width={"48%"} height={150} borderRadius={15} />
-              <SkeletonText width={"48%"} height={150} borderRadius={15} />
-            </View>
-          </>
-        ) : (
-          <>
-            {injured > 0 || atRisk > 0 ? (
-              <>
-                <TouchableOpacity
-                  style={[styles.noticeCard, {backgroundColor: "#fef3de", borderColor: "#e9a803"}]}
-                  onPress={() => navigation.navigate("Team")}
-                >
-                  <View style={styles.noticeIconContainer}>
-                    <MaterialIcons
-                      name="warning-amber"
-                      size={40}
-                      color="#e9a803"
-                    />
-                  </View>
-                  <View style={styles.noticeTextContainer}>
-                    <Text style={styles.noticeLabel}>Alert</Text>
-                    <Text style={styles.noticeTitle}>
-                      Athletes require your attention
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              </>
-            ) : (
-              <>
-                <TouchableOpacity
-                  style={[styles.noticeCard, {backgroundColor: "#e4fede", borderColor: "#10b981"}]}
-                  onPress={() => navigation.navigate("Team")}
-                >
-                  <View style={styles.noticeIconContainer}>
-                    <MaterialIcons
-                      name="check-circle-outline"
-                      size={40}
-                      color="#10b981"
-                    />
-                  </View>
-                  <View style={styles.noticeTextContainer}>
-                    <Text style={styles.noticeLabel}>Team looks good</Text>
-                    <Text style={styles.noticeTitle}>All athletes healthy</Text>
-                  </View>
-                </TouchableOpacity>
-              </>
-            )}
-            <View style={styles.overviewHeaderContainer}>
-              <Text style={styles.componentTitle}>Overview</Text>
-              <View style={styles.line} />
-              <TouchableOpacity
-                style={styles.changeTeamFocusButton}
-                onPress={() => setShowTeamPicker(true)}
-              >
-                <Text
-                  style={styles.changeTeamFocusText}
-                  ellipsizeMode="tail"
-                  numberOfLines={1}
-                >
-                  {teams[activeTeam]?.team_name}
-                </Text>
-                <Ionicons name="chevron-down" size={11} />
-              </TouchableOpacity>
-            </View>
-            <View style={styles.infoCardsContainer}>
-              <TouchableOpacity
-                style={styles.infoCard}
-                onPress={() =>
-                  navigation.navigate("TeamViewer", { team: teams[activeTeam] })
-                }
-              >
-                <MaterialCommunityIcons
-                  name="check-circle"
-                  size={28}
-                  color="#10b981"
-                  style={styles.cardIcon}
-                />
-                <Text style={styles.cardValue}>{healthy}</Text>
-                <Text style={styles.cardLabel}>Healthy</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.infoCard}
-                onPress={() =>
-                  navigation.navigate("TeamViewer", { team: teams[activeTeam] })
-                }
-              >
-                <MaterialCommunityIcons
-                  name="alert-circle"
-                  size={28}
-                  color="#f59e0b"
-                  style={styles.cardIcon}
-                />
-                <Text style={styles.cardValue}>{atRisk}</Text>
-                <Text style={styles.cardLabel}>Partially Absent</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.infoCard}
-                onPress={() =>
-                  navigation.navigate("TeamViewer", { team: teams[activeTeam] })
-                }
-              >
-                <MaterialCommunityIcons
-                  name="close-circle"
-                  size={28}
-                  color="#ef4444"
-                  style={styles.cardIcon}
-                />
-                <Text style={styles.cardValue}>{injured}</Text>
-                <Text style={styles.cardLabel}>Fully Absent</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.infoCardsContainer}>
-              <TouchableOpacity
-                style={styles.infoCard}
-                onPress={() =>
-                  navigation.navigate("TeamViewer", { team: teams[activeTeam] })
-                }
-              >
-                <MaterialCommunityIcons
-                  name="calendar-check"
-                  size={28}
-                  color="#3b82f6"
-                  style={styles.cardIcon}
-                />
-                <Text style={styles.cardValue}>{reportsSubmitted}</Text>
-                <Text style={styles.cardLabel}>Reports Submitted Today</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.infoCard}
-                onPress={() =>
-                  navigation.navigate("TeamViewer", { team: teams[activeTeam] })
-                }
-              >
-                <MaterialCommunityIcons
-                  name="information-outline"
-                  size={28}
-                  color="#8b5cf6"
-                  style={styles.cardIcon}
-                />
-                <Text style={styles.cardValue}>{athletesNotReported}</Text>
-                <Text style={styles.cardLabel}>
-                  Athletes Not Reported Today
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.scheduleContainer}>
-              <Text style={styles.componentTitle}>Team Schedule</Text>
-              <View style={styles.calendarView}>
-                <CalendarContainer
-                  theme={calendarTheme}
-                  numberOfDays={3}
-                  hourWidth={50}
-                  timeInterval={30}
-                  start={540}
-                  end={1320}
-                  initialTimeIntervalHeight={60}
-                  allowPinchToZoom={true}
-                  scrollByDay
-                >
-                  <CalendarHeader />
-                  <CalendarBody />
-                </CalendarContainer>
-              </View>
-            </View>
-          </>
-        )}
-      </ScrollView>
-      <Modal
-        visible={showTeamPicker}
-        animationType="fade"
-        transparent={true}
-        onRequestClose={() => setShowTeamPicker(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Select Team</Text>
-              <TouchableOpacity onPress={() => setShowTeamPicker(false)}>
-                <MaterialIcons name="close" size={28} color="#333" />
-              </TouchableOpacity>
-            </View>
-            <ScrollView style={styles.scrollview}>
-              {teams.map((team, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={styles.option}
-                  onPress={() => {
-                    setActiveTeam(index);
-                    setTeamFocus(index);
-                    setShowTeamPicker(false);
-                  }}
-                >
-                  <Text style={styles.optionText}>{team.team_name}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+          return {
+            id: event.event_id.toString(),
+            start: { dateTime: startDate.toISOString() },
+            end: { dateTime: endDate.toISOString() },
+            color: "#bb000077"
+          };
+        });
+      setEvents(formattedEvents);
+
+    } else {
+      console.log("No events data received");
+    }
+  } catch (error) {
+    console.error("Error fetching team events:", error);
+  }
+};
+
+const renderEvent = useCallback((event) => (
+  <View style={{
+    width: "100%",
+    height: "100%",
+    padding: 5,
+    backgroundColor: event.color,
+    borderRadius: 4,
+    borderColor: "#d30000",
+    borderLeftWidth: 5,
+  }}
+  >
+  </View>
+), []
+);
+
+const setTeamFocus = async (teamIndex) => {
+  await loadTeamData(teams, teamIndex);
+};
+
+return (
+  <SafeAreaView style={globalStyles.container} edges={["top"]}>
+    <View style={globalStyles.header}>
+      <Text style={[globalStyles.headerText, { alignContent: "flex-start" }]}>
+        Hello Macdarach
+      </Text>
+    </View>
+    <ScrollView style={globalStyles.contentContainer}>
+      {loading ? (
+        <>
+          <SkeletonText height={125} borderRadius={15} />
+
+          <View style={{ marginTop: 45 }}>
+            <SkeletonText height={16} />
           </View>
+          <View style={[styles.infoCardsContainer, { marginTop: 15 }]}>
+            <SkeletonText width={"30%"} height={120} borderRadius={15} />
+            <SkeletonText width={"30%"} height={120} borderRadius={15} />
+            <SkeletonText width={"30%"} height={120} borderRadius={15} />
+          </View>
+          <View style={[styles.infoCardsContainer, { marginTop: 25 }]}>
+            <SkeletonText width={"48%"} height={150} borderRadius={15} />
+            <SkeletonText width={"48%"} height={150} borderRadius={15} />
+          </View>
+        </>
+      ) : (
+        <>
+          {injured > 0 || atRisk > 0 ? (
+            <>
+              <TouchableOpacity
+                style={[styles.noticeCard, { backgroundColor: "#fef3de", borderColor: "#e9a803" }]}
+                onPress={() => navigation.navigate("Team")}
+              >
+                <View style={styles.noticeIconContainer}>
+                  <MaterialIcons
+                    name="warning-amber"
+                    size={40}
+                    color="#e9a803"
+                  />
+                </View>
+                <View style={styles.noticeTextContainer}>
+                  <Text style={styles.noticeLabel}>Alert</Text>
+                  <Text style={styles.noticeTitle}>
+                    Athletes require your attention
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              <TouchableOpacity
+                style={[styles.noticeCard, { backgroundColor: "#e4fede", borderColor: "#10b981" }]}
+                onPress={() => navigation.navigate("Team")}
+              >
+                <View style={styles.noticeIconContainer}>
+                  <MaterialIcons
+                    name="check-circle-outline"
+                    size={40}
+                    color="#10b981"
+                  />
+                </View>
+                <View style={styles.noticeTextContainer}>
+                  <Text style={styles.noticeLabel}>Team looks good</Text>
+                  <Text style={styles.noticeTitle}>All athletes healthy</Text>
+                </View>
+              </TouchableOpacity>
+            </>
+          )}
+          <View style={styles.overviewHeaderContainer}>
+            <Text style={styles.componentTitle}>Overview</Text>
+            <View style={styles.line} />
+            <TouchableOpacity
+              style={styles.changeTeamFocusButton}
+              onPress={() => setShowTeamPicker(true)}
+            >
+              <Text
+                style={styles.changeTeamFocusText}
+                ellipsizeMode="tail"
+                numberOfLines={1}
+              >
+                {teams[activeTeam]?.team_name}
+              </Text>
+              <Ionicons name="chevron-down" size={11} />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.infoCardsContainer}>
+            <TouchableOpacity
+              style={styles.infoCard}
+              onPress={() =>
+                navigation.navigate("TeamViewer", { team: teams[activeTeam] })
+              }
+            >
+              <MaterialCommunityIcons
+                name="check-circle"
+                size={28}
+                color="#10b981"
+                style={styles.cardIcon}
+              />
+              <Text style={styles.cardValue}>{healthy}</Text>
+              <Text style={styles.cardLabel}>Healthy</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.infoCard}
+              onPress={() =>
+                navigation.navigate("TeamViewer", { team: teams[activeTeam] })
+              }
+            >
+              <MaterialCommunityIcons
+                name="alert-circle"
+                size={28}
+                color="#f59e0b"
+                style={styles.cardIcon}
+              />
+              <Text style={styles.cardValue}>{atRisk}</Text>
+              <Text style={styles.cardLabel}>Training Only</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.infoCard}
+              onPress={() =>
+                navigation.navigate("TeamViewer", { team: teams[activeTeam] })
+              }
+            >
+              <MaterialCommunityIcons
+                name="close-circle"
+                size={28}
+                color="#ef4444"
+                style={styles.cardIcon}
+              />
+              <Text style={styles.cardValue}>{injured}</Text>
+              <Text style={styles.cardLabel}>Fully Absent</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.infoCardsContainer}>
+            <TouchableOpacity
+              style={styles.infoCard}
+              onPress={() =>
+                navigation.navigate("TeamViewer", { team: teams[activeTeam] })
+              }
+            >
+              <MaterialCommunityIcons
+                name="calendar-check"
+                size={28}
+                color="#3b82f6"
+                style={styles.cardIcon}
+              />
+              <Text style={styles.cardValue}>{reportsSubmitted}</Text>
+              <Text style={styles.cardLabel}>Reports Submitted Today</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.infoCard}
+              onPress={() =>
+                navigation.navigate("TeamViewer", { team: teams[activeTeam] })
+              }
+            >
+              <MaterialCommunityIcons
+                name="information-outline"
+                size={28}
+                color="#8b5cf6"
+                style={styles.cardIcon}
+              />
+              <Text style={styles.cardValue}>{athletesNotReported}</Text>
+              <Text style={styles.cardLabel}>
+                Athletes Not Reported Today
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.scheduleContainer}>
+            <Text style={styles.componentTitle}>Team Schedule</Text>
+            <View style={styles.calendarView}>
+              <CalendarContainer
+                theme={calendarTheme}
+                numberOfDays={3}
+                hourWidth={50}
+                timeInterval={30}
+                start={540}
+                end={1320}
+                initialTimeIntervalHeight={60}
+                allowPinchToZoom={true}
+                scrollByDay={false}
+                events={events}
+              >
+                <CalendarHeader />
+                <CalendarBody renderEvent={renderEvent} />
+              </CalendarContainer>
+            </View>
+          </View>
+        </>
+      )}
+    </ScrollView>
+    <Modal
+      visible={showTeamPicker}
+      animationType="fade"
+      transparent={true}
+      onRequestClose={() => setShowTeamPicker(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Select Team</Text>
+            <TouchableOpacity onPress={() => setShowTeamPicker(false)}>
+              <MaterialIcons name="close" size={28} color="#333" />
+            </TouchableOpacity>
+          </View>
+          <ScrollView style={styles.scrollview}>
+            {teams.map((team, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.option}
+                onPress={() => {
+                  setActiveTeam(index);
+                  setTeamFocus(index);
+                  setShowTeamPicker(false);
+                }}
+              >
+                <Text style={styles.optionText}>{team.team_name}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
-      </Modal>
-    </SafeAreaView>
-  );
+      </View>
+    </Modal>
+  </SafeAreaView>
+);
 }
 
 const styles = StyleSheet.create({

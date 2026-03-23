@@ -2,6 +2,7 @@
 
 # VSCode settings
 .vscode/
+.editorconfig
 
 # dependencies
 node_modules/
