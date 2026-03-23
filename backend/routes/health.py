@@ -24,7 +24,8 @@ logger = logging.getLogger(__name__)
 def health_report():
     """
     Handles new report submissions from athletes, updating their health status 
-    wherever required before inserting report data into database.
+    wherever required before inserting report data into database. If the athlete 
+    is injured, their respective coach recieves a push notification.
 
     Returns:
         JSON response indicating success or failure of report submission.
