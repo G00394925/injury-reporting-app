@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Modal } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput } from "react-native";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../context/AuthContext";
@@ -13,11 +13,21 @@ import { API_BASE_URL } from "../config/apiConfig";
 export default function AccountScreen() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [confirmationText, setConfirmationText] = useState("")
+  const [buttonDisabled, setButtonDisabled] = useState(true)
   const { uuid, userData, logout } = useAuth();
   const navigation = useNavigation();
 
   if (!userData) {
     return null;
+  }
+
+  const checkConfirmationText = (text) => {
+    if (text === "DELETE") {
+      setButtonDisabled(false)
+    } else {
+      setButtonDisabled(true)
+    }
   }
 
   const deleteAccount = async () => {
@@ -175,12 +185,23 @@ export default function AccountScreen() {
                 This action is irreversible and will lead to the permanent removal of your account.
                 Are you absolutely certain you wish to proceed?
               </Text>
+              <TextInput
+                style={styles.modalInput}
+                placeholder="Type 'DELETE' to confirm"
+                placeholderTextColor="#999"
+                value={confirmationText}
+                onChangeText={(value) => {
+                  setConfirmationText(value)
+                  checkConfirmationText(value)
+                }}
+              />
             <View style={styles.modalBody}>
               <TouchableOpacity
-                style={styles.modalConfirmButton}
+                style={[styles.modalConfirmButton, { backgroundColor: buttonDisabled ? "#b38b8b" : "#ff8d8d" }]}
                 onPress={deleteAccount}
+                disabled={buttonDisabled}
               >
-                <Text style={styles.modalButtonText}>Yes, delete account</Text>
+                <Text style={[styles.modalButtonText, { color: buttonDisabled ? "#c2c2c2": "#333" }]}>Yes, delete account</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.modalCancelButton}
@@ -307,6 +328,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "center"
+  },
+  modalInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 15,
+    marginHorizontal: 25
   },
   warningText: {
     fontFamily: "Rubik",
