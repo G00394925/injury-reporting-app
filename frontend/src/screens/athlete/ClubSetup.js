@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput } from "react-native";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { API_BASE_URL } from "../../config/apiConfig";
@@ -11,6 +11,8 @@ export default function ClubSetup() {
   const [selection, setSelection] = useState(null);
   const { uuid } = useAuth();
   const [teams, setTeams] = useState([]);
+  const [query, setQuery] = useState("");
+  const [filteredTeams, setFilteredTeams] = useState([]);
   const navigation = useNavigation();
 
   // Acquire list of teams from database
@@ -19,12 +21,26 @@ export default function ClubSetup() {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/teams/get_teams`);
         setTeams(response.data.teams);
+        setFilteredTeams(response.data.teams);
       } catch (error) {
         console.error("Error fetching teams:", error);
       }
     };
     fetchTeams();
   }, []);
+
+  // Filter teams based on search query
+  const handleSearch = (query) => {
+    setQuery(query);
+    if (query === "") {
+      setFilteredTeams(teams);
+    } else {
+      const filtered = teams.filter((team) => {
+        return team.team_name.toLowerCase().includes(query.toLowerCase());
+      });
+      setFilteredTeams(filtered);
+    }
+  };
 
   const handleSave = async (team_id) => {
     try {
@@ -50,8 +66,15 @@ export default function ClubSetup() {
       <View
         style={[globalStyles.contentContainer, { flex: 1, paddingBottom: 30 }]}
       >
-        <View style={{ flex: 1 }}>
-          {teams.map((team) => (
+        <TextInput
+          placeholder="Search by team name..."
+          placeholderTextColor="#999"
+          value={query}
+          onChangeText={handleSearch}
+          style={styles.searchInput}
+        />
+        <View style={{ flex: 1, borderTopWidth: 1, borderColor: "#cccccc", paddingTop: 15 }}>
+          {filteredTeams.map((team) => (
             <TouchableOpacity
               key={team.team_id}
               style={[
@@ -108,6 +131,14 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginBottom: 15,
     justifyContent: "flex-start"
+  },
+  searchInput: {
+    fontFamily: "Rubik",
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#cccccc",
+    padding: 15,
+    marginBottom: 15
   },
   teamText: {
     fontSize: 18,
