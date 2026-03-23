@@ -12,7 +12,7 @@ class NotificationService:
     """
     Allows for the creation and sending of push notifications to a given expo push token.
     Tokens are sent to the expo push notifications api -> https://exp.host/--/api/v2/push/send,
-    which is subsequently sent to a user's device.
+    which subsequently sends the notification to a user's device.
     """
 
     @staticmethod
@@ -27,14 +27,14 @@ class NotificationService:
         Send a single push notification to a device.
 
         Args:
-                push_token (str): The user's expo push token to send the notification to.
-                title (str): Notification title.
-                body (str): Notification body.
-                data (dict): Optional custom data/metadata.
-                channel_id (str): Android notification channel id.
+            - push_token (str): The user's expo push token to send the notification to.
+            - title (str): Notification title.
+            - body (str): Notification body.
+            - data (dict): Optional custom data/metadata.
+            - channel_id (str): Android notification channel id.
 
         Returns:
-                True if successful, False otherwise.
+            - True if successful, False otherwise.
         """
         # Validate token
         if not push_token or not push_token.startswith("ExponentPushToken"):
@@ -65,13 +65,13 @@ class NotificationService:
         Send mutliple notifications to multiple devices.
 
         Args:
-                push_tokens (List [str]): The expo push tokens to send notifications to.
-                title (str): Notification title.
-                body (str): Notification body.
-                data (dict): Optional data/metadata
+            - push_tokens (List [str]): The expo push tokens to send notifications to.
+            - title (str): Notification title.
+            - body (str): Notification body.
+            - data (dict): Optional data/metadata
 
         Returns: 
-                Dictionary with success/failure counts.
+            - Dictionary with success/failure counts.
 
         """
         results = {"sent": 0, "failed": 0}

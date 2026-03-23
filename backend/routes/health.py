@@ -92,7 +92,8 @@ def health_report():
                             )
                         # Notify coach of athlete's injury
                         if coach_response and coach_response.data:
-                            push_token = coach_response.data[0].get("push_token")
+                            push_token = coach_response.data[0].get(
+                                "push_token")
                             notification_service.send_notification(
                                 push_token=push_token,
                                 title="An athlete is injured!",
@@ -163,7 +164,7 @@ def health_report():
             logger.info("Inserted new report to database")
             return jsonify(message="Health report submitted successfully"), 201
 
-        # Injured athlete's submission
+        # Injured athlete's follow-up submission
         else:
             if report_data["answers"].get("availability") == "Fully available":
                 update_data = {
@@ -203,10 +204,9 @@ def health_report():
                 "recovery_progress": report_data['answers'].get('recovery_progress'),
                 "practitioner_contact": report_data['answers'].get('practitioner_contact'),
                 "new_availability": report_data['answers'].get('availability'),
-                "comments": report_data['answers'].get('availability')
+                "comments": report_data['answers'].get('comments')
             }
             db_service.insert("reports", data=submission_data)
-
             return jsonify(message="Follow-up report submitted successfully"), 200
 
     except Exception as e:
@@ -230,7 +230,9 @@ def get_status(user_id):
 
         if user.data:
             reports = db_service.fetch(
-                "reports", filters={"athlete_id": user_id})
+                table="reports",
+                filters={"athlete_id": user_id}
+            )
             health_status_value = user.data[0].get('status')
             injury_date = user.data[0].get('injury_date')
             report_streak = user.data[0].get('report_streak')
@@ -266,7 +268,7 @@ def get_status(user_id):
 def check_report_due(user_id):
     """
     Checks database for a boolean value for whether a report by an athlete is 
-    due. Value is recurringly updated by a cron job on Supabase.
+    due. Value is recurringly updated by a cron job on Supabase at 7am daily.
 
     Parameters:
         user_id (uuid): User to be queried.
@@ -297,7 +299,8 @@ def check_report_due(user_id):
 def get_recent_report(user_id):
     """
     Acquires the most recent report and calculate the time difference 
-    between now and submission time.
+    between now and submission time. Submission time is shown to coaches
+    when viewing their team overview.
 
     Parameters:
         user_id (uuid): The athlete to be queried
@@ -315,6 +318,7 @@ def get_recent_report(user_id):
             logger.info("Fetching most recent report for each athlete")
             now = datetime.now()
             recent = datetime.fromisoformat(
+                # Account for timezone formatting
                 response.data[0].get('created_at').replace('+00:00', ''))
             time_since = ""
 

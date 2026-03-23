@@ -30,7 +30,8 @@ def get_teams():
             teams = []
             for team in response.data:
                 coach_data = db_service.fetch(
-                    "users", filters={"id": team.get("coach_id")})
+                    table="users",
+                    filters={"id": team.get("coach_id")})
                 coach_name = coach_data.data[0].get(
                     "name") if coach_data and coach_data.data else None
 
@@ -64,9 +65,13 @@ def fetch_coach_teams(coach_id):
 
         if response:
             teams = []
+
+            # Fetch athletes for each team
             for team in response.data:
                 players = db_service.fetch(
-                    "athletes", filters={"team_id": team.get("team_id")})
+                    table="athletes",
+                    filters={"team_id": team.get("team_id")})
+
                 teams.append({
                     "team_id": team.get("team_id"),
                     "team_name": team.get("team_name"),
@@ -112,7 +117,9 @@ def create_team():
 @teams_bp.route('/get_athletes/<team_id>', methods=['GET'])
 def fetch_athletes(team_id):
     """
-    Fetches athletes associated with a given team
+    Fetches athletes associated with a given team. Counts number of 
+    athletes in each health status category as well as the number of 
+    reports due for the day.
 
     Args:
         team_id (str): The UUID of the team to be queried.

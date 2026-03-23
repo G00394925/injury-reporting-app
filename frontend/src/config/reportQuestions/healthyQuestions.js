@@ -127,7 +127,7 @@ export const getHealthyQuestions = ( updateAnswer, answers, setInjured, setIll, 
   },
   {
     index: 4,
-    text: "Rate your current pain level.",
+    text: "Rate your discomfort.",
     subtext: null,
     component: 
     answers.injured === "Yes" ? (

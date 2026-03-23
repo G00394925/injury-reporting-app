@@ -32,8 +32,8 @@ class SchedulerService:
         for the day at the specified time.
 
         Args:
-            hour (int): Hour of the day to send notification
-            minute (int): Minute of the hour to send notification
+            - hour (int): Hour of the day to send notification
+            - minute (int): Minute of the hour to send notification
         """
         trigger = CronTrigger(hour=hour, minute=minute)
         self.scheduler.add_job(
@@ -58,7 +58,7 @@ class SchedulerService:
             if not athletes_response or not athletes_response.data:
                 logger.error(f"No athletes response or missing data.")
                 return
-            
+
             athletes_data = athletes_response.data
             logger.info(f"Processing {len(athletes_data)} athletes")
 
@@ -71,9 +71,11 @@ class SchedulerService:
 
                     if push_token and NotificationService.send_daily_reminder(push_token):
                         sent += 1
-                        logger.info(f"Notification sent to athlete {athlete.get('id')}")
+                        logger.info(
+                            f"Notification sent to athlete {athlete.get('id')}")
                     else:
-                        logger.warning(f"Notification was NOT sent to athlete {athlete.get('id')}")
+                        logger.warning(
+                            f"Notification was NOT sent to athlete {athlete.get('id')}")
 
             logger.info(f"Reminders sent: {sent}")
         except Exception as e:

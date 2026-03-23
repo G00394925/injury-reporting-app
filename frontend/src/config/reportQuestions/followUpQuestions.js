@@ -42,10 +42,10 @@ export const getFollowUpQuestions = (
 
   {
     index: 2,
-    text: "Who have you contacted about your injury?",
+    text: "Have you discussed your injury with anyone?",
     component: (
       <MultiChoice
-        options={["Healthcare Professional", "My Coach", "Nobody"]}
+        options={["A Healthcare Professional", "My Coach", "Both", "Nobody"]}
         value={answers.practitioner_contact}
         onValueChange={(value) => updateAnswer("practitioner_contact", value)}
       />

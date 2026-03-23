@@ -1,5 +1,4 @@
 from flask import jsonify
-
 from services.supabase_service import SupabaseService
 import logging
 
@@ -7,6 +6,8 @@ import logging
 class AuthService:
     """
     Service to handle all authentication-related operations using Supabase Auth.
+    These include actions such as signing up, signing in, updating passwords, 
+    sending and verifying OTPs, etc.
     """
 
     def __init__(self):
@@ -98,7 +99,10 @@ class AuthService:
 
     def send_otp(self, email: str) -> dict:
         """
-        Send a One Time Passcode to the given email.
+        Send a One Time Passcode to the given email. Typically OTPs are sent 
+        automatically by Supabase upon sign up, but this function supports
+        sending additional OTPs at the user's request (e.g., if their original 
+        OTP expired or they didn't receive it).
 
         Args:
             email (str): The email to send the OTP to. 
