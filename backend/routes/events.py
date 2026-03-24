@@ -1,9 +1,11 @@
 from flask import Blueprint, request, jsonify
 from services.database_service import DatabaseService
+from services.session_service import SessionService
 import logging
 from datetime import datetime, timedelta
 
 db_service = DatabaseService()
+session_service = SessionService()
 events_bp = Blueprint('events', __name__)
 
 logging.basicConfig(
@@ -36,6 +38,15 @@ def create_event():
         })
 
         if response:
+            session_service.log_event(
+                session_id=new_event.get("session"),
+                event_type="create_event",
+                event_data={
+                    "event_id": response.data[0].get("id"),
+                    "title": new_event.get("title"),
+                },
+                endpoint="/events/new"
+            )
             logger.info(
                 f"Event created successfully: {new_event.get('title')}")
             return jsonify(message="Event created successfully"), 201

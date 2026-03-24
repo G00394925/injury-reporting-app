@@ -14,7 +14,7 @@ export default function TeamManagerScreen() {
   const [newTeamName, setNewTeamName] = useState(null);
   const [newSport, setNewSport] = useState(null);
   const navigation = useNavigation();
-  const { uuid } = useAuth();
+  const { uuid, session } = useAuth();
   const [teamItems, setTeamItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [validSubmit, setValidSubmit] = useState(true);
@@ -91,14 +91,15 @@ export default function TeamManagerScreen() {
       const response = await axios.post(`${API_BASE_URL}/api/teams/new`, {
         team_name: newTeamName,
         sport: newSport,
-        coach_id: uuid
+        coach_id: uuid,
+        session: session
       });
       console.log("Team created:", response.data);
-      
+
       // Reset modal state and close
       setCreateModalVisible(false);
-      setNewTeamName(null)
-      setNewSport(null)
+      setNewTeamName(null);
+      setNewSport(null);
 
       // Refresh team list
       setLoading(true);
@@ -168,7 +169,7 @@ export default function TeamManagerScreen() {
               />
 
               <Text style={globalStyles.modalInputLabel}>Sport</Text>
-              <TextInput 
+              <TextInput
                 style={globalStyles.modalInput}
                 placeholder="What sport will your team be playing?"
                 placeholderTextColor={"#999"}
@@ -184,7 +185,7 @@ export default function TeamManagerScreen() {
               >
                 <Text style={styles.modalCancelButtonText}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.modalConfirmButton}
                 onPress={handleCreateTeam}
               >

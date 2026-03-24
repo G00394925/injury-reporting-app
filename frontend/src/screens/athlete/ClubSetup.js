@@ -9,7 +9,7 @@ import { useNavigation } from "@react-navigation/native";
 
 export default function ClubSetup() {
   const [selection, setSelection] = useState(null);
-  const { uuid } = useAuth();
+  const { uuid, session } = useAuth();
   const [teams, setTeams] = useState([]);
   const [query, setQuery] = useState("");
   const [filteredTeams, setFilteredTeams] = useState([]);
@@ -48,7 +48,8 @@ export default function ClubSetup() {
         `${API_BASE_URL}/api/athletes/join_team`,
         {
           athlete_id: uuid,
-          team_id: team_id
+          team_id: team_id,
+          session: session
         }
       );
       console.log("Team joined successfully:", response.data);

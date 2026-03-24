@@ -4,10 +4,10 @@ import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import { API_BASE_URL } from "../config/apiConfig";
 import { View, Text, TextInput, StyleSheet } from "react-native";
-import { Button } from "@rneui/themed"
+import { Button } from "@rneui/themed";
 
 export default function ResetPasswordScreen() {
-  const { uuid, userData } = useAuth();
+  const { uuid, userData, session } = useAuth();
   const [oldPass, setOldPass] = useState("");
   const [newPass, setNewPass] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
@@ -37,7 +37,7 @@ export default function ResetPasswordScreen() {
 
   const handleConfirm = async () => {
     if (!validateForm()) {
-      console.log("ERROR: Inputs are invalid")
+      console.log("ERROR: Inputs are invalid");
       return;
     }
 
@@ -46,12 +46,13 @@ export default function ResetPasswordScreen() {
 
     try {
       const url = `${API_BASE_URL}/api/auth/change_password`;
-      
+
       const payload = {
         email: userData.email,
         old_password: oldPass,
-        new_password: newPass
-      }
+        new_password: newPass,
+        session: session
+      };
 
       const response = await axios.post(url, payload, {
         timeout: 10000,
@@ -60,16 +61,16 @@ export default function ResetPasswordScreen() {
         }
       });
 
-      console.log("Password changed successfully")
+      console.log("Password changed successfully");
       navigation.navigate("MainApp");
-      
+
     } catch (error) {
       console.error("Error changing password:", error);
       setErrors({ general: "Failed to change password" });
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -169,4 +170,4 @@ const styles = StyleSheet.create({
     marginTop: 2,
     paddingLeft: 15
   }
-})
+});

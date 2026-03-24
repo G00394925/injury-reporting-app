@@ -1,9 +1,11 @@
 from flask import Blueprint, request, jsonify
 from health_status import HealthStatus
 from services.database_service import DatabaseService
+from services.session_service import SessionService
 import logging
 
 db_service = DatabaseService()
+session_service = SessionService()
 teams_bp = Blueprint('teams', __name__)
 
 logging.basicConfig(
@@ -107,6 +109,15 @@ def create_team():
         if response:
             logger.info("New team added to supabase database successfully")
 
+            session_service.log_event(
+                session_id=new_team.get("session"),
+                event_type="create_team",
+                event_data={
+                    "team_id": response.data[0].get("team_id"),
+                    "team_name": new_team.get("team_name"),
+                },
+                endpoint="/teams/new"
+            )
             return jsonify(message="Team created successfully"), 201
 
     except Exception as e:

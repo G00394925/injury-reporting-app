@@ -1,12 +1,14 @@
 from flask import Blueprint, request, jsonify
 from services.auth_service import AuthService
 from services.database_service import DatabaseService
+from services.session_service import SessionService
 import logging
 from datetime import datetime
 
 auth_bp = Blueprint('auth', __name__)
 auth_service = AuthService()
 db_service = DatabaseService()
+session_service = SessionService()
 
 logging.basicConfig(
     level=logging.INFO,
@@ -102,29 +104,31 @@ def login():
         )
 
         if response:
-            try:
-                db_service.update("users",
-                                  data={
-                                      "num_logins": user_data.data[0].get('num_logins') + 1,
-                                      "last_login": datetime.now().isoformat()
-                                  },
-                                  filters={"id": response.user.id}
-                                  )
-                return jsonify(
-                    message="Login successful",
-                    uuid=response.user.id,
-                    user={
-                        "name": user_data.data[0].get('name'),
-                        "email": email,
-                        "user_type": user_data.data[0].get('role'),
-                        "dob": user_data.data[0].get('dob'),
-                    },
-                    verified=True
-                )
-            except Exception as e:
-                logger.error(
-                    f"Error retrieving user data from Supabase table: {e}")
-                return jsonify(error=str(e)), 401
+            # Create a new session for the user
+            user_id = response.user.id
+            session_response = session_service.create_session(user_id=user_id)
+            session_id = session_response.data[0]['session_id']
+
+            # Log the login event
+            session_service.log_event(
+                session_id=session_id,
+                event_type="login",
+                event_data={"email": email},
+                endpoint="/auth/login"
+            )
+
+            return jsonify(
+                message="Login successful",
+                uuid=response.user.id,
+                user={
+                    "name": user_data.data[0].get('name'),
+                    "email": email,
+                    "user_type": user_data.data[0].get('role'),
+                    "dob": user_data.data[0].get('dob'),
+                },
+                session_id=session_id,
+                verified=True
+            ), 200
 
     except Exception as e:
         logger.error(f"Error during login: {e}")
@@ -141,6 +145,7 @@ def update_password():
         JSON response indicating success for failure.
     """
     credentials = request.get_json()
+    session = credentials.get('session')
     old_password = credentials.get('old_password')
     new_password = credentials.get('new_password')
 
@@ -216,6 +221,28 @@ def verify_otp():
     except Exception as e:
         logger.error(f"Error verifying OTP: {e}")
         return jsonify(error=str(e)), 400
+
+
+@auth_bp.route('/logout', methods=['POST'])
+def logout():
+    data = request.get_json()
+    session = data.get('session')
+
+    try:
+        # End the session
+        session_service.end_session(session)
+
+        # Log logout event
+        session_service.log_event(
+            session_id=session,
+            event_type="logout",
+            endpoint="/auth/logout"
+        )
+        logger.info(f"Session {session} ended")
+        return jsonify(message="Logged out successfully"), 200
+    except Exception as e:
+        logger.error(f"Error during logout: {e}")
+        return jsonify(error=str(e)), 500
 
 
 @auth_bp.route('/delete_account', methods=['POST'])

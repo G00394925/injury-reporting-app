@@ -11,7 +11,7 @@ import { API_BASE_URL } from "../../config/apiConfig";
 import axios from "axios";
 
 export default function ManageScheduleScreen() {
-  const { uuid } = useAuth();
+  const { uuid, session } = useAuth();
   const [modalVisible, setModalVisible] = useState(false);
   const [eventType, setEventType] = useState("");
   const [eventTitle, setEventTitle] = useState("");
@@ -120,7 +120,8 @@ export default function ManageScheduleScreen() {
         event_date: formattedDate,
         start_time: formattedStartTime,
         end_time: formattedEndTime,
-        type: eventType
+        type: eventType,
+        session: session
       });
 
       console.log("Event created successfully: ", response.data);
@@ -163,7 +164,9 @@ export default function ManageScheduleScreen() {
             title: event.title,
             start: { dateTime: startDate.toISOString() },
             end: { dateTime: endDate.toISOString() },
-            color: event.type === "Training" ? "#2038be" : "#28a745"
+            color: event.type === "Training" ? "#2038be7f" : "#28a74679",
+            borderColor: event.type === "Training" ? "#223392" : "#308a45"
+
           };
         });
 
@@ -189,14 +192,16 @@ export default function ManageScheduleScreen() {
           height: "100%",
           padding: 5,
           backgroundColor: event.color,
-          borderRadius: 4
+          borderRadius: 4,
+          borderLeftWidth: 5,
+          borderColor: event.borderColor
         }}
       >
         <Text
           style={{
             color: "white",
             fontSize: 12,
-            fontWeight: "500",
+            fontWeight: "bold",
             fontFamily: "Rubik"
           }}
         >
@@ -268,6 +273,7 @@ export default function ManageScheduleScreen() {
                   value={isTraining}
                   trackColor={{ false: '#c6c6c6', true: '#6279fc' }}
                   thumbColor={isTraining ? '#2038be' : '#676767'}
+                  ios_backgroundColor={"#3e3e3e"}
                   style={{ transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }] }}
                 />
               </View>

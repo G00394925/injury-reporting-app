@@ -6,15 +6,15 @@ import { globalStyles } from "../styles/globalStyles";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
-import axios from 'axios'
+import axios from 'axios';
 import { API_BASE_URL } from "../config/apiConfig";
 
 
 export default function AccountScreen() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const [confirmationText, setConfirmationText] = useState("")
-  const [buttonDisabled, setButtonDisabled] = useState(true)
+  const [confirmationText, setConfirmationText] = useState("");
+  const [buttonDisabled, setButtonDisabled] = useState(true);
   const { uuid, userData, logout } = useAuth();
   const navigation = useNavigation();
 
@@ -22,29 +22,33 @@ export default function AccountScreen() {
     return null;
   }
 
+  const handleLogout = () => {
+    logout();
+  };
+
   const checkConfirmationText = (text) => {
     if (text === "DELETE") {
-      setButtonDisabled(false)
+      setButtonDisabled(false);
     } else {
-      setButtonDisabled(true)
+      setButtonDisabled(true);
     }
-  }
+  };
 
   const deleteAccount = async () => {
     try {
       const response = await axios.post(`${API_BASE_URL}/api/auth/delete_account`, {
         uuid: uuid
-      })
-      
+      });
+
       if (response) {
-        console.log("Account deleted!")
+        console.log("Account deleted!");
         setShowDeleteConfirmation(false);
         logout();
       }
     } catch {
-      console.error("Account deletion failed: ", error)
+      console.error("Account deletion failed: ", error);
     }
-  }
+  };
 
   return (
     <SafeAreaView style={globalStyles.container} edges={["top"]}>
@@ -134,7 +138,7 @@ export default function AccountScreen() {
           </View>
         </TouchableOpacity>
       </ScrollView>
-      
+
       <Modal
         visible={showConfirmation}
         animationType="fade"
@@ -152,7 +156,7 @@ export default function AccountScreen() {
             <View style={styles.modalBody}>
               <TouchableOpacity
                 style={styles.modalConfirmButton}
-                onPress={logout}
+                onPress={handleLogout}
               >
                 <Text style={styles.modalButtonText}>Logout</Text>
               </TouchableOpacity>
@@ -181,27 +185,27 @@ export default function AccountScreen() {
                 WARNING
               </Text>
             </View>
-              <Text style={styles.warningText}>
-                This action is irreversible and will lead to the permanent removal of your account.
-                Are you absolutely certain you wish to proceed?
-              </Text>
-              <TextInput
-                style={styles.modalInput}
-                placeholder="Type 'DELETE' to confirm"
-                placeholderTextColor="#999"
-                value={confirmationText}
-                onChangeText={(value) => {
-                  setConfirmationText(value)
-                  checkConfirmationText(value)
-                }}
-              />
+            <Text style={styles.warningText}>
+              This action is irreversible and will lead to the permanent removal of your account.
+              Are you absolutely certain you wish to proceed?
+            </Text>
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Type 'DELETE' to confirm"
+              placeholderTextColor="#999"
+              value={confirmationText}
+              onChangeText={(value) => {
+                setConfirmationText(value);
+                checkConfirmationText(value);
+              }}
+            />
             <View style={styles.modalBody}>
               <TouchableOpacity
                 style={[styles.modalConfirmButton, { backgroundColor: buttonDisabled ? "#b38b8b" : "#ff8d8d" }]}
                 onPress={deleteAccount}
                 disabled={buttonDisabled}
               >
-                <Text style={[styles.modalButtonText, { color: buttonDisabled ? "#c2c2c2": "#333" }]}>Yes, delete account</Text>
+                <Text style={[styles.modalButtonText, { color: buttonDisabled ? "#c2c2c2" : "#333" }]}>Yes, delete account</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.modalCancelButton}

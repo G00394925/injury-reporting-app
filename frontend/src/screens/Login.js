@@ -53,11 +53,11 @@ export default function LoginScreen() {
       });
 
       if (!response.data.verified) {
-        navigation.navigate("ConfirmRegistration", { email })
+        navigation.navigate("ConfirmRegistration", { email });
       } else {
         // Save user data to context
-        const { uuid, user } = response.data;
-        login(uuid, user);
+        const { uuid, user, session_id } = response.data;
+        login(uuid, user, session_id);
         console.log("Login context updated successfully");
       }
 
@@ -168,8 +168,8 @@ export default function LoginScreen() {
       />
 
       <Button
-        title="DEBUG: Registration Complete Screen"
-        onPress={() => navigation.navigate("ConfirmRegistration")}
+        title="DEBUG: Admin Interface"
+        onPress={() => navigation.navigate("Admin")}
       />
     </View>
   );

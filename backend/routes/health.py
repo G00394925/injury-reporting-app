@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from services.database_service import DatabaseService
 from services.notification_service import NotificationService
+from services.session_service import SessionService
 import logging
 from health_status import HealthStatus
 from datetime import datetime, timedelta, timezone
@@ -8,6 +9,7 @@ import re
 from injury_codes import generate_code
 
 db_service = DatabaseService()
+session_service = SessionService()
 notification_service = NotificationService()
 
 health_bp = Blueprint('health', __name__)
@@ -36,6 +38,7 @@ def health_report():
         report_data = {
             "user": report.get('user_id'),
             "user_data": report.get('user_data'),
+            "session": report.get('session'),
             "answers": report.get('answers_list'),
         }
         # Check if this is an injury follow up report
@@ -145,6 +148,22 @@ def health_report():
             except Exception as e:
                 logger.error(f"Error updating athlete's health status: {e}")
                 return jsonify(error="Failed to update health status"), 500
+
+            try:
+                # Log to session events
+                session = report_data.get('session')
+                session_service.log_event(
+                    session_id=session,
+                    event_type="report_submission",
+                    event_data={
+                        "athlete_id": report_data['user'],
+                    },
+                    endpoint="/health/report",
+                )
+                logger.info(
+                    f"Logged report submission event for session {session}")
+            except Exception as e:
+                logger.error(f"Error logging session event: {e}")
 
             # Insert health report into database
             submission_data = {

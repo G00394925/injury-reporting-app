@@ -9,7 +9,7 @@ import { API_BASE_URL } from "../../config/apiConfig";
 
 export default function AthleteTeamScreen() {
   const navigation = useNavigation();
-  const { userData, uuid } = useAuth();
+  const { userData, uuid, session } = useAuth();
   const [teamDetails, setTeamDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -43,7 +43,8 @@ export default function AthleteTeamScreen() {
   const handleTeamLeave = async () => {
     try {
       const response = await axios.post(
-        `${API_BASE_URL}/api/athletes/leave_team/${uuid}`
+        `${API_BASE_URL}/api/athletes/leave_team/${uuid}`,
+        { session: session }
       );
 
       if (response && response.data) {

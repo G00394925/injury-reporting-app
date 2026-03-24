@@ -1,9 +1,11 @@
 from flask import Blueprint, request, jsonify
 from services.database_service import DatabaseService
+from services.session_service import SessionService
 import logging
 
 athletes_bp = Blueprint('athletes', __name__)
 db_service = DatabaseService()
+session_service = SessionService()
 
 logging.basicConfig(
     level=logging.INFO,
@@ -81,8 +83,18 @@ def join_team():
                                      )
 
         if response:
+
             logger.info(
                 f"Athlete {req.get('athlete_id')} joined team {req.get('team_id')}")
+            session_service.log_event(
+                session_id=req.get("session"),
+                event_type="join_team",
+                event_data={
+                    "athlete_id": req.get("athlete_id"),
+                    "team_id": req.get("team_id")
+                },
+                endpoint="/athletes/join_team"
+            )
             return jsonify(message="Athlete successfully joined the team"), 200
 
     except Exception as e:
@@ -109,6 +121,14 @@ def leave_team(athlete_id):
                                      )
         if response:
             logger.info(f"Athlete {athlete_id} has left their team.")
+            session_service.log_event(
+                session_id=request.get_json().get("session"),
+                event_type="leave_team",
+                event_data={
+                    "athlete_id": athlete_id,
+                },
+                endpoint="/athletes/leave_team"
+            )
             return jsonify(message="Athlete successfully left the team"), 200
         else:
             logger.warning(
