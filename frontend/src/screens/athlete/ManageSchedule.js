@@ -1,6 +1,6 @@
 import { useAuth } from "../../context/AuthContext";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, TextInput, Alert } from "react-native";
+import { View, Text, Switch, StyleSheet, TouchableOpacity, ScrollView, Modal, TextInput, Alert } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { CalendarContainer, CalendarHeader, CalendarBody } from "@howljs/calendar-kit";
 import calendarTheme from "../../styles/calendarTheme";
@@ -19,11 +19,13 @@ export default function ManageScheduleScreen() {
   const [eventStartTime, setEventStartTime] = useState(new Date());
   const [eventEndTime, setEventEndTime] = useState(new Date());
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
-  const [isStartTimePickerVisible, setIsStartTimePickerVisible] =
-    useState(false);
+  const [isStartTimePickerVisible, setIsStartTimePickerVisible] = useState(false);
   const [isEndTimePickerVisible, setIsEndTimePickerVisible] = useState(false);
   const [events, setEvents] = useState([]);
+  const [isTraining, setIsTraining] = useState(false);
   const [loading, setLoading] = useState(true);
+  const toggleSwitch = () => setIsTraining(!isTraining);
+
 
   const formatDate = (date) => {
     return date.toLocaleDateString("en-GB", {
@@ -42,8 +44,8 @@ export default function ManageScheduleScreen() {
   };
 
   // Modal handlers for event creation
-  const openModal = (type) => {
-    setEventType(type);
+  const openModal = () => {
+    setEventType(isTraining ? "Training" : "Match");
     setModalVisible(true);
   };
 
@@ -129,7 +131,7 @@ export default function ManageScheduleScreen() {
       Alert.alert(
         "Error",
         error.response?.data?.error ||
-          "Failed to create event. Please try again."
+        "Failed to create event. Please try again."
       );
     }
   };
@@ -210,7 +212,7 @@ export default function ManageScheduleScreen() {
       <View style={globalStyles.header}>
         <Text style={globalStyles.headerText}>Schedule</Text>
       </View>
-      <ScrollView style={globalStyles.contentContainer}>
+      <View style={styles.contentContainer}>
         <View style={styles.calendarView}>
           <CalendarContainer
             theme={calendarTheme}
@@ -225,29 +227,19 @@ export default function ManageScheduleScreen() {
             scrollToNow={false}
             events={events}
           >
-            <CalendarHeader />
+            <CalendarHeader
+              LeftAreaComponent={
+                <TouchableOpacity
+                  onPress={() => openModal()}
+                  style={styles.addButton}
+                >
+                  <MaterialIcons name="add-circle" size={37} color={'#4d4d4d'} />
+                </TouchableOpacity>}
+            />
             <CalendarBody renderEvent={renderEvent} />
           </CalendarContainer>
         </View>
-
-        <View style={styles.actionsContainer}>
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => openModal("Training")}
-          >
-            <MaterialIcons name="fitness-center" size={24} color="white" />
-            <Text style={styles.actionButtonText}>Add Training Session</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.actionButton, styles.secondaryButton]}
-            onPress={() => openModal("Match")}
-          >
-            <MaterialIcons name="sports-soccer" size={24} color="white" />
-            <Text style={styles.actionButtonText}>Add Match/Game</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+      </View>
 
       <Modal
         animationType="slide"
@@ -261,8 +253,7 @@ export default function ManageScheduleScreen() {
           <View style={globalStyles.modalContent}>
             <View style={globalStyles.modalHeader}>
               <Text style={globalStyles.modalTitle}>
-                Add{" "}
-                {eventType === "training" ? "Training Session" : "Match/Game"}
+                Add Event
               </Text>
               <TouchableOpacity onPress={closeModal}>
                 <Ionicons name="close" size={28} color="#333" />
@@ -270,6 +261,17 @@ export default function ManageScheduleScreen() {
             </View>
 
             <ScrollView style={globalStyles.modalBody}>
+              <View style={styles.switchContainer}>
+                <Text style={[globalStyles.modalInputLabel, { fontWeight: "bold" }]}>Is this a training session?</Text>
+                <Switch
+                  onValueChange={toggleSwitch}
+                  value={isTraining}
+                  trackColor={{ false: '#c6c6c6', true: '#6279fc' }}
+                  thumbColor={isTraining ? '#2038be' : '#676767'}
+                  style={{ transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }] }}
+                />
+              </View>
+
               <Text style={globalStyles.modalInputLabel}>Event Title</Text>
               <TextInput
                 style={globalStyles.modalInput}
@@ -360,14 +362,13 @@ const styles = StyleSheet.create({
     padding: 5
   },
   calendarView: {
-    height: 430,
-    marginTop: 10,
+    flex: 1,
     justifyContent: "center",
     overflow: "hidden",
-    borderWidth: 1,
+    borderWidth: 0,
+    marginBottom: 10,
     borderColor: "#ccccccff",
     borderRadius: 10,
-    marginBottom: 20,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -377,37 +378,29 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 3
   },
-  actionsContainer: {
-    marginTop: 10,
-    marginBottom: 20,
-    paddingBottom: 20
+  contentContainer: {
+    flex: 1,
+    borderRadius: 10,
+    backgroundColor: "#ffffff",
+    padding: 5,
+    marginTop: -8,
+    marginBottom: -10
   },
-  actionButton: {
-    backgroundColor: "#2038be",
-    padding: 18,
-    borderRadius: 12,
-    marginBottom: 15,
+  addButton: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  switchContainer: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5
-  },
-  secondaryButton: {
-    backgroundColor: "#28a745"
-  },
-  actionButtonText: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "bold",
-    fontFamily: "Rubik",
-    marginLeft: 10
+    justifyContent: "space-between",
+    borderBottomWidth: 1,
+    borderColor: "#e0e0e0",
+    paddingBottom: 10,
+    marginBottom: 10,
+    marginTop: -5
   },
   timePickerContainer: {
     flexDirection: "row",

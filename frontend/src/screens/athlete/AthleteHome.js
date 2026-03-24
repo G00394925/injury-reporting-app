@@ -100,196 +100,196 @@ export default function AthleteDashScreen() {
 
   return (
     <SafeAreaView style={globalStyles.container} edges={["top"]}>
-        <View style={globalStyles.header}>
-            <Text style={globalStyles.headerText}>Hello {userData?.name.split(' ')[0]}</Text>
-          </View>
-          <ScrollView
-          style={globalStyles.contentContainer}
-          contentContainerStyle={{ paddingBottom: 100 }}
-          >
-          {loading ? (
-            <>
-              <View>
-                <SkeletonText height={100} borderRadius={90} />
+      <View style={globalStyles.header}>
+        <Text style={globalStyles.headerText}>Hello {userData?.name.split(' ')[0]}</Text>
+      </View>
+      <ScrollView
+        style={globalStyles.contentContainer}
+        contentContainerStyle={{ paddingBottom: 100 }}
+      >
+        {loading ? (
+          <>
+            <View>
+              <SkeletonText height={100} borderRadius={90} />
+            </View>
+            <View style={{ marginTop: 20 }}>
+              <SkeletonText height={120} borderRadius={15} />
+            </View>
+            <View style={styles.infoCardsContainer}>
+              <SkeletonText width={"30%"} height={160} borderRadius={15} />
+              <SkeletonText width={"30%"} height={160} borderRadius={15} />
+              <SkeletonText width={"30%"} height={160} borderRadius={15} />
+            </View>
+            <View style={{ marginTop: 20 }}>
+              <SkeletonText height={120} borderRadius={15} />
+            </View>
+          </>
+        ) : (
+          <>
+            {/* Traffic light status indicators */}
+            <Card containerStyle={styles.lightsCard}>
+              <View style={styles.lightsContainer}>
+                <Image
+                  style={styles.light}
+                  source={
+                    healthStatus === "No training or competing"
+                      ? require("../../../assets/RedLightOn.png")
+                      : require("../../../assets/RedLightOff.png")
+                  }
+                />
+                <Image
+                  style={styles.light}
+                  source={
+                    healthStatus === "No competing"
+                      ? require("../../../assets/AmberLightOn.png")
+                      : require("../../../assets/AmberLightOff.png")
+                  }
+                />
+                <Image
+                  style={styles.light}
+                  source={
+                    healthStatus === "Healthy"
+                      ? require("../../../assets/GreenLightOn.png")
+                      : require("../../../assets/GreenLightOff.png")
+                  }
+                />
               </View>
-              <View style={{marginTop: 20}}>
-                <SkeletonText height={120} borderRadius={15} />
-              </View>
-              <View style={styles.infoCardsContainer}>
-                <SkeletonText width={"30%"} height={160} borderRadius={15} />
-                <SkeletonText width={"30%"} height={160} borderRadius={15} />
-                <SkeletonText width={"30%"} height={160} borderRadius={15} />
-              </View>
-             <View style={{marginTop: 20}}>
-                <SkeletonText height={120} borderRadius={15} />
-              </View>
-            </>
-          ) : (
-            <>
-              {/* Traffic light status indicators */}
-              <Card containerStyle={styles.lightsCard}>
-                <View style={styles.lightsContainer}>
-                  <Image
-                    style={styles.light}
-                    source={
-                      healthStatus === "No training or competing"
-                        ? require("../../../assets/RedLightOn.png")
-                        : require("../../../assets/RedLightOff.png")
-                    }
-                  />
-                  <Image
-                    style={styles.light}
-                    source={
-                      healthStatus === "No competing"
-                        ? require("../../../assets/AmberLightOn.png")
-                        : require("../../../assets/AmberLightOff.png")
-                    }
-                  />
-                  <Image
-                    style={styles.light}
-                    source={
-                      healthStatus === "Healthy"
-                        ? require("../../../assets/GreenLightOn.png")
-                        : require("../../../assets/GreenLightOff.png")
-                    }
-                  />
-                </View>
-              </Card>
+            </Card>
 
-              {/* Report Submission button */}
-              {reportDue && (
-                <TouchableOpacity
-                  style={styles.reportCard}
-                  onPress={() => {
-                    navigation.navigate("Report", {
-                      healthStatus: healthStatus,
-                      recoveryDate: estimatedRecoveryDate
-                    });
-                  }}
-                >
-                  <View style={styles.noticeIconContainer}>
-                    <MaterialIcons name="warning-amber" size={40} color="#000" />
-                  </View>
-                  <View style={styles.noticeTextContainer}>
-                    <Text style={styles.noticeTitle}>
-                      Your daily report is due!
-                    </Text>
-                    <Text style={styles.noticeSubtext}>
-                      Tap to submit your report
-                    </Text>
-                  </View>
-                  <Ionicons name="chevron-forward" size={24} color="#0000006c" />
-                </TouchableOpacity>
-              )}
-
-              {/* Notice card */}
-              <View
-                style={[
-                  styles.noticeCard,
-                  healthStatus === "Healthy"
-                    ? styles.noticeCardGreen
-                    : healthStatus === "No competing"
-                      ? styles.noticeCardAmber
-                      : styles.noticeCardRed
-                ]}
-              >
-                <View style={styles.noticeIconContainer}>
-                  <MaterialCommunityIcons
-                    name={
-                      healthStatus === "Healthy"
-                        ? "check-circle"
-                        : healthStatus === "No competing"
-                          ? "alert-circle"
-                          : "close-circle"
-                    }
-                    size={40}
-                    color={
-                      healthStatus === "Healthy"
-                        ? "#10b981"
-                        : healthStatus === "No competing"
-                          ? "#f59e0b"
-                          : "#ef4444"
-                    }
-                  />
-                </View>
-                <View style={styles.noticeTextContainer}>
-                  <Text style={styles.noticeLabel}>Status</Text>
-                  <Text style={styles.noticeTitle}>
-                    {healthStatus === "No training or competing"
-                      ? "No training or competing"
-                      : healthStatus === "No competing"
-                        ? "Training only"
-                        : "Ready to play"}
-                  </Text>
-                  <Text style={styles.noticeSubtext}>
-                    {healthStatus === "No training or competing"
-                      ? "Rest and recovery needed"
-                      : healthStatus === "No competing"
-                        ? "Cleared for training activities"
-                        : "Fully cleared for all activities"}
-                  </Text>
-                </View>
-              </View>
-
-              {/* Information/Status cards */}
-              <View style={styles.infoCardsContainer}>
-                <View style={styles.infoCard}>
-                  <MaterialCommunityIcons
-                    name="file-document-multiple"
-                    size={32}
-                    color="#6366f1"
-                    style={styles.cardIcon}
-                  />
-                  <Text style={styles.cardValue}>{numReports}</Text>
-                  <Text style={styles.cardLabel}>Total Reports</Text>
-                </View>
-
-                <View style={styles.infoCard}>
-                  <MaterialCommunityIcons
-                    name="calendar-check"
-                    size={32}
-                    color="#10b981"
-                    style={styles.cardIcon}
-                  />
-                  <Text style={styles.cardValue}>{futureEvents}</Text>
-                  <Text style={styles.cardLabel}>Planned Events</Text>
-                </View>
-
-                <View style={styles.infoCard}>
-                  <MaterialCommunityIcons
-                    name="fire"
-                    size={32}
-                    color="#f59e0b"
-                    style={styles.cardIcon}
-                  />
-                  <Text style={styles.cardValue}>{consecutiveReports}</Text>
-                  <Text style={styles.cardLabel}>
-                    Consecutive Submitted Reports
-                  </Text>
-                </View>
-              </View>
-
-              {/* Next Event Card */}
+            {/* Report Submission button */}
+            {reportDue && (
               <TouchableOpacity
-                style={styles.eventCard}
+                style={styles.reportCard}
                 onPress={() => {
-                  navigation.navigate("Schedule");
+                  navigation.navigate("Report", {
+                    healthStatus: healthStatus,
+                    recoveryDate: estimatedRecoveryDate
+                  });
                 }}
               >
                 <View style={styles.noticeIconContainer}>
-                  <MaterialIcons name="sports-soccer" size={40} color="#1963ca" />
+                  <MaterialIcons name="warning-amber" size={40} color="#000" />
                 </View>
                 <View style={styles.noticeTextContainer}>
-                  <Text style={styles.noticeLabel}>Next Event</Text>
-                  <Text style={styles.noticeTitle}>{nextEventTitle}</Text>
-                  {nextEventDate && nextEventTime && (
-                    <Text style={styles.noticeSubtext}>
-                      {nextEventDate} - {nextEventTime}
-                    </Text>
-                  )}
+                  <Text style={styles.noticeTitle}>
+                    Your daily report is due!
+                  </Text>
+                  <Text style={styles.noticeSubtext}>
+                    Tap to submit your report
+                  </Text>
                 </View>
                 <Ionicons name="chevron-forward" size={24} color="#0000006c" />
               </TouchableOpacity>
+            )}
+
+            {/* Notice card */}
+            <View
+              style={[
+                styles.noticeCard,
+                healthStatus === "Healthy"
+                  ? styles.noticeCardGreen
+                  : healthStatus === "No competing"
+                    ? styles.noticeCardAmber
+                    : styles.noticeCardRed
+              ]}
+            >
+              <View style={styles.noticeIconContainer}>
+                <MaterialCommunityIcons
+                  name={
+                    healthStatus === "Healthy"
+                      ? "check-circle"
+                      : healthStatus === "No competing"
+                        ? "alert-circle"
+                        : "close-circle"
+                  }
+                  size={40}
+                  color={
+                    healthStatus === "Healthy"
+                      ? "#10b981"
+                      : healthStatus === "No competing"
+                        ? "#f59e0b"
+                        : "#ef4444"
+                  }
+                />
+              </View>
+              <View style={styles.noticeTextContainer}>
+                <Text style={styles.noticeLabel}>Status</Text>
+                <Text style={styles.noticeTitle}>
+                  {healthStatus === "No training or competing"
+                    ? "No training or competing"
+                    : healthStatus === "No competing"
+                      ? "Training only"
+                      : "Ready to play"}
+                </Text>
+                <Text style={styles.noticeSubtext}>
+                  {healthStatus === "No training or competing"
+                    ? "Rest and recovery needed"
+                    : healthStatus === "No competing"
+                      ? "Cleared for training activities"
+                      : "Fully cleared for all activities"}
+                </Text>
+              </View>
+            </View>
+
+            {/* Information/Status cards */}
+            <View style={styles.infoCardsContainer}>
+              <View style={styles.infoCard}>
+                <MaterialCommunityIcons
+                  name="file-document-multiple"
+                  size={32}
+                  color="#6366f1"
+                  style={styles.cardIcon}
+                />
+                <Text style={styles.cardValue}>{numReports}</Text>
+                <Text style={styles.cardLabel}>Total Reports</Text>
+              </View>
+
+              <View style={styles.infoCard}>
+                <MaterialCommunityIcons
+                  name="calendar-check"
+                  size={32}
+                  color="#10b981"
+                  style={styles.cardIcon}
+                />
+                <Text style={styles.cardValue}>{futureEvents}</Text>
+                <Text style={styles.cardLabel}>Planned Events</Text>
+              </View>
+
+              <View style={styles.infoCard}>
+                <MaterialCommunityIcons
+                  name="fire"
+                  size={32}
+                  color="#f59e0b"
+                  style={styles.cardIcon}
+                />
+                <Text style={styles.cardValue}>{consecutiveReports}</Text>
+                <Text style={styles.cardLabel}>
+                  Consecutive Submitted Reports
+                </Text>
+              </View>
+            </View>
+
+            {/* Next Event Card */}
+            <TouchableOpacity
+              style={styles.eventCard}
+              onPress={() => {
+                navigation.navigate("Schedule");
+              }}
+            >
+              <View style={styles.noticeIconContainer}>
+                <MaterialIcons name="sports-soccer" size={40} color="#1963ca" />
+              </View>
+              <View style={styles.noticeTextContainer}>
+                <Text style={styles.noticeLabel}>Next Event</Text>
+                <Text style={styles.noticeTitle}>{nextEventTitle}</Text>
+                {nextEventDate && nextEventTime && (
+                  <Text style={styles.noticeSubtext}>
+                    {nextEventDate} - {nextEventTime}
+                  </Text>
+                )}
+              </View>
+              <Ionicons name="chevron-forward" size={24} color="#0000006c" />
+            </TouchableOpacity>
           </>
         )}
       </ScrollView>
