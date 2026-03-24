@@ -79,7 +79,7 @@ export default function AthleteTeamScreen() {
       console.error("Error leaving team: ", error);
     } finally {
       setShowConfirmation(false);
-      navigation.navigate("ClubSetup");
+      { teams.length > 1 ? setTeamFocus(0) : navigation.navigate("ClubSetup"); }
     }
   };
 

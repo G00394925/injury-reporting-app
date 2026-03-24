@@ -34,6 +34,7 @@ def get_teams():
                 coach_data = db_service.fetch(
                     table="users",
                     filters={"id": team.get("coach_id")})
+
                 coach_name = coach_data.data[0].get(
                     "name") if coach_data and coach_data.data else None
 

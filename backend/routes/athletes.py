@@ -38,26 +38,29 @@ def get_team_details(athlete_id):
                 team_details=None
             ), 200
 
-        # Fetch team details
-        response = db_service.fetch(
-            "teams", {"team_id": athlete_teams.data[0].get("team_id")})
+        # Fetch team details for all teams the athlete is in
+        teams = []
+        for athlete_team in athlete_teams.data:
+            response = db_service.fetch(
+                "teams", {"team_id": athlete_team.get("team_id")})
 
-        if response:
-            teams = []
-            for team in response.data:
-                # Fetch coach id for their name and return team details
-                coach = db_service.fetch(
-                    "users", {"id": response.data[0].get("coach_id")})
-                teams.append({
-                    "team_id": team.get("team_id"),
-                    "sport": team.get("sport"),
-                    "team_name": team.get("team_name"),
-                    "coach": coach.data[0].get("name") if coach and coach.data else None,
-                })
+            if response and response.data:
+                for team in response.data:
+                    # Fetch coach details
+                    coach = db_service.fetch(
+                        "users", {"id": team.get("coach_id")})
+                    teams.append({
+                        "team_id": team.get("team_id"),
+                        "sport": team.get("sport"),
+                        "team_name": team.get("team_name"),
+                        "coach": coach.data[0].get("name") if coach and coach.data else None,
+                    })
+
+        if teams:
             logger.info(f"Fetched teams for athlete {athlete_id}")
             return jsonify(teams=teams), 200
         else:
-            return jsonify(message="No team found for the given athlete ID"), 404
+            return jsonify(message="No teams found for the given athlete ID"), 404
 
     except Exception as e:
         logger.error(

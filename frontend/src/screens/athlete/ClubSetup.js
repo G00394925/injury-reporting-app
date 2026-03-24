@@ -22,8 +22,20 @@ export default function ClubSetup() {
     const fetchTeams = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/teams/get_teams`);
-        setTeams(response.data.teams);
-        setFilteredTeams(response.data.teams);
+        console.log("Teams data: ", response.data);
+
+        const alreadyJoined = await axios.get(`${API_BASE_URL}/api/athletes/team/${uuid}`);
+        console.log("Already joined team data: ", alreadyJoined.data);
+
+        // Get IDs of teams athlete is already in
+        const joinedTeamIds = alreadyJoined.data.teams.map(t => t.team_id);
+        // Filter out those teams from the available list
+        const filteredTeamsList = response.data.teams.filter(
+          team => !joinedTeamIds.includes(team.team_id)
+        );
+        setTeams(filteredTeamsList);
+        setFilteredTeams(filteredTeamsList);
+
       } catch (error) {
         console.error("Error fetching teams:", error);
       } finally {
