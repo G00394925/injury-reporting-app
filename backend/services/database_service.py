@@ -46,20 +46,20 @@ class DatabaseService:
         Fetch data from a specified table with optional filters.
 
         Args:
-            - table (str): Name of the table to fetch from
-            - filters (dict): Filters to apply (e.g., {"id": "123"} or {"date": "gte.2026-01-01"})
+            table (str): Name of the table to fetch from
+            filters (dict): Filters to apply (e.g., {"id": "123"} or {"date": "gte.2026-01-01"})
                 Supports operators: gte, lte, gt, lt, neq (e.g., "gte.value")
                 (default None)
-            - modifiers (dict):
+            modifiers (dict):
                 Additional modifiers for the query (e.g, order column with desc=True).
                 (default None)
-            - select (str): Columns to be retrieved. (default "*")
+            select (str): Columns to be retrieved. (default "*")
 
         Returns:
-            - Response containing the fetched data
+            Response containing the fetched data
 
         Raises:
-            - Exception: If fetch operation fails
+            Exception: If fetch operation fails
         """
         try:
             query = self.supabase.table(table).select(select)
@@ -120,15 +120,15 @@ class DatabaseService:
         Update data in a specified table.
 
         Args:
-            - table (str): Name of the table to update
-            - data (dict): Dictionary containing the data to update
-            - filters (dict): Dictionary of filters to identify rows to update
+            table (str): Name of the table to update
+            data (dict): Dictionary containing the data to update
+            filters (dict): Dictionary of filters to identify rows to update
 
         Returns:
-            - Response from the database operation
+            Response from the database operation
 
         Raises:
-            - Exception: If update operation fails
+            Exception: If update operation fails
         """
         try:
             query = self.supabase.table(table).update(data)
@@ -150,14 +150,14 @@ class DatabaseService:
         Delete data from a specified table.
 
         Args:
-            - table (str): Name of the table to delete from
-            - filters (dict): Dictionary of filters to identify rows to delete
+            table (str): Name of the table to delete from
+            filters (dict): Dictionary of filters to identify rows to delete
 
         Returns:
-            - Response from the database operation
+            Response from the database operation
 
         Raises:
-            - Exception: If delete operation fails
+            Exception: If delete operation fails
         """
         try:
             query = self.supabase.table(table).delete()

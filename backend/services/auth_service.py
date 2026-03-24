@@ -25,8 +25,8 @@ class AuthService:
         Register a new user with Supabase Auth.
 
         Args:
-            email: User's email address
-            password: User's password
+            email (str): User's email address
+            password (str): User's password
 
         Returns:
             Authentication response containing user data
@@ -50,8 +50,8 @@ class AuthService:
         Authenticate a user with Supabase Auth.
 
         Args:
-            email: User's email address
-            password: User's password
+            email (str): User's email address
+            password (str): User's password
 
         Returns:
             Authentication response containing user data and session

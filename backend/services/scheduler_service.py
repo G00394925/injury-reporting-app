@@ -32,8 +32,8 @@ class SchedulerService:
         for the day at the specified time.
 
         Args:
-            - hour (int): Hour of the day to send notification
-            - minute (int): Minute of the hour to send notification
+            hour (int): Hour of the day to send notification
+            minute (int): Minute of the hour to send notification
         """
         trigger = CronTrigger(hour=hour, minute=minute)
         self.scheduler.add_job(
