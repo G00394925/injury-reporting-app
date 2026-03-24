@@ -1,5 +1,5 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text, View, StyleSheet, TouchableOpacity, Modal } from "react-native";
+import { Text, View, ScrollView, StyleSheet, TouchableOpacity, Modal } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { globalStyles } from "../../styles/globalStyles";
 import { API_BASE_URL } from "../../config/apiConfig";
@@ -114,7 +114,7 @@ export default function TeamManagerScreen() {
       <View style={globalStyles.header}>
         <Text style={globalStyles.headerText}>Team Manager</Text>
       </View>
-      <View style={globalStyles.contentContainer}>
+      <ScrollView style={globalStyles.contentContainer} contentContainerStyle={{ paddingBottom: 75 }}>
         {loading ? (
           <>
             <View style={{ marginBottom: 15 }}><SkeletonText width={"100%"} height={125} borderRadius={25} /></View>
@@ -131,13 +131,13 @@ export default function TeamManagerScreen() {
               }}
             >
               <Text style={styles.newTeamText}>Create new team</Text>
-              <MaterialIcons name="add-circle" size={40} color={'#bab8b8'} />
+              <MaterialIcons name="add-circle" size={35} color={'#bab8b8'} />
             </TouchableOpacity>
 
             {teamItems}
           </>
         )}
-      </View>
+      </ScrollView>
       <Modal
         animationType="slide"
         transparent={true}

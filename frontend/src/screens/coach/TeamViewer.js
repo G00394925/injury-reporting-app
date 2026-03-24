@@ -63,20 +63,20 @@ export default function TeamViewerScreen({ route }) {
                 <MaterialCommunityIcons
                   name={
                     athlete.health_status === "Healthy" ? "check-circle"
-                    : athlete.health_status === "No competing" ? "alert-circle"
-                    : "close-circle"
+                      : athlete.health_status === "No competing" ? "alert-circle"
+                        : "close-circle"
                   }
                   size={50}
                   color={
                     athlete.health_status === "Healthy" ? "#10b981"
-                    : athlete.health_status === "No competing" ? "#f59e0b"
-                    : "#ef4444"
+                      : athlete.health_status === "No competing" ? "#f59e0b"
+                        : "#ef4444"
                   }
                 />
               </View>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.athleteDetailsContainer}
-                onPress={() => navigation.navigate("AthleteViewer", { athlete: athlete})}>
+                onPress={() => navigation.navigate("AthleteViewer", { athlete: athlete })}>
                 <Text style={styles.athleteNameText}>
                   {athlete.name}
                 </Text>
@@ -109,7 +109,7 @@ export default function TeamViewerScreen({ route }) {
         </TouchableOpacity>
         <Text style={globalStyles.headerText}>{team.team_name}</Text>
       </View>
-      <ScrollView style={globalStyles.contentContainer}>
+      <View style={globalStyles.contentContainer}>
         {loading ? (
           <>
             <AthleteInfoSkeleton />
@@ -118,9 +118,12 @@ export default function TeamViewerScreen({ route }) {
             <AthleteInfoSkeleton />
             <AthleteInfoSkeleton />
             <AthleteInfoSkeleton />
+            <AthleteInfoSkeleton />
+            <AthleteInfoSkeleton />
+            <AthleteInfoSkeleton />
           </>
         ) : (
-          <ScrollView>
+          <ScrollView contentContainerStyle={{ paddingBottom: 45 }}>
             {athleteItems.length > 0 ? (
               athleteItems
             ) : (
@@ -130,7 +133,7 @@ export default function TeamViewerScreen({ route }) {
             )}
           </ScrollView>
         )}
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -173,7 +176,6 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
     color: "#6e6e6e",
     marginTop: 10
-
   },
   iconContainer: {
     justifyContent: "center",

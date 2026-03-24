@@ -71,7 +71,7 @@ def fetch_coach_teams(coach_id):
             # Fetch athletes for each team
             for team in response.data:
                 players = db_service.fetch(
-                    table="athletes",
+                    table="athlete_teams",
                     filters={"team_id": team.get("team_id")})
 
                 teams.append({
@@ -140,16 +140,23 @@ def fetch_athletes(team_id):
     """
 
     try:
-        response = db_service.fetch("athletes", filters={"team_id": team_id})
+        athlete_ids = db_service.fetch(
+            table="athlete_teams",
+            filters={"team_id": team_id}
+        )
 
-        if response:
+        if athlete_ids:
             athletes = []
             healthy_athletes = 0
             at_risk_athletes = 0
             injured_athletes = 0
             reports_due = 0
 
-            for athlete in response.data:
+            for athlete_id in athlete_ids.data:
+                athlete = db_service.fetch(
+                    table="athletes",
+                    filters={"id": athlete_id.get("athlete_id")}
+                ).data[0]
                 if athlete.get("status") == HealthStatus.GREEN:
                     healthy_athletes += 1
                 elif athlete.get("status") == HealthStatus.AMBER:

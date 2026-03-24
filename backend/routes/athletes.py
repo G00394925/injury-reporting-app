@@ -28,34 +28,34 @@ def get_team_details(athlete_id):
     """
 
     try:
-        # Get athlete's team id
-        athlete = db_service.fetch("athletes", {"id": athlete_id})
+        athlete_teams = db_service.fetch(
+            table="athlete_teams",
+            filters={"athlete_id": athlete_id})
 
-        if not athlete or not athlete.data:
-            return jsonify(message="Athlete not found"), 404
-
-        team_id = athlete.data[0].get("team_id")
-
-        if not team_id:
+        if not athlete_teams or not athlete_teams.data:
             return jsonify(
                 message="Athlete is not part of any team",
                 team_details=None
             ), 200
 
         # Fetch team details
-        response = db_service.fetch("teams", {"team_id": team_id})
+        response = db_service.fetch(
+            "teams", {"team_id": athlete_teams.data[0].get("team_id")})
 
         if response:
-            # Fetch coach id for their name and return team details
-            coach = db_service.fetch(
-                "users", {"id": response.data[0].get("coach_id")})
-            team_details = {
-                "sport": response.data[0].get("sport"),
-                "team_name": response.data[0].get("team_name"),
-                "coach": coach.data[0].get("name") if coach and coach.data else None,
-            }
-            return jsonify(team_details=team_details), 200
-
+            teams = []
+            for team in response.data:
+                # Fetch coach id for their name and return team details
+                coach = db_service.fetch(
+                    "users", {"id": response.data[0].get("coach_id")})
+                teams.append({
+                    "team_id": team.get("team_id"),
+                    "sport": team.get("sport"),
+                    "team_name": team.get("team_name"),
+                    "coach": coach.data[0].get("name") if coach and coach.data else None,
+                })
+            logger.info(f"Fetched teams for athlete {athlete_id}")
+            return jsonify(teams=teams), 200
         else:
             return jsonify(message="No team found for the given athlete ID"), 404
 
@@ -76,16 +76,18 @@ def join_team():
 
     try:
         req = request.get_json()
-
-        response = db_service.update("athletes",
-                                     data={"team_id": req.get("team_id")},
-                                     filters={"id": req.get("athlete_id")}
-                                     )
+        response = db_service.insert(
+            table="athlete_teams",
+            data={
+                "team_id": req.get("team_id"),
+                "athlete_id": req.get("athlete_id")
+            },
+        )
 
         if response:
-
             logger.info(
                 f"Athlete {req.get('athlete_id')} joined team {req.get('team_id')}")
+
             session_service.log_event(
                 session_id=req.get("session"),
                 event_type="join_team",
@@ -102,30 +104,32 @@ def join_team():
         return jsonify(message="Error joining team"), 500
 
 
-@athletes_bp.route('/leave_team/<athlete_id>', methods=['POST'])
-def leave_team(athlete_id):
+@athletes_bp.route('/leave_team', methods=['POST'])
+def leave_team():
     """
-    Handles team exit for a given athlete. Updates team_id to None
-    on the database.
-
-    Parameters:
-        athlete_id (uuid): Associated athlete for team removal.
+    Handles team exit for requesting athlete. 
 
     Returns:
         message (json): Message indicating success or failure.
     """
     try:
-        response = db_service.update("athletes",
-                                     data={"team_id": None},
-                                     filters={"id": athlete_id}
-                                     )
+        athlete_request = request.get_json()
+        athlete_id = athlete_request.get("athlete_id")
+        team_id = athlete_request.get("team_id")
+        session = athlete_request.get("session")
+
+        response = db_service.delete(
+            table="athlete_teams",
+            filters={"athlete_id": athlete_id, "team_id": team_id}
+        )
         if response:
             logger.info(f"Athlete {athlete_id} has left their team.")
             session_service.log_event(
-                session_id=request.get_json().get("session"),
+                session_id=session,
                 event_type="leave_team",
                 event_data={
                     "athlete_id": athlete_id,
+                    "team_id": team_id
                 },
                 endpoint="/athletes/leave_team"
             )

@@ -175,24 +175,28 @@ def get_team_events(team_id):
     # Get all athletes from team
     try:
         athletes_response = db_service.fetch(
-            "athletes", filters={"team_id": team_id})
-        if athletes_response and athletes_response.data:
-            logger.info(f"Fetching events for team {team_id}")
-            events = []
-            for athlete in athletes_response.data:
-                athlete_id = athlete.get("id")
+            table="athlete_teams",
+            filters={"team_id": team_id},
+            select={"athlete_id"})
 
+        if athletes_response and athletes_response.data:
+            events = []
+            logger.info(f"Fetching events for team {team_id}")
+
+            for athlete in athletes_response.data:
                 # Only acquire events occuring within the next 3 days
                 events_response = db_service.fetch(
                     table="events",
                     filters={
-                        "athlete_id": athlete_id,
+                        "athlete_id": athlete.get("athlete_id"),
                         "event_date": f"gte.{datetime.now().strftime('%Y-%m-%d')}",
                         "event_date": f"lte.{(datetime.now() + timedelta(days=3)).strftime('%Y-%m-%d')}"
                     }
                 )
                 if events_response and events_response.data:
-                    logger.info(f"Fetched events for {athlete_id}")
+                    logger.info(
+                        f"Fetched events for {athlete.get('athlete_id')}")
+
                     for event in events_response.data:
                         events.append({
                             "event_id": event.get("id"),
@@ -204,13 +208,14 @@ def get_team_events(team_id):
                         })
 
                 else:
-                    logger.info(f"No events found for {athlete_id}")
+                    logger.info(
+                        f"No events found for {athlete.get('athlete_id')}")
 
             logger.info(f"Fetched team events for team {team_id}")
             return jsonify(team_events=events), 200
         else:
             logger.warning(f"No athletes found for team {team_id}")
-            return jsonify(message="No athletes found for the specified team"), 404
+            return jsonify(message="No athletes found for the specified team"), 200
 
     except Exception as e:
         logger.error(f"Error fetching team events for team {team_id}: {e}")

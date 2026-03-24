@@ -1,4 +1,4 @@
-import { Text, StyleSheet, View, ActivityIndicator, TouchableOpacity, Modal } from "react-native";
+import { Text, StyleSheet, View, ScrollView, TouchableOpacity, Modal } from "react-native";
 import { globalStyles } from "../../styles/globalStyles";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -6,13 +6,18 @@ import { useAuth } from "../../context/AuthContext";
 import { useCallback, useState } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "../../config/apiConfig";
+import SkeletonText from "../../components/skeleton/SkeletonText";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 export default function AthleteTeamScreen() {
   const navigation = useNavigation();
   const { userData, uuid, session } = useAuth();
+  const [teams, setTeams] = useState([]);
+  const [activeTeam, setActiveTeam] = useState(0);
   const [teamDetails, setTeamDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showTeamPicker, setShowTeamPicker] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -24,11 +29,13 @@ export default function AthleteTeamScreen() {
           );
 
           // Athlete is not in a team - redirect to club setup.
-          if (response.data.team_details == null) {
+          if (response.data == null) {
             navigation.navigate("ClubSetup");
             return;
           } else {
-            setTeamDetails(response.data.team_details);
+            const fetchedTeams = response.data.teams;
+            setTeams(fetchedTeams);
+            await loadTeamData(fetchedTeams, activeTeam);
           }
         } catch (error) {
           console.error("Error fetching team details:", error);
@@ -40,11 +47,27 @@ export default function AthleteTeamScreen() {
     }, [uuid])
   );
 
+  const loadTeamData = async (teams, teamIndex) => {
+    // Acquire details for active team
+    try {
+      setTeamDetails(teams[teamIndex]);
+    } catch (error) {
+      console.error("Error loading team data:", error);
+    }
+  };
+
+  const setTeamFocus = async (teamIndex) => {
+    await loadTeamData(teams, teamIndex);
+  };
+
   const handleTeamLeave = async () => {
     try {
       const response = await axios.post(
-        `${API_BASE_URL}/api/athletes/leave_team/${uuid}`,
-        { session: session }
+        `${API_BASE_URL}/api/athletes/leave_team`, {
+        athlete_id: uuid,
+        team_id: teamDetails.team_id,
+        session: session
+      }
       );
 
       if (response && response.data) {
@@ -68,18 +91,23 @@ export default function AthleteTeamScreen() {
       <View style={[globalStyles.contentContainer, { flex: 1 }]}>
         <View style={{ flex: 1 }}>
           <View>
-            <Text style={styles.clubTitle}>Club</Text>
             {loading ? (
-              <ActivityIndicator size="small" color="#484848" />
+              <SkeletonText width={"75%"} height={32} />
             ) : (
-              <Text style={styles.clubText}>{teamDetails?.team_name}</Text>
+              <TouchableOpacity
+                style={styles.teamHeader}
+                onPress={() => setShowTeamPicker(true)}
+              >
+                <Text style={styles.clubText}>{teamDetails?.team_name}</Text>
+                <Ionicons name="chevron-down" size={24} />
+              </TouchableOpacity>
             )}
           </View>
           <View style={styles.detailContainer}>
             <View style={styles.detail}>
               <Text style={styles.detailTitle}>Name: </Text>
               {loading ? (
-                <ActivityIndicator size="small" color="#484848" />
+                <SkeletonText width={"35%"} height={32} borderRadius={25} />
               ) : (
                 <Text style={styles.detailText}>{userData?.name}</Text>
               )}
@@ -87,7 +115,7 @@ export default function AthleteTeamScreen() {
             <View style={styles.detail}>
               <Text style={styles.detailTitle}>Coach: </Text>
               {loading ? (
-                <ActivityIndicator size="small" color="#484848" />
+                <SkeletonText width={"35%"} height={32} borderRadius={25} />
               ) : (
                 <Text style={styles.detailText}>{teamDetails?.coach}</Text>
               )}
@@ -95,19 +123,29 @@ export default function AthleteTeamScreen() {
             <View style={styles.detail}>
               <Text style={styles.detailTitle}>Sport: </Text>
               {loading ? (
-                <ActivityIndicator size="small" color="#484848" />
+                <SkeletonText width={"35%"} height={32} borderRadius={25} />
               ) : (
                 <Text style={styles.detailText}>{teamDetails?.sport}</Text>
               )}
             </View>
           </View>
         </View>
-        <TouchableOpacity
-          style={styles.leaveTeamButton}
-          onPress={() => setShowConfirmation(true)}
-        >
-          <Text style={styles.leaveTeamButtonText}>Leave team</Text>
-        </TouchableOpacity>
+        {!loading && (
+          <View style={styles.buttonsContainer}>
+            <TouchableOpacity
+              style={styles.joinTeamsButton}
+              onPress={() => navigation.navigate("ClubSetup")}
+            >
+              <Text style={styles.joinTeamsButtonText}>Join Another Team</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.leaveTeamButton}
+              onPress={() => setShowConfirmation(true)}
+            >
+              <MaterialIcons name="logout" size={24} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
       <Modal
         visible={showConfirmation}
@@ -140,20 +178,53 @@ export default function AthleteTeamScreen() {
           </View>
         </View>
       </Modal>
+
+      <Modal
+        visible={showTeamPicker}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => setShowTeamPicker(false)}
+      >
+        <View style={globalStyles.modalOverlay}>
+          <View style={globalStyles.modalContent}>
+            <View style={globalStyles.modalHeader}>
+              <Text style={globalStyles.modalTitle}>Select Team</Text>
+              <TouchableOpacity onPress={() => setShowTeamPicker(false)}>
+                <MaterialIcons name="close" size={28} color="#333" />
+              </TouchableOpacity>
+            </View>
+            <ScrollView contentContainerStyle={{ padding: 15 }}>
+              {teams.map((team, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.option}
+                  onPress={() => {
+                    setActiveTeam(index);
+                    setTeamFocus(index);
+                    setShowTeamPicker(false);
+                  }}
+                >
+                  <Text style={styles.optionText}>{team.team_name}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  clubTitle: {
-    fontWeight: "bold",
-    fontFamily: "Rubik",
-    fontSize: 22
+  teamHeader: {
+    flexDirection: "row",
+    alignItems: "center"
   },
   clubText: {
     fontFamily: "Rubik",
     fontSize: 28,
-    marginTop: 5
+    marginTop: 5,
+    marginRight: 5
   },
   detailContainer: {
     marginTop: 20
@@ -180,20 +251,29 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontFamily: "Rubik"
   },
-  leaveTeamButton: {
-    backgroundColor: "#ffffff",
-    padding: 15,
-    borderRadius: 15,
-    marginBottom: 10,
-    alignItems: "center",
-    borderWidth: 2,
-    borderColor: "#ff9999"
+  buttonsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center"
   },
-  leaveTeamButtonText: {
-    color: "#b30000",
+  joinTeamsButton: {
+    backgroundColor: "#001a79",
+    padding: 15,
+    width: "78%",
+    borderRadius: 45
+  },
+  joinTeamsButtonText: {
+    color: "#ffffff",
     fontFamily: "Rubik",
     fontWeight: "bold",
-    fontSize: 18
+    fontSize: 18,
+    textAlign: "center"
+  },
+  leaveTeamButton: {
+    backgroundColor: "#fc0505",
+    padding: 15,
+    borderRadius: 90,
+    alignItems: "center",
   },
   modalOverlay: {
     position: "absolute",
@@ -252,6 +332,23 @@ const styles = StyleSheet.create({
   },
   modalButtonText: {
     fontFamily: "Rubik",
+    fontWeight: "bold",
     fontSize: 16
-  }
+  },
+  option: {
+    width: "100%",
+    paddingVertical: 18,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    backgroundColor: "#f5f5f5",
+    marginVertical: 5,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center"
+  },
+  optionText: {
+    fontSize: 16,
+    fontFamily: "Rubik",
+    color: "#333"
+  },
 });

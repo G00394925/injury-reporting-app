@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from "react-native";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { API_BASE_URL } from "../../config/apiConfig";
@@ -6,6 +6,7 @@ import axios from "axios";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { globalStyles } from "../../styles/globalStyles";
 import { useNavigation } from "@react-navigation/native";
+import SkeletonText from "../../components/skeleton/SkeletonText";
 
 export default function ClubSetup() {
   const [selection, setSelection] = useState(null);
@@ -13,6 +14,7 @@ export default function ClubSetup() {
   const [teams, setTeams] = useState([]);
   const [query, setQuery] = useState("");
   const [filteredTeams, setFilteredTeams] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
   // Acquire list of teams from database
@@ -24,6 +26,8 @@ export default function ClubSetup() {
         setFilteredTeams(response.data.teams);
       } catch (error) {
         console.error("Error fetching teams:", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchTeams();
@@ -65,7 +69,7 @@ export default function ClubSetup() {
         <Text style={globalStyles.headerText}>Choose Team</Text>
       </View>
       <View
-        style={[globalStyles.contentContainer, { flex: 1, paddingBottom: 30 }]}
+        style={[globalStyles.contentContainer, { flex: 1, paddingBottom: 55 }]}
       >
         <TextInput
           placeholder="Search by team name..."
@@ -74,43 +78,63 @@ export default function ClubSetup() {
           onChangeText={handleSearch}
           style={styles.searchInput}
         />
-        <View style={{ flex: 1, borderTopWidth: 1, borderColor: "#cccccc", paddingTop: 15 }}>
-          {filteredTeams.map((team) => (
-            <TouchableOpacity
-              key={team.team_id}
-              style={[
-                styles.teamSlotInactive,
-                selection === team.team_id && styles.teamSlotActive
-              ]}
-              onPress={() => setSelection(team.team_id)}
+        {loading ? (
+          <>
+            <View style={{ marginBottom: 15 }}><SkeletonText height={125} borderRadius={15} /></View>
+            <View style={{ marginBottom: 15 }}><SkeletonText height={125} borderRadius={15} /></View>
+            <View style={{ marginBottom: 15 }}><SkeletonText height={125} borderRadius={15} /></View>
+            <View style={{ marginBottom: 15 }}><SkeletonText height={125} borderRadius={15} /></View>
+            <View style={{ marginBottom: 15 }}><SkeletonText height={125} borderRadius={15} /></View>
+          </>
+        ) : (
+          <>
+            <ScrollView
+              style={{
+                flex: 1,
+                borderTopWidth: 1,
+                borderColor: "#cccccc",
+                paddingTop: 15
+              }}
+              contentContainerStyle={{ paddingBottom: 40 }}
             >
-              <View style={styles.teamHeader}>
-                <Text style={styles.teamText}>{team.team_name}</Text>
-                <Text style={styles.sportText}>{team.sport}</Text>
-              </View>
-              <Text style={styles.coachText}>Coach: {team.coach_name}</Text>
+              {filteredTeams.map((team) => (
+                <TouchableOpacity
+                  key={team.team_id}
+                  style={[
+                    styles.teamSlotInactive,
+                    selection === team.team_id && styles.teamSlotActive
+                  ]}
+                  onPress={() => setSelection(team.team_id)}
+                >
+                  <View style={styles.teamHeader}>
+                    <Text style={styles.teamText}>{team.team_name}</Text>
+                    <Text style={styles.sportText}>{team.sport}</Text>
+                  </View>
+                  <Text style={styles.coachText}>Coach: {team.coach_name}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            <TouchableOpacity
+              style={
+                selection
+                  ? styles.saveSelectionButton
+                  : styles.saveSelectionButtonDisabled
+              }
+              onPress={() => handleSave(selection)}
+              disabled={!selection}
+            >
+              <Text
+                style={
+                  selection
+                    ? styles.saveSelectionButtonText
+                    : styles.saveSelectionButtonTextDisabled
+                }
+              >
+                Save Selection
+              </Text>
             </TouchableOpacity>
-          ))}
-        </View>
-        <TouchableOpacity
-          style={
-            selection
-              ? styles.saveSelectionButton
-              : styles.saveSelectionButtonDisabled
-          }
-          onPress={() => handleSave(selection)}
-          disabled={!selection}
-        >
-          <Text
-            style={
-              selection
-                ? styles.saveSelectionButtonText
-                : styles.saveSelectionButtonTextDisabled
-            }
-          >
-            Save Selection
-          </Text>
-        </TouchableOpacity>
+          </>
+        )}
       </View>
     </SafeAreaView>
   );
