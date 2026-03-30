@@ -22,8 +22,9 @@ import ManageScheduleScreen from "./src/screens/athlete/ManageSchedule";
 import ReportFinish from "./src/screens/athlete/ReportFinish";
 import AthleteViewerScreen from "./src/screens/coach/AthleteViewer";
 import ResetPasswordScreen from "./src/screens/ResetPassword";
-import ConfirmRegistrationScreen from "./src/screens/ConfirmRegistration"
+import ConfirmRegistrationScreen from "./src/screens/ConfirmRegistration";
 import { usePushNotifications } from "./src/hooks/usePushNotifications";
+import AdminDashScreen from "./src/screens/administrator/AdminDashboard";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -97,10 +98,31 @@ function CoachTabNavigator() {
   );
 }
 
+function AdminTabNavigator() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarIcon: ({ color, size }) => {
+          let iconName;
+
+          if (route.name === "Dashboard") {
+            iconName = "view-dashboard";
+          }
+        },
+        tabBarActiveTintColor: "#001a79",
+        tabBarInactiveTintColor: "gray"
+      })}
+    >
+      <Tab.Screen name="Dashboard" component={AdminDashScreen} />
+    </Tab.Navigator>
+  );
+}
+
 function AppNavigator() {
   usePushNotifications();
   const { isAuthenticated, userData } = useAuth();
-  const userType = userData?.user_type; // 'Athlete' or 'Coach'
+  const userType = userData?.user_type;
 
   return (
     <NavigationContainer fallback={<Text>Loading...</Text>}>
@@ -114,6 +136,10 @@ function AppNavigator() {
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen name="ConfirmRegistration" component={ConfirmRegistrationScreen} />
+          </>
+        ) : userType === "Admin" ? (
+          <>
+            <Stack.Screen name="Admin" component={AdminTabNavigator} />
           </>
         ) : userType === "Coach" ? (
           <>
@@ -140,18 +166,18 @@ export default function App() {
     Rubik: require("./assets/fonts/Rubik-VariableFont_wght.ttf"),
     ...MaterialIcons.font
   });
-  
+
   // Load fonts first, then hide splash screen
   useEffect(() => {
     if (fontsLoaded) {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
-  
+
   if (!fontsLoaded) {
     return null;
   }
-  
+
   return (
     <AuthProvider>
       <AppNavigator />
