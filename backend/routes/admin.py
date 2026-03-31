@@ -44,7 +44,8 @@ def get_all_athletes():
 				"num_athletes": len(response.data),
 				"healthy": healthy,
 				"at_risk": at_risk,
-				"injured": injured
+				"injured": injured,
+				"reports_due": reports_due
 			}), 200
 		else:
 			logger.warning("No athlete data found")

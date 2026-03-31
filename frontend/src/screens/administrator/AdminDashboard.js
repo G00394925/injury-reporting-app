@@ -2,14 +2,15 @@ import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { globalStyles } from "../../styles/globalStyles";
 import { Text, View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
-import { PieChart } from "react-native-gifted-charts"
 import { API_BASE_URL } from "../../config/apiConfig";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import PieChartComponent from "../../components/PieChart"; 
 
 export default function AdminDashScreen() {
   const [reports, setReports] = useState([]);
+  const [reportsDue, setReportsDue] = useState(0)
   const [athletes, setAthletes] = useState(0);
   const [healthy, setHealthy] = useState(0);
   const [atRisk, setAtRisk] = useState(0);
@@ -19,7 +20,6 @@ export default function AdminDashScreen() {
 
   useEffect(() => {
     getData();
-
   }, [])
   
   const getData = async () => {
@@ -30,6 +30,7 @@ export default function AdminDashScreen() {
         setHealthy(athletesResponse.data.healthy)
         setAtRisk(athletesResponse.data.at_risk)
         setInjured(athletesResponse.data.injured)
+        setReportsDue(athletesResponse.data.reports_due)
       }
 
       const coachesResponse = await axios.get(`${API_BASE_URL}/api/admin/all_coaches`);
@@ -46,55 +47,6 @@ export default function AdminDashScreen() {
     return Math.round((value / athletes) * 100)
   }
   
-  const pieData = [
-    {value: getPercentage(healthy), color: '#10b981'}, 
-    {value: getPercentage(atRisk), color: '#f59e0b'},
-    {value: getPercentage(injured), color: '#ef4444'}
-  ]
-
-  const renderDot = color => {
-    return (
-      <View 
-        style={{
-          height: 10,
-          width: 10,
-          borderRadius: 5,
-          backgroundColor: color,
-          marginRight: 10,
-          marginLeft: 15   
-        }}
-      />
-    )
-  }
-
-  const renderLegendComponent = () => {
-    return (
-      <>
-        <View 
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            marginBottom: 10,
-            marginTop: 15
-          }}
-        >
-          <View
-            style={{
-              flexDirection: 'row',
-              marginRight: 20,
-              alignItems: 'center',
-            }}>
-              {renderDot('#10b981')}
-              <Text style={styles.legendText}>Healthy: {getPercentage(healthy)}%</Text>
-              {renderDot('#f59e0b')}
-              <Text style={styles.legendText}>At Risk: {getPercentage(atRisk)}%</Text>
-              {renderDot('#ef4444')}
-              <Text style={styles.legendText}>Injured: {getPercentage(injured)}%</Text>
-            </View>
-        </View>
-      </>
-    )
-  }
   return (
     <SafeAreaView style={globalStyles.container}>
       <View style={globalStyles.header}>
@@ -103,23 +55,13 @@ export default function AdminDashScreen() {
       <ScrollView style={globalStyles.contentContainer} contentContainerStyle={{paddingBottom: 75}}>
         <View style={styles.dataContainer}>
           <Text style={styles.dataHeader}>Health Summary</Text>
-          <PieChart
-            data={pieData}
-            donut
-            sectionAutoFocus
-            showGradient
-            isAnimated
-            radius={100}
-            innerRadius={55}
-            centerLabelComponent={() => {
-              return (
-                <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                  <Text style={styles.focusPercentage}>{getPercentage(healthy)}%</Text>
-                  <Text style={styles.focusLabel}>Healthy</Text>
-                </View>
-              )}}
-            />
-        {renderLegendComponent()}
+          <PieChartComponent
+            values={[getPercentage(healthy), getPercentage(atRisk), getPercentage(injured)]}
+            labels={["Healthy", "At Risk", "Injured"]}
+            colors={["#10b981", "#f59e0b", "#ef4444"]}
+            centerLabel={"Healthy"}
+            centerValue={getPercentage(healthy)}
+          />
         </View>
         <View style={styles.smallDataContainer}>
           <View style={styles.dataContainer}>
@@ -168,19 +110,6 @@ const styles = StyleSheet.create({
     textAlign: "left",
     alignSelf: "flex-start",
     marginBottom: 15
-  },
-  legendText: {
-    fontFamily: 'Rubik',
-    fontSize: 14,
-  },
-  focusPercentage: {
-    fontFamily: "Rubik",
-    fontSize: 22,
-    fontWeight: "bold"
-  },
-  focusLabel: {
-    fontFamily: "Rubik",
-    fontSize: 16
   },
   dataLabelSmall: {
     fontFamily: "Rubik",
