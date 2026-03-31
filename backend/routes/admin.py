@@ -53,3 +53,22 @@ def get_all_athletes():
 	except Exception as e:
 		logger.error(f"Error fetching athletes for admin: {e}")
 		return jsonify(error=str(e)), 500
+
+
+@admin_bp.route('/all_coaches', methods=['GET'])
+def get_all_coaches():
+	try:
+		response = db_service.fetch(
+			table="coaches"
+		)
+
+		if response and response.data:
+			logger.info("Fetched coaches for admin")
+			return jsonify({"num_coaches": len(response.data)}), 200
+		else:
+			logger.warning("No coach data found")
+			return jsonify(message="No coach data found"), 200
+		
+	except Exception as e:
+		logger.error(f"Error fetching coaches from database: {e}")
+		return jsonify(error=str(e)), 500

@@ -6,6 +6,7 @@ import { PieChart } from "react-native-gifted-charts"
 import { API_BASE_URL } from "../../config/apiConfig";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function AdminDashScreen() {
   const [reports, setReports] = useState([]);
@@ -13,6 +14,7 @@ export default function AdminDashScreen() {
   const [healthy, setHealthy] = useState(0);
   const [atRisk, setAtRisk] = useState(0);
   const [injured, setInjured] = useState(0);
+  const [coaches, setCoaches] = useState(0);
   const [teams, setTeams] = useState([]);
 
   useEffect(() => {
@@ -29,6 +31,12 @@ export default function AdminDashScreen() {
         setAtRisk(athletesResponse.data.at_risk)
         setInjured(athletesResponse.data.injured)
       }
+
+      const coachesResponse = await axios.get(`${API_BASE_URL}/api/admin/all_coaches`);
+      if (coachesResponse) {
+        setCoaches(coachesResponse.data.num_coaches);
+      }
+
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -94,13 +102,15 @@ export default function AdminDashScreen() {
       </View>
       <ScrollView style={globalStyles.contentContainer} contentContainerStyle={{paddingBottom: 75}}>
         <View style={styles.dataContainer}>
+          <Text style={styles.dataHeader}>Health Summary</Text>
           <PieChart
             data={pieData}
             donut
             sectionAutoFocus
             showGradient
-            radius={90}
-            innerRadius={60}
+            isAnimated
+            radius={100}
+            innerRadius={55}
             centerLabelComponent={() => {
               return (
                 <View style={{justifyContent: 'center', alignItems: 'center'}}>
@@ -111,14 +121,26 @@ export default function AdminDashScreen() {
             />
         {renderLegendComponent()}
         </View>
+        <View style={styles.smallDataContainer}>
+          <View style={styles.dataContainer}>
+            <MaterialCommunityIcons name={"crowd"} size={42} color={'#3ca1ff'} style={{marginBottom: 8}} />
+            <Text style={styles.dataValueSmall}>{athletes}</Text>
+            <Text style={styles.dataLabelSmall}>Athletes</Text>
+          </View>
+          <View style={styles.dataContainer}>
+            <MaterialCommunityIcons name={"whistle"} size={42} color={'#ff7272'} style={{marginBottom: 8}} />
+            <Text style={styles.dataValueSmall}>{coaches}</Text>
+            <Text style={styles.dataLabelSmall}>Coaches</Text>
+          </View>
+        </View>
       </ScrollView>
-        
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   dataContainer: {
+    flex: 1,
     padding: 15,
     borderRadius: 15,
     alignItems: "center",
@@ -133,6 +155,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#f3f4f6"
   },
+  smallDataContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 25,
+    gap: 12,
+  },
+  dataHeader: {
+    fontFamily: "Rubik",
+    fontWeight: "bold",
+    fontSize: 18,
+    textAlign: "left",
+    alignSelf: "flex-start",
+    marginBottom: 15
+  },
   legendText: {
     fontFamily: 'Rubik',
     fontSize: 14,
@@ -145,5 +181,18 @@ const styles = StyleSheet.create({
   focusLabel: {
     fontFamily: "Rubik",
     fontSize: 16
+  },
+  dataLabelSmall: {
+    fontFamily: "Rubik",
+    fontSize: 14,
+    color: "#6b7280",
+    lineHeight: 16
+  },
+  dataValueSmall: {
+    fontFamily: "Rubik",
+    fontSize: 30,
+    fontWeight: "bold",
+    marginBottom: 4,
+    color: "#1f2937"
   }
 })
