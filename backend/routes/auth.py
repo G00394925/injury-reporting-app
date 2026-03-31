@@ -95,6 +95,11 @@ def login():
         # Fetch user data from database
         user_data = db_service.fetch("users", {"email": email})
 
+        # Verify user exists in database
+        if not user_data.data or len(user_data.data) == 0:
+            logger.error(f"User with email {email} not found in database")
+            return jsonify(error="User not found"), 401
+
         if not user_data.data[0].get("email_verified"):
             return jsonify(message="Email not verified", verified=False), 200
 
@@ -106,6 +111,13 @@ def login():
         if response:
             # Create a new session for the user
             user_id = response.user.id
+            
+            # Double-check user exists before creating session
+            user_check = db_service.fetch("users", {"id": user_id})
+            if not user_check.data or len(user_check.data) == 0:
+                logger.error(f"User ID {user_id} not found in database despite email match")
+                return jsonify(error="User record mismatch"), 401
+            
             session_response = session_service.create_session(user_id=user_id)
             session_id = session_response.data[0]['session_id']
 

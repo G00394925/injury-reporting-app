@@ -286,6 +286,8 @@ export default function ManageScheduleScreen() {
                 onChangeText={setEventTitle}
               />
 
+              {/* TODO: Add input to get associated team  */}
+
               <Text style={globalStyles.modalInputLabel}>Date</Text>
               <TouchableOpacity onPress={showDatePicker} style={globalStyles.modalInput}>
                 <Text style={globalStyles.modalInputText}>{formatDate(eventDate)}</Text>

@@ -108,6 +108,10 @@ function AdminTabNavigator() {
 
           if (route.name === "Dashboard") {
             iconName = "view-dashboard";
+          } else if (route.name ==="Question Builder") {
+            iconName = "view-dashboard"; 
+          } else if (route.name === "Account") {
+            iconName = "account-circle"
           }
         },
         tabBarActiveTintColor: "#001a79",
@@ -115,6 +119,8 @@ function AdminTabNavigator() {
       })}
     >
       <Tab.Screen name="Dashboard" component={AdminDashScreen} />
+      <Tab.Screen name="Question Builder" component={AdminDashScreen} />
+      <Tab.Screen name="Account" component={AccountScreen} />
     </Tab.Navigator>
   );
 }
