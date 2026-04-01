@@ -1,78 +1,158 @@
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { globalStyles } from "../../styles/globalStyles";
-import { Text, View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView
+} from "react-native";
 import { API_BASE_URL } from "../../config/apiConfig";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import PieChartComponent from "../../components/PieChart"; 
+import { BarChart } from "react-native-gifted-charts";
+import PieChartComponent from "../../components/PieChart";
 
 export default function AdminDashScreen() {
   const [reports, setReports] = useState([]);
-  const [reportsDue, setReportsDue] = useState(0)
+  const [reportsDue, setReportsDue] = useState(0);
   const [athletes, setAthletes] = useState(0);
-  const [healthy, setHealthy] = useState(0);
-  const [atRisk, setAtRisk] = useState(0);
-  const [injured, setInjured] = useState(0);
   const [coaches, setCoaches] = useState(0);
   const [teams, setTeams] = useState([]);
-
+  const [healthData, setHealthData] = useState({
+    healthy: { value: 0, color: "#10b981", label: "Healthy" },
+    atRisk: { value: 0, color: "#f59e0b", label: "At Risk" },
+    injured: { value: 0, color: "#ef4444", label: "Injured" }
+  });
+  const [reportsData, setReportsData] = useState({
+    due: { value: 0, color: "#a3a3a3", label: "Due" },
+    submitted: { value: 0, color: "#3b82f6", label: "Submitted" }
+  });
   useEffect(() => {
     getData();
-  }, [])
-  
+  }, []);
+
   const getData = async () => {
     try {
-      const athletesResponse = await axios.get(`${API_BASE_URL}/api/admin/all_athletes`);
+      const athletesResponse = await axios.get(
+        `${API_BASE_URL}/api/admin/all_athletes`
+      );
       if (athletesResponse) {
-        setAthletes(athletesResponse.data.num_athletes)
-        setHealthy(athletesResponse.data.healthy)
-        setAtRisk(athletesResponse.data.at_risk)
-        setInjured(athletesResponse.data.injured)
-        setReportsDue(athletesResponse.data.reports_due)
+        setAthletes(athletesResponse.data.num_athletes);
+        setHealthData({
+          ...healthData,
+          healthy: {
+            ...healthData.healthy,
+            value: athletesResponse.data.healthy
+          },
+          atRisk: {
+            ...healthData.atRisk,
+            value: athletesResponse.data.at_risk
+          },
+          injured: {
+            ...healthData.injured,
+            value: athletesResponse.data.injured
+          }
+        });
+        setReportsData({
+          ...reportsData,
+          due: { ...reportsData.due, value: athletesResponse.data.reports_due },
+          submitted: {
+            ...reportsData.submitted,
+            value: athletesResponse.data.reports_submitted
+          }
+        });
       }
 
-      const coachesResponse = await axios.get(`${API_BASE_URL}/api/admin/all_coaches`);
+      const coachesResponse = await axios.get(
+        `${API_BASE_URL}/api/admin/all_coaches`
+      );
       if (coachesResponse) {
         setCoaches(coachesResponse.data.num_coaches);
       }
-
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
-  
+
   const getPercentage = (value) => {
-    return Math.round((value / athletes) * 100)
-  }
-  
+    if (athletes === 0) return 0;
+    return Math.round((value / athletes) * 100);
+  };
+
+  const submittedPercentage = getPercentage(reportsData.submitted.value);
+  const duePercentage = getPercentage(reportsData.due.value);
+
   return (
     <SafeAreaView style={globalStyles.container}>
       <View style={globalStyles.header}>
         <Text style={globalStyles.headerText}>Admin Dashboard</Text>
       </View>
-      <ScrollView style={globalStyles.contentContainer} contentContainerStyle={{paddingBottom: 75}}>
+      <ScrollView
+        style={globalStyles.contentContainer}
+        contentContainerStyle={{ paddingBottom: 75 }}
+      >
         <View style={styles.dataContainer}>
           <Text style={styles.dataHeader}>Health Summary</Text>
           <PieChartComponent
-            values={[getPercentage(healthy), getPercentage(atRisk), getPercentage(injured)]}
-            labels={["Healthy", "At Risk", "Injured"]}
-            colors={["#10b981", "#f59e0b", "#ef4444"]}
+            data={healthData}
             centerLabel={"Healthy"}
-            centerValue={getPercentage(healthy)}
+            centerValue={getPercentage(healthData.healthy.value)}
+            numItems={athletes}
           />
         </View>
         <View style={styles.smallDataContainer}>
           <View style={styles.dataContainer}>
-            <MaterialCommunityIcons name={"crowd"} size={42} color={'#3ca1ff'} style={{marginBottom: 8}} />
+            <MaterialCommunityIcons
+              name={"crowd"}
+              size={42}
+              color={"#3ca1ff"}
+              style={{ marginBottom: 8 }}
+            />
             <Text style={styles.dataValueSmall}>{athletes}</Text>
             <Text style={styles.dataLabelSmall}>Athletes</Text>
           </View>
           <View style={styles.dataContainer}>
-            <MaterialCommunityIcons name={"whistle"} size={42} color={'#ff7272'} style={{marginBottom: 8}} />
+            <MaterialCommunityIcons
+              name={"whistle"}
+              size={42}
+              color={"#ff7272"}
+              style={{ marginBottom: 8 }}
+            />
             <Text style={styles.dataValueSmall}>{coaches}</Text>
             <Text style={styles.dataLabelSmall}>Coaches</Text>
+          </View>
+        </View>
+        <View style={styles.submissionProgressContainer}>
+          <Text style={styles.dataHeader}>Today's Submissions</Text>
+          <View style={styles.barsContainer}>
+            <View
+              style={{
+                width: submittedPercentage + "%",
+                backgroundColor: "#3b82f6",
+                borderRadius: 35,
+                height: 40,
+                overflow: "hidden",
+                marginBottom: 15,
+                position: "absolute",
+                zIndex: 1,
+                justifyContent: "center"
+              }}
+            >
+              <Text style={styles.submissionPercentageText}>{submittedPercentage}%</Text>
+            </View>
+            <View
+              style={{
+                width: "100%",
+                backgroundColor: "#c2c2c2",
+                borderRadius: 35,
+                height: 40,
+                overflow: "hidden",
+                marginBottom: 15
+              }}
+            />
           </View>
         </View>
       </ScrollView>
@@ -101,7 +181,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 25,
-    gap: 12,
+    marginBottom: 25,
+    gap: 12
   },
   dataHeader: {
     fontFamily: "Rubik",
@@ -123,5 +204,36 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 4,
     color: "#1f2937"
+  },
+  submissionProgressContainer: {
+    alignItems: "center",
+    marginTop: 25,
+    padding: 15,
+    borderRadius: 15,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: "#f3f4f6"
+  },
+  barsContainer: {
+    flexDirection: "row",
+    flex: 1,
+    width: "100%",
+    gap: 1
+  },
+  submissionPercentageText: {
+    fontFamily: "Rubik",
+    fontSize: 16,
+    color: "#fff",
+    alignSelf: "flex-end",
+    marginRight: 15,
+    fontWeight: "bold"
   }
-})
+});

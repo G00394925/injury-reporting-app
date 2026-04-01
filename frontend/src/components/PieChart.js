@@ -1,13 +1,12 @@
 import { PieChart } from "react-native-gifted-charts";
 import { View, Text, StyleSheet } from "react-native";
 
-export default function PieChartComponent({
-  values,
-  labels,
-  colors,
-  centerLabel,
-  centerValue
-}) {
+export default function PieChartComponent({ data, centerLabel, centerValue, numItems }) {
+  const getPercentage = (value) => {
+    if (numItems === 0) return 0;
+    return Math.round((value / numItems) * 100);
+  };
+
   const renderDot = (color) => {
     return (
       <View
@@ -35,7 +34,7 @@ export default function PieChartComponent({
             alignItems: "center"
           }}
         >
-          {values.map((value, index) => (
+          {Object.values(data).map((obj, index) => (
             <View
               style={{
                 flexDirection: "row",
@@ -43,9 +42,9 @@ export default function PieChartComponent({
               }}
               key={index}
             >
-              {renderDot(colors[index])}
+              {renderDot(obj.color)}
               <Text style={styles.legendText}>
-                {labels[index]}: {value}%
+                {obj.label}: {getPercentage(obj.value)}%
               </Text>
             </View>
           ))}
@@ -54,9 +53,9 @@ export default function PieChartComponent({
     );
   };
 
-  const pieData = values.map((value, index) => ({
-    value: value,
-    color: colors[index]
+  const pieData = Object.values(data).map((obj, index) => ({
+    value: getPercentage(obj.value),
+    color: obj.color
   }));
 
   return (
@@ -71,7 +70,6 @@ export default function PieChartComponent({
         data={pieData}
         donut
         sectionAutoFocus
-        showGradient
         isAnimated
         radius={100}
         innerRadius={55}
@@ -98,10 +96,12 @@ const styles = StyleSheet.create({
   focusPercentage: {
     fontFamily: "Rubik",
     fontSize: 22,
-    fontWeight: "bold"
+    fontWeight: "bold",
+    color: "#1f2937"
   },
   focusLabel: {
     fontFamily: "Rubik",
-    fontSize: 16
+    fontSize: 16,
+    color: "#6b7280"
   }
 });
