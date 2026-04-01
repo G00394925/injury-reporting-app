@@ -91,6 +91,8 @@ const styles = StyleSheet.create({
   legendText: {
     fontFamily: "Rubik",
     fontSize: 14,
+    color: "#6b7280",
+    lineHeight: 16,
     marginRight: 15
   },
   focusPercentage: {

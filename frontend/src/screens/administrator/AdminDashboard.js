@@ -154,6 +154,32 @@ export default function AdminDashScreen() {
               }}
             />
           </View>
+          <View style={styles.submissionProgressLegend}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View
+                style={{
+                  height: 10,
+                  width: 10,
+                  borderRadius: 5,
+                  backgroundColor: '#3b82f6',
+                  marginRight: 5
+              }}
+              />
+              <Text style={styles.dataLabelSmall}>Submitted</Text>
+            </View>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View
+                style={{
+                  height: 10,
+                  width: 10,
+                  borderRadius: 5,
+                  backgroundColor: '#c2c2c2',
+                  marginRight: 5
+                }}
+              />
+              <Text style={styles.dataLabelSmall}>Due</Text>
+            </View>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -207,7 +233,6 @@ const styles = StyleSheet.create({
   },
   submissionProgressContainer: {
     alignItems: "center",
-    marginTop: 25,
     padding: 15,
     borderRadius: 15,
     alignItems: "center",
@@ -235,5 +260,11 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
     marginRight: 15,
     fontWeight: "bold"
+  },
+  submissionProgressLegend: {
+    flexDirection: "row",
+    marginTop: 10,
+    gap: 55,
+    alignItems: "center"
   }
 });
