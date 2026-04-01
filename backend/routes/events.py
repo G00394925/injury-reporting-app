@@ -108,10 +108,10 @@ def get_next_event(athlete_id):
     """
     try:
         today = datetime.now().strftime('%Y-%m-%d')
-        response = db_service.fetch("events",
-                                    filters={"athlete_id": athlete_id,
-                                             "event_date": f"gte.{today}"},
-                                    modifiers={"order": "event_date"})
+        response = db_service.fetch(
+            table="events",
+            filters={"athlete_id": athlete_id, "event_date": f"gte.{today}"},
+            modifiers={"order": "event_date"})
 
         if response and response.data:
             total_count = len(response.data)

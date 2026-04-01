@@ -1,22 +1,17 @@
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { globalStyles } from "../../styles/globalStyles";
-import {
-  Text,
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView
-} from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { API_BASE_URL } from "../../config/apiConfig";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BarChart } from "react-native-gifted-charts";
 import PieChartComponent from "../../components/PieChart";
+import BarChartComponent from "../../components/BarChart";
 
 export default function AdminDashScreen() {
-  const [reports, setReports] = useState([]);
+  const [reports, setReports] = useState({});
   const [reportsDue, setReportsDue] = useState(0);
   const [athletes, setAthletes] = useState(0);
   const [coaches, setCoaches] = useState(0);
@@ -26,10 +21,14 @@ export default function AdminDashScreen() {
     atRisk: { value: 0, color: "#f59e0b", label: "At Risk" },
     injured: { value: 0, color: "#ef4444", label: "Injured" }
   });
-  const [reportsData, setReportsData] = useState({
+
+  const [submissionData, setSubmissionData] = useState({
     due: { value: 0, color: "#a3a3a3", label: "Due" },
     submitted: { value: 0, color: "#3b82f6", label: "Submitted" }
   });
+  
+  const [reportsData, setReportsData] = useState({})
+
   useEffect(() => {
     getData();
   }, []);
@@ -56,11 +55,11 @@ export default function AdminDashScreen() {
             value: athletesResponse.data.injured
           }
         });
-        setReportsData({
-          ...reportsData,
-          due: { ...reportsData.due, value: athletesResponse.data.reports_due },
+        setSubmissionData({
+          ...submissionData,
+          due: { ...submissionData.due, value: athletesResponse.data.reports_due },
           submitted: {
-            ...reportsData.submitted,
+            ...submissionData.submitted,
             value: athletesResponse.data.reports_submitted
           }
         });
@@ -72,6 +71,16 @@ export default function AdminDashScreen() {
       if (coachesResponse) {
         setCoaches(coachesResponse.data.num_coaches);
       }
+
+      const reportsResponse = await axios.get(
+        `${API_BASE_URL}/api/admin/all_reports`
+      );
+
+      if (reportsResponse) {
+        setReports(reportsResponse.data.reports)
+        setReportsData(reportsResponse.data.reports_summary)
+      }
+
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -82,8 +91,8 @@ export default function AdminDashScreen() {
     return Math.round((value / athletes) * 100);
   };
 
-  const submittedPercentage = getPercentage(reportsData.submitted.value);
-  const duePercentage = getPercentage(reportsData.due.value);
+  const submittedPercentage = getPercentage(submissionData.submitted.value);
+  const duePercentage = getPercentage(submissionData.due.value);
 
   return (
     <SafeAreaView style={globalStyles.container}>
@@ -181,6 +190,11 @@ export default function AdminDashScreen() {
             </View>
           </View>
         </View>
+
+        <View style={styles.barChartContainer}>
+          <Text style={styles.dataHeader}>Report Summary</Text>
+          <BarChartComponent data={reportsData} />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -201,7 +215,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
     borderWidth: 1,
-    borderColor: "#f3f4f6"
+    borderColor: "#f3f4f6",
   },
   smallDataContainer: {
     flexDirection: "row",
@@ -266,5 +280,22 @@ const styles = StyleSheet.create({
     marginTop: 10,
     gap: 55,
     alignItems: "center"
+  },
+  barChartContainer: {
+    padding: 15,
+    paddingBottom: 40,
+    borderRadius: 15,
+    marginTop: 25,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: "#f3f4f6",
   }
 });
