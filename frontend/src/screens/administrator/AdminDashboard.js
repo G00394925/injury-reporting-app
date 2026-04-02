@@ -16,12 +16,15 @@ export default function AdminDashScreen() {
   const [athletes, setAthletes] = useState(0);
   const [coaches, setCoaches] = useState(0);
   const [teams, setTeams] = useState([]);
+  
+  // Health status data for pie chart 
   const [healthData, setHealthData] = useState({
     healthy: { value: 0, color: "#10b981", label: "Healthy" },
     atRisk: { value: 0, color: "#f59e0b", label: "At Risk" },
     injured: { value: 0, color: "#ef4444", label: "Injured" }
   });
 
+  // Today's submission progress status
   const [submissionData, setSubmissionData] = useState({
     due: { value: 0, color: "#a3a3a3", label: "Due" },
     submitted: { value: 0, color: "#3b82f6", label: "Submitted" }
@@ -35,6 +38,7 @@ export default function AdminDashScreen() {
 
   const getData = async () => {
     try {
+      // Get health summary data
       const athletesResponse = await axios.get(
         `${API_BASE_URL}/api/admin/all_athletes`
       );
@@ -55,6 +59,8 @@ export default function AdminDashScreen() {
             value: athletesResponse.data.injured
           }
         });
+
+        // Set submission progress data
         setSubmissionData({
           ...submissionData,
           due: { ...submissionData.due, value: athletesResponse.data.reports_due },
@@ -65,6 +71,7 @@ export default function AdminDashScreen() {
         });
       }
 
+      // Get number of coaches
       const coachesResponse = await axios.get(
         `${API_BASE_URL}/api/admin/all_coaches`
       );
@@ -72,6 +79,7 @@ export default function AdminDashScreen() {
         setCoaches(coachesResponse.data.num_coaches);
       }
 
+      // Get report outcome summary data
       const reportsResponse = await axios.get(
         `${API_BASE_URL}/api/admin/all_reports`
       );
@@ -92,7 +100,6 @@ export default function AdminDashScreen() {
   };
 
   const submittedPercentage = getPercentage(submissionData.submitted.value);
-  const duePercentage = getPercentage(submissionData.due.value);
 
   return (
     <SafeAreaView style={globalStyles.container}>
@@ -192,7 +199,7 @@ export default function AdminDashScreen() {
         </View>
 
         <View style={styles.barChartContainer}>
-          <Text style={styles.dataHeader}>Report Summary</Text>
+          <Text style={styles.dataHeader}>Report Outcome Summary</Text>
           <BarChartComponent data={reportsData} />
         </View>
       </ScrollView>
