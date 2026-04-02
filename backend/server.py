@@ -12,6 +12,7 @@ from routes.health import health_bp
 from routes.events import events_bp
 from routes.notifications import notifications_bp
 from routes.admin import admin_bp
+from routes.sessions import session_bp
 
 logging.basicConfig(
     level=logging.INFO,
@@ -40,7 +41,7 @@ app.register_blueprint(health_bp, url_prefix='/api/health')
 app.register_blueprint(events_bp, url_prefix='/api/events')
 app.register_blueprint(notifications_bp, url_prefix='/api/notifications')
 app.register_blueprint(admin_bp, url_prefix='/api/admin')
-
+app.register_blueprint(session_bp, url_prefix='/api/session')
 
 if __name__ == '__main__':
     scheduler_service.start()
