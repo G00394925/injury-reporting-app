@@ -149,7 +149,7 @@ export default function AdminDashScreen() {
                 width: submittedPercentage + "%",
                 backgroundColor: "#3b82f6",
                 borderRadius: 35,
-                height: 40,
+                height: 25,
                 overflow: "hidden",
                 marginBottom: 15,
                 position: "absolute",
@@ -164,7 +164,7 @@ export default function AdminDashScreen() {
                 width: "100%",
                 backgroundColor: "#c2c2c2",
                 borderRadius: 35,
-                height: 40,
+                height: 25,
                 overflow: "hidden",
                 marginBottom: 15
               }}
@@ -211,6 +211,7 @@ const styles = StyleSheet.create({
   dataContainer: {
     flex: 1,
     padding: 15,
+    backgroundColor: "#fff",
     borderRadius: 15,
     alignItems: "center",
     shadowColor: "#000",
@@ -235,7 +236,6 @@ const styles = StyleSheet.create({
     fontFamily: "Rubik",
     fontWeight: "bold",
     fontSize: 18,
-    textAlign: "left",
     alignSelf: "flex-start",
     marginBottom: 15
   },
@@ -256,6 +256,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 15,
     borderRadius: 15,
+    backgroundColor: '#fff',
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -292,8 +293,10 @@ const styles = StyleSheet.create({
     padding: 15,
     paddingBottom: 40,
     borderRadius: 15,
+    backgroundColor: '#fff',
     marginTop: 25,
     alignItems: "center",
+    width: "100%",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,

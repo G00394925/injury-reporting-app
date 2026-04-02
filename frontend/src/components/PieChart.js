@@ -28,9 +28,6 @@ export default function PieChartComponent({ data, centerLabel, centerValue, numI
           style={{
             flexDirection: "row",
             justifyContent: "center",
-            marginBottom: 10,
-            marginTop: 15,
-            marginLeft: 10,
             alignItems: "center"
           }}
         >
@@ -82,7 +79,13 @@ export default function PieChartComponent({ data, centerLabel, centerValue, numI
           );
         }}
       />
-      {renderLegendComponent()}
+      <View style={{
+        marginLeft: 15,
+        marginTop: 20,
+        marginBottom: 15
+      }}>
+        {renderLegendComponent()}
+      </View>
     </View>
   );
 }
@@ -90,10 +93,11 @@ export default function PieChartComponent({ data, centerLabel, centerValue, numI
 const styles = StyleSheet.create({
   legendText: {
     fontFamily: "Rubik",
-    fontSize: 14,
+    fontSize: 13,
     color: "#6b7280",
     lineHeight: 16,
-    marginRight: 15
+    marginRight: 15,
+    textAlign: "auto"
   },
   focusPercentage: {
     fontFamily: "Rubik",

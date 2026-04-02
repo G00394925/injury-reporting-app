@@ -1,5 +1,5 @@
 import { BarChart } from "react-native-gifted-charts";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Dimensions } from "react-native";
 
 export default function BarChartComponent({ data }) {
   const barData = Object.entries(data).map(([date, outcomes]) => {
@@ -17,12 +17,12 @@ export default function BarChartComponent({ data }) {
         {
           value: outcomes["At Risk"],
           color: "#f59e0b",
-          marginBottom: 1,
+          marginBottom: 1
         },
         {
           value: outcomes["Injured"],
           color: "#ef4444",
-          marginBottom: 1,
+          marginBottom: 1
         }
       ],
       label: dayLabel
@@ -57,7 +57,7 @@ export default function BarChartComponent({ data }) {
           justifyContent: "center",
           marginTop: 50,
           alignItems: "center",
-          gap: 20
+          gap: 15
         }}
       >
         {stackLabels.map((item, index) => (
@@ -81,7 +81,7 @@ export default function BarChartComponent({ data }) {
       style={{
         alignItems: "center",
         width: "100%",
-        height: "100%"
+        flex: 1
       }}
     >
       <BarChart
@@ -89,30 +89,30 @@ export default function BarChartComponent({ data }) {
         initialSpacing={2}
         xAxisColor={"#6b7280"}
         yAxisColor={"#6b7280"}
-		yAxisTextStyle={{ fontFamily: "Rubik", color: "#6b7280" }}
-		xAxisTextStyle={{ fontFamily: "Rubik", color: "#6b7280" }}
-		hideRules
+        yAxisTextStyle={{ fontFamily: "Rubik", color: "#6b7280" }}
+        xAxisTextStyle={{ fontFamily: "Rubik", color: "#6b7280" }}
+        hideRules
         labelsDistanceFromXaxis={10}
-		stackBorderRadius={5}
-		barBorderRadius={5}
-		barWidth={40}
-        width={280}
-        height={290}
-        xAxisThickness={2}
+        stackBorderRadius={5}
+        barBorderRadius={8}
+        barWidth={15}
+        width={Dimensions.get("window").width - 150}
+        height={280}
+        xAxisThickness={1}
         disablePress
         stackData={barData}
       />
-	  {renderLegendComponent()}
+      {renderLegendComponent()}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-	legendText: {
-	  fontFamily: "Rubik",
-	  fontSize: 14,
-	  color: "#6b7280",
-	  lineHeight: 16,
-	  marginRight: 15
-	},
-})
+  legendText: {
+    fontFamily: "Rubik",
+    fontSize: 14,
+    color: "#6b7280",
+    lineHeight: 16,
+    marginRight: 15
+  }
+});
