@@ -63,6 +63,7 @@ def get_all_athletes():
 
 @admin_bp.route('/all_coaches', methods=['GET'])
 def get_all_coaches():
+	"""Fetches all coach data from database for admin interface"""
 	try:
 		response = db_service.fetch(
 			table="coaches"
@@ -82,6 +83,10 @@ def get_all_coaches():
 
 @admin_bp.route('/all_reports', methods=['GET'])
 def get_all_reports():
+	"""
+	Fetches all report data from database for admin interface, 
+	providing a summary of report outcomes over the past week
+	"""
 	now = datetime.now()
 	threshold = now - timedelta(days=7)
 	reports_summary = {}
@@ -90,16 +95,20 @@ def get_all_reports():
 		response = db_service.fetch(
 			table="reports",
 			filters={"created_at": f"gte.{threshold}", "follow_up": False},
-			modifiers={"order": {"column": "created_at", "desc": True}}
+			modifiers={"order": {"column": "created_at", "desc": True}},
 		)
 
 		if response and response.data:
 			logger.info("Fetched reports for admin")
+			# For each of the past 7 days...
 			for i in range(0, 7):
-				day = (now - timedelta(days=i)).strftime("%Y-%m-%d")
+				day = (now - timedelta(days=i)).strftime("%Y-%m-%d")  # Start from today, proceed backwards
 				reports_summary[day] = {"Healthy": 0, "At Risk": 0, "Injured": 0}
 				
+				# Acquire all reports created on that day
 				reports = [r for r in response.data if r['created_at'].startswith(day)]
+
+				# Summarise outcomes of the reports
 				for report in reports:
 					if report.get('new_availability') == HealthStatus.AMBER:
 						reports_summary[day]["At Risk"] += 1
@@ -121,3 +130,4 @@ def get_all_reports():
 	except Exception as e:
 		logger.error(f"Error fetching reports from database: {e}")
 		return jsonify(error=str(e)), 500
+	
