@@ -55,9 +55,10 @@ export default function BarChartComponent({ data }) {
         style={{
           flexDirection: "row",
           justifyContent: "center",
-          marginTop: 50,
+          marginBottom: 25,
           alignItems: "center",
-          gap: 15
+          gap: 10,
+          marginRight: -10
         }}
       >
         {stackLabels.map((item, index) => (
@@ -84,6 +85,7 @@ export default function BarChartComponent({ data }) {
         flex: 1
       }}
     >
+      {renderLegendComponent()}
       <BarChart
         rotateLabel
         initialSpacing={2}
@@ -102,7 +104,6 @@ export default function BarChartComponent({ data }) {
         disablePress
         stackData={barData}
       />
-      {renderLegendComponent()}
     </View>
   );
 }

@@ -102,13 +102,13 @@ export default function AdminDashScreen() {
   const submittedPercentage = getPercentage(submissionData.submitted.value);
 
   return (
-    <SafeAreaView style={globalStyles.container}>
+    <SafeAreaView style={globalStyles.container} edges={["top"]}>
       <View style={globalStyles.header}>
         <Text style={globalStyles.headerText}>Admin Dashboard</Text>
       </View>
       <ScrollView
         style={globalStyles.contentContainer}
-        contentContainerStyle={{ paddingBottom: 75 }}
+        contentContainerStyle={{ paddingBottom: 100 }}
       >
         <View style={styles.dataContainer}>
           <Text style={styles.dataHeader}>Health Summary</Text>
@@ -143,6 +143,32 @@ export default function AdminDashScreen() {
         </View>
         <View style={styles.submissionProgressContainer}>
           <Text style={styles.dataHeader}>Today's Submissions</Text>
+          <View style={styles.submissionProgressLegend}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View
+                style={{
+                  height: 10,
+                  width: 10,
+                  borderRadius: 5,
+                  backgroundColor: '#3b82f6',
+                  marginRight: 5
+              }}
+              />
+              <Text style={styles.dataLabelSmall}>Submitted</Text>
+            </View>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View
+                style={{
+                  height: 10,
+                  width: 10,
+                  borderRadius: 5,
+                  backgroundColor: '#c2c2c2',
+                  marginRight: 5
+                }}
+              />
+              <Text style={styles.dataLabelSmall}>Due</Text>
+            </View>
+          </View>
           <View style={styles.barsContainer}>
             <View
               style={{
@@ -169,32 +195,6 @@ export default function AdminDashScreen() {
                 marginBottom: 15
               }}
             />
-          </View>
-          <View style={styles.submissionProgressLegend}>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <View
-                style={{
-                  height: 10,
-                  width: 10,
-                  borderRadius: 5,
-                  backgroundColor: '#3b82f6',
-                  marginRight: 5
-              }}
-              />
-              <Text style={styles.dataLabelSmall}>Submitted</Text>
-            </View>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <View
-                style={{
-                  height: 10,
-                  width: 10,
-                  borderRadius: 5,
-                  backgroundColor: '#c2c2c2',
-                  marginRight: 5
-                }}
-              />
-              <Text style={styles.dataLabelSmall}>Due</Text>
-            </View>
           </View>
         </View>
 
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     fontFamily: "Rubik",
     fontWeight: "bold",
     fontSize: 18,
-    alignSelf: "flex-start",
+    textAlign: "center",
     marginBottom: 15
   },
   dataLabelSmall: {
@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
   },
   submissionProgressLegend: {
     flexDirection: "row",
-    marginTop: 10,
+    marginBottom: 15,
     gap: 55,
     alignItems: "center"
   },
