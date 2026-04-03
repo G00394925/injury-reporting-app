@@ -9,6 +9,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { BarChart } from "react-native-gifted-charts";
 import PieChartComponent from "../../components/PieChart";
 import BarChartComponent from "../../components/BarChart";
+import LineChartComponent from "../../components/LineChart";
 
 export default function AdminDashScreen() {
   const [reports, setReports] = useState({});
@@ -31,6 +32,7 @@ export default function AdminDashScreen() {
   });
   
   const [reportsData, setReportsData] = useState({})
+  const [activityData, setActivityData] = useState({})
 
   useEffect(() => {
     getData();
@@ -87,6 +89,11 @@ export default function AdminDashScreen() {
       if (reportsResponse) {
         setReports(reportsResponse.data.reports)
         setReportsData(reportsResponse.data.reports_summary)
+      }
+
+      const activityResponse = await axios.get(`${API_BASE_URL}/api/admin/activity_data`)
+      if (activityResponse) {
+        setActivityData(activityResponse.data.weekly_activity)
       }
 
     } catch (error) {
@@ -202,6 +209,11 @@ export default function AdminDashScreen() {
           <Text style={styles.dataHeader}>Report Outcome Summary</Text>
           <BarChartComponent data={reportsData} />
         </View>
+
+        <View style={styles.dataContainer}>
+          <Text style={styles.dataHeader}>Activity</Text>
+          <LineChartComponent data={activityData} />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -277,7 +289,7 @@ const styles = StyleSheet.create({
   },
   submissionPercentageText: {
     fontFamily: "Rubik",
-    fontSize: 16,
+    fontSize: 13,
     color: "#fff",
     alignSelf: "flex-end",
     marginRight: 15,
@@ -295,6 +307,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     backgroundColor: '#fff',
     marginTop: 25,
+    marginBottom: 25,
     alignItems: "center",
     width: "100%",
     shadowColor: "#000",

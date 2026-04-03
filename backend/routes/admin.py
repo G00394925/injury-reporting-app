@@ -94,7 +94,7 @@ def get_all_reports():
 	try:
 		response = db_service.fetch(
 			table="reports",
-			filters={"created_at": f"gte.{threshold}", "follow_up": False},
+			filters={"created_at": f"gte.{threshold}"},
 			modifiers={"order": {"column": "created_at", "desc": True}},
 		)
 
@@ -131,3 +131,32 @@ def get_all_reports():
 		logger.error(f"Error fetching reports from database: {e}")
 		return jsonify(error=str(e)), 500
 	
+
+@admin_bp.route('/activity_data', methods=['GET'])
+def get_activity_data():
+	"""Fetches activity data, i.e. users who opened the app on a given day"""
+	now = datetime.now()
+	threshold = now - timedelta(days=7)
+	weekly_activity = {}
+
+	try: 
+		response = db_service.fetch(
+			table="session_events",
+			filters={"event_type": "app_open_daily", "timestamp": f"gte.{threshold}"},
+			modifiers={"order": {"column": "timestamp", "desc": True}}
+		)
+		if response and response.data:
+			for i in range(0, 7):
+				day = (now - timedelta(days=i)).strftime("%Y-%m-%d")
+				weekly_activity[day] = 0
+
+				items = [i for i in response.data if i['timestamp'].startswith(day)]
+				weekly_activity[day] = len(items)
+			logger.info(f"Weekly activity: {weekly_activity}")
+			return jsonify(weekly_activity=weekly_activity), 200
+		else:
+			logger.warning("No activity data found")
+			return jsonify(message="No activity data found"), 200
+	except Exception as e:
+		logger.error(f"Error retrieving activity data: {e}")
+		return jsonify(error=str(e)), 500
