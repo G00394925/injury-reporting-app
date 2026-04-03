@@ -1,5 +1,5 @@
 from supabase import Client, create_client
-from supabase.lib.client_options import ClientOptions
+from supabase.lib.client_options import SyncClientOptions
 from dotenv import load_dotenv
 import os
 import logging
@@ -38,7 +38,8 @@ class SupabaseService:
             assert self.url is not None, "SUPABASE_URL is not set in environment variables."
             assert self.key is not None, "SUPABASE_KEY is not set in environment variables."
 
-            self.client: Client = create_client(self.url, self.key)
+            options = SyncClientOptions(auto_refresh_token=True, persist_session=False)
+            self.client: Client = create_client(self.url, self.key, options=options)
 
             self.admin_auth_client = self.client.auth.admin
 

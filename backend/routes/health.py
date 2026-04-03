@@ -25,8 +25,8 @@ logger = logging.getLogger(__name__)
 @health_bp.route('/report', methods=['POST'])
 def health_report():
     """
-    Handles new report submissions from athletes, updating their health status 
-    wherever required before inserting report data into database. If the athlete 
+    Handles new report submissions from athletes, updating their health status
+    wherever required before inserting report data into database. If the athlete
     is injured, their respective coach recieves a push notification.
 
     Returns:
@@ -41,83 +41,78 @@ def health_report():
             "session": report.get('session'),
             "answers": report.get('answers_list'),
         }
-        # Check if this is an injury follow up report
-        followup = report_data['answers'].get('followup')
         logger.info(f"Received new health report: {report_data}")
 
         estimated_recovery_date = None
 
         # Healthy athlete's submission
-        if not followup:
-            proposed_status = HealthStatus.GREEN
-            injury_code = None
-            side = "N/A"
+        proposed_status = HealthStatus.GREEN
+        injury_code = None
+        side = "N/A"
 
-            # Acquire injury location and type, generate injury code
-            if report_data['answers'].get('injured'):
-                if report_data['answers'].get('expected_outage'):
+        # Acquire injury location and type, generate injury code
+        if report_data['answers'].get('injured'):
+            if report_data['answers'].get('expected_outage'):
 
-                    # Extract days from string
-                    outage_days = int(
-                        re.split(r'[+\s]+', report_data['answers'].get('expected_outage'))[0])
-                    restriction = report_data['answers'].get('missed_activity')
-                    estimated_recovery_date = (
-                        datetime.now() + timedelta(days=outage_days)).isoformat()
+                # Extract days from string
+                outage_days = int(
+                    re.split(r'[+\s]+', report_data['answers'].get('expected_outage'))[0])
+                restriction = report_data['answers'].get('missed_activity')
+                estimated_recovery_date = (
+                    datetime.now() + timedelta(days=outage_days)).isoformat()
 
-                    if restriction == "Competing Only":
-                        proposed_status = HealthStatus.AMBER
-                    elif restriction == "Training & Competing":
-                        proposed_status = HealthStatus.RED
+                if restriction == "Competing Only":
+                    proposed_status = HealthStatus.AMBER
+                elif restriction == "Training & Competing":
+                    proposed_status = HealthStatus.RED
 
-                    # Fetch coach associated with athlete's team
-                    athlete_response = db_service.fetch(
-                        table="athletes",
-                        filters={"id": report_data['user']},
-                        select="team_id"
-                    )
+                # Fetch coaches associated with athlete's teams
+                athlete_response = db_service.fetch(
+                    table="athlete_teams",
+                    filters={"athlete_id": report_data['user']},
+                    select="teams(coach_id)"
+                )
 
-                    if athlete_response and athlete_response.data:
-                        team_id = athlete_response.data[0].get('team_id')
+                if athlete_response and athlete_response.data:
+                    coach_ids = set()
+                    for item in athlete_response.data:
+                        if item.get('teams') and item['teams'].get('coach_id'):
+                            coach_ids.add(item['teams']['coach_id'])
 
-                        team_response = db_service.fetch(
-                            table="teams",
-                            filters={"team_id": team_id},
-                            select="coach_id"
+                    # Fetch push tokens of each coach                    
+                    if coach_ids:
+                        coach_response = db_service.fetch(
+                            table="users",
+                            modifiers={"in_": ("id", list(coach_ids))},
+                            select="push_token"
                         )
-
-                        if team_response and team_response.data:
-                            coach_id = team_response.data[0].get('coach_id')
-
-                            coach_response = db_service.fetch(
-                                table="users",
-                                filters={"id": coach_id},
-                                select="push_token"
-                            )
-                        # Notify coach of athlete's injury
+                        
+                        # Notify coaches of athlete's injury
                         if coach_response and coach_response.data:
-                            push_token = coach_response.data[0].get(
-                                "push_token")
-                            notification_service.send_notification(
-                                push_token=push_token,
-                                title="An athlete is injured!",
-                                body=f"{report_data.get('user_data').get('name')} suffered an injury and is expecting absence. Tap to view more details."
-                            )
+                            for coach in coach_response.data:
+                                push_token = coach.get("push_token")
+                                if push_token:
+                                    notification_service.send_notification(
+                                        push_token=push_token,
+                                        title="An athlete is injured!",
+                                        body=f"{report_data.get('user_data').get('name')} suffered an injury and is expecting absence. Tap to view more details."
+                                    )
 
-                injury_location = report_data['answers'].get('injury_location')
-                injury_type = report_data['answers'].get('injury_type')
+            injury_location = report_data['answers'].get('injury_location')
+            injury_type = report_data['answers'].get('injury_type')
 
-                # Account for injuries that may occur on either left or right side
-                if injury_location and (injury_location.startswith("Left") or injury_location.startswith("Right")):
-                    split_str = injury_location.split(' ', 1)
-                    if len(split_str) == 2:
-                        side = split_str[0]
-                        location = split_str[1]
-                    else:
-                        location = split_str[0]
+            # Account for injuries that may occur on either left or right side
+            if injury_location and (injury_location.startswith("Left") or injury_location.startswith("Right")):
+                split_str = injury_location.split(' ', 1)
+                if len(split_str) == 2:
+                    side = split_str[0]
+                    location = split_str[1]
                 else:
-                    side = "N/A"
-                    location = injury_location
-                injury_code = generate_code(location, injury_type)
+                    location = split_str[0]
+            else:
+                side = "N/A"
+                location = injury_location
+            injury_code = generate_code(location, injury_type)
 
             # Set code to M for illness cases
             if report_data['answers'].get('ill'):
@@ -140,8 +135,11 @@ def health_report():
 
             try:
                 # Update athlete's health status in the database
-                db_service.update("athletes", data=update_data, filters={
-                                  "id": report_data['user']})
+                db_service.update(
+                    table="athletes", 
+                    data=update_data, 
+                    filters={"id": report_data['user']})
+                
                 logger.info(
                     f"Updated athlete's status: Recovery date: {estimated_recovery_date}, Proposed status: {proposed_status.value}")
 
@@ -176,60 +174,110 @@ def health_report():
                 "injury_onset": report_data['answers'].get('injury_onset'),
                 "consulted": report_data['answers'].get('consulted'),
                 "comments": report_data['answers'].get('comments'),
-                "follow_up": False
             }
             db_service.insert("reports", data=submission_data)
 
             logger.info("Inserted new report to database")
             return jsonify(message="Health report submitted successfully"), 201
 
-        # Injured athlete's follow-up submission
-        else:
-            if report_data["answers"].get("availability") == "Fully available":
-                update_data = {
-                    "status": HealthStatus.GREEN,
-                    "report_due": False
-                }
-                db_service.update("athletes", data=update_data, filters={
-                                  "id": report_data['user']})
-            else:
-                # New expected return date
-                if report_data['answers'].get('expected_return'):
-                    expected_return = int(
-                        re.split(r'[+\s]+', report_data['answers'].get('expected_return'))[0])
-                    estimated_recovery_date = (
-                        datetime.now() + timedelta(days=expected_return)).isoformat()
-
-                    update_data = {
-                        "report_due": False,
-                        "status": report_data['answers'].get('availability'),
-                        "estimated_recovery_date": estimated_recovery_date
-                    }
-
-                # No return date submited, keep as is
-                else:
-                    update_data = {
-                        "report_due": False,
-                        "status": report_data['answers'].get('availability')
-                    }
-
-                db_service.update('athletes', data=update_data, filters={
-                                  "id": report_data["user"]})
-
-            # Insert into report table
-            submission_data = {
-                "athlete_id": report_data['user'],
-                "follow_up": True,
-                "recovery_progress": report_data['answers'].get('recovery_progress'),
-                "practitioner_contact": report_data['answers'].get('practitioner_contact'),
-                "new_availability": report_data['answers'].get('availability'),
-                "comments": report_data['answers'].get('comments')
-            }
-            db_service.insert("reports", data=submission_data)
-            return jsonify(message="Follow-up report submitted successfully"), 200
-
     except Exception as e:
         logger.error(f"Error submitting health report: {e}")
+        return jsonify(error=str(e)), 500
+
+
+@health_bp.route('/followup_report', methods=['POST'])
+def followup_report():
+    """
+    Handles submission of follow-up reports; an athlete providing their
+    recovery progress following an injury.
+    """
+    report = request.get_json()
+    report_data = {
+        "user": report.get('user_id'),
+        "user_data": report.get('user_data'),
+        "session": report.get('session'),
+        "answers": report.get('answers_list'),
+    }
+
+    try:
+        # Athlete ready to return
+        if report_data["answers"].get("availability") == "Fully available":
+            update_data = {
+                "status": HealthStatus.GREEN,
+                "report_due": False
+            }
+            db_service.update(
+                table="athletes",
+                data=update_data,
+                filters={"id": report_data['user']})
+
+        # Otherwise get expected return date if provided
+        else:
+            # New expected return date
+            if report_data['answers'].get('expected_return'):
+                expected_return = int(
+                    re.split(r'[+\s]+', report_data['answers'].get('expected_return'))[0])
+                estimated_recovery_date = (
+                    datetime.now() + timedelta(days=expected_return)).isoformat()
+
+                update_data = {
+                    "report_due": False,
+                    "status": report_data['answers'].get('availability'),
+                    "estimated_recovery_date": estimated_recovery_date
+                }
+
+            # No return date submited, keep as is
+            else:
+                update_data = {
+                    "report_due": False,
+                    "status": report_data['answers'].get('availability')
+                }
+            db_service.update(
+                table="athletes",
+                data=update_data,
+                filters={"id": report_data["user"]})
+
+    except Exception as e:
+        logger.error(f"Error updating athlete data upon follow-up report: {e}")
+        return jsonify(error=str(e)), 500
+
+    try:
+        # Get original report that notified of initial injury
+        original_report = db_service.fetch(
+            table="reports",
+            filters={"athlete_id": report_data['user'], "timeloss": True},
+            modifiers={
+                "order": {"column": "created_at", "desc": True},
+                "limit": 1
+            },
+            select={"report_id"}
+        )
+        logger.info(original_report)
+
+        submission_data = {
+            "report_id": original_report.data[0].get("report_id") if original_report.data else None,
+            "athlete_id": report_data["user"],
+            "recovery_progress": report_data['answers'].get('recovery_progress'),
+            "practitioner_contact": report_data['answers'].get('practitioner_contact'),
+            "new_availability": report_data['answers'].get('availability'),
+            "comments": report_data['answers'].get('comments')
+        }
+
+        # Submit follow-up report to database
+        try:
+            db_service.insert(
+                table="followup_reports",
+                data=submission_data
+            )
+            logger.info("Follow-up report submitted successfully")
+            return jsonify(message="Follow-up report submitted successfully"), 200
+
+        except Exception as e:
+            logger.error(f"Error submitting follow-up report: {e}")
+            return jsonify(error=str(e)), 500
+
+    except Exception as e:
+        logger.error(f"Error fetching original report: {e}")
         return jsonify(error=str(e)), 500
 
 

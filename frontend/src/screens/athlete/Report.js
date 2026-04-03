@@ -98,13 +98,26 @@ export default function ReportScreen({ route }) {
         return;
       }
 
-      const response = await axios.post(`${API_BASE_URL}/api/health/report`, {
-        user_id: uuid,
-        user_data: userData,
-        session: session,
-        answers_list: formattedAnswers
-      });
-      console.log("Health Report Response:", response.data);
+      if(healthStatus === "Healthy") {
+        // Submit normal report
+        const response = await axios.post(`${API_BASE_URL}/api/health/report`, {
+          user_id: uuid,
+          user_data: userData,
+          session: session,
+          answers_list: formattedAnswers
+        });
+        console.log("Health Report Response:", response.data);
+
+      } else {
+        // Submit follow-up report
+        const response = await axios.post(`${API_BASE_URL}/api/health/followup_report`, {
+          user_id: uuid,
+          user_data: userData,
+          session: session,
+          answers_list: formattedAnswers
+        })
+        console.log("Health Report Response:", response.data);
+      }
 
       // Reset form after submission
       setCurrentQuestionIndex(0);
@@ -248,7 +261,7 @@ export default function ReportScreen({ route }) {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          disabled={!isQuestionAnswered(currentQuestion)}
+          disabled={!isQuestionAnswered(currentQuestion) || isLoading}
           onPress={() => {
             isLastQuestion
               ? handleReportSubmission(answers)
@@ -258,7 +271,7 @@ export default function ReportScreen({ route }) {
           <Text
             style={[
               styles.navButtonText,
-              !isQuestionAnswered(currentQuestion) && styles.navButtonDisabled
+              (!isQuestionAnswered(currentQuestion) || isLoading) && styles.navButtonDisabled
             ]}
           >
             {isLastQuestion ? "Submit" : "Next"}

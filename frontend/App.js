@@ -156,6 +156,7 @@ function AppNavigator() {
           await axios.post(`${API_BASE_URL}/api/session/log_event`, {
             session_id: session,
             event_type: "app_open_daily",
+            event_data: {"email": userData.email},
             endpoint: "app_state_change"
           })
           // Store today's date
