@@ -3,6 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { Text, AppState } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import AthleteDashScreen from "./src/screens/athlete/AthleteHome";
 import AthleteTeamScreen from "./src/screens/athlete/AthleteTeam";
 import ReportScreen from "./src/screens/athlete/Report";
@@ -11,7 +12,7 @@ import LoginScreen from "./src/screens/Login";
 import CoachDashScreen from "./src/screens/coach/CoachHome";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import { AuthProvider, useAuth } from "./src/context/AuthContext";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -130,57 +131,60 @@ function AdminTabNavigator() {
 
 function AppNavigator() {
   usePushNotifications();
-  const { isAuthenticated, userData, restoreSession, session } = useAuth();
+  const { isAuthenticated, userData, restoreSession, session, isLoading } = useAuth();
+  const userType = userData?.user_type;
   const appState = useRef(AppState.currentState)
-
+  
   useEffect(() => {
-    restoreSession();
-
+    const initializeApp = async () => {
+      await restoreSession();
+    };
+    initializeApp();
+    
     const subscription = AppState.addEventListener("change", handleAppStateChange)
     return () => subscription.remove()
   }, [])
+
+  const logDailyOpen = useCallback(async () => {
+    if (session) {
+      try {
+        const lastOpen = await AsyncStorage.getItem('lastAppOpen');
+        const today = new Date().toISOString().split('T')[0];
+        
+        if (lastOpen !== today) {
+          // First open of the day
+          await axios.post(`${API_BASE_URL}/api/session/log_event`, {
+            session_id: session,
+            event_type: "app_open_daily",
+            endpoint: "app_state_change"
+          })
+          // Store today's date
+          await AsyncStorage.setItem('lastAppOpen', today);
+        }
+      } catch (error) {
+        console.error("Error logging app open event:", error)
+      }
+    }
+  }, [session])
+  
+  useEffect(() => {
+    if (session) {
+      logDailyOpen()
+    }
+  }, [session])
+
 
   const handleAppStateChange = async (nextAppState) => {
     // App moving from background/inactive to foreground
     if (appState.current.match(/inactive|background/) && nextAppState === "active") {
       console.log("App has come to foreground")
-
-      // Log app open event
-      if (session) {
-        try {
-          await axios.post(`${API_BASE_URL}/api/session/log_event`, {
-            session_id: session,
-            event_type: "app_open",
-            endpoint: "app_state_change"
-          })
-        } catch (error) {
-          console.error("Error logging app open event:", error)
-        }
-      }
+      await logDailyOpen();
     }
-
-    // App moving to background/inactive
-    if (nextAppState === "background" || nextAppState === "inactive") {
-      console.log("App has moved to background/inactive")
-
-      // Log app close event
-      if (session) {
-        try {
-          await axios.post(`${API_BASE_URL}/api/session/log_event`, {
-            session_id: session,
-            event_type: "app_close",
-            endpoint: "app_state_change"
-          })
-        } catch (error) {
-          console.error("Error logging app close event:", error)
-        }
-      }
-    }
-
+    
     appState.current = nextAppState;
   }
-
-  const userType = userData?.user_type;
+  
+  if (isLoading) return <Text>Loading...</Text>;
 
   return (
     <NavigationContainer fallback={<Text>Loading...</Text>}>

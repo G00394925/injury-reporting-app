@@ -2,6 +2,7 @@ import React, { useContext, createContext, useState } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "../config/apiConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from 'expo-secure-store';
 
 const AuthContext = createContext();
 
@@ -10,6 +11,7 @@ export const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [session, setSession] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true)
 
   const login = async (userId, user, session) => {
     setUuid(userId);
@@ -18,10 +20,12 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(true);
 
     // Store session in AsyncStorage
-    await AsyncStorage.setItem("uuid", userId);
+    await SecureStore.setItemAsync("uuid", String(userId));
+    await SecureStore.setItemAsync("session", String(session));
     await AsyncStorage.setItem("userData", JSON.stringify(user));
-    await AsyncStorage.setItem("session", session);
-    await AsyncStorage.setItem("isAuthenticated", "true")
+
+    const check = await SecureStore.getItemAsync("session");
+    console.log("Saved session: ", check);
   };
 
   const logout = async () => {
@@ -29,19 +33,16 @@ export const AuthProvider = ({ children }) => {
       // End session
       if (session) {
         console.log("Ending session");
-        await axios.post(`${API_BASE_URL}/api/auth/logout`, {
-          session: session
-        });
+        await axios.post(`${API_BASE_URL}/api/auth/logout`, { session });
       }
     } catch (error) {
       console.error("Error ending session:", error);
     }
 
-    // Clear from AsyncStorage
-    await AsyncStorage.removeItem("uuid");
+    // Clear from AsyncStorage/SecureStore
+    await SecureStore.deleteItemAsync("uuid");
+    await SecureStore.deleteItemAsync("session");
     await AsyncStorage.removeItem("userData");
-    await AsyncStorage.removeItem("session");
-    await AsyncStorage.removeItem("isAuthenticated")
 
     setUuid(null);
     setUserData(null);
@@ -51,20 +52,22 @@ export const AuthProvider = ({ children }) => {
 
   const restoreSession = async () => {
     try {
-      const [storedUuid, storedUserData, storedSession] = await Promise.all([
-        AsyncStorage.getItem("uuid"),
-        AsyncStorage.getItem("userData"),
-        AsyncStorage.getItem("session")
+      const [storedUuid, storedSession, storedUserData] = await Promise.all([
+        SecureStore.getItemAsync("uuid"),
+        SecureStore.getItemAsync("session"),
+        AsyncStorage.getItem("userData")
       ]);
 
-      if (storedUuid && storedUserData && storedSession) {
+      if (storedUuid && storedSession && storedUserData) {
         setUuid(storedUuid);
-        setUserData(JSON.parse(storedUserData));
         setSession(storedSession);
-        setIsAuthenticated(true)
+        setUserData(JSON.parse(storedUserData));
+        setIsAuthenticated(true);
       }
     } catch (error) {
       console.error("Error retoring session:", error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -75,6 +78,7 @@ export const AuthProvider = ({ children }) => {
         userData,
         session,
         isAuthenticated,
+        isLoading,
         login,
         logout,
         restoreSession
