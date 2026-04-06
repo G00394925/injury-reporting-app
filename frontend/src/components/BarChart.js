@@ -13,16 +13,22 @@ export default function BarChartComponent({ data }) {
         {
           value: outcomes["Healthy"],
           color: "#10b981",
+          gradientColor: "#8be6c7",
+          label: "Healthy"
         },
         {
           value: outcomes["At Risk"],
           color: "#f59e0b",
-          marginBottom: 1
+          gradientColor: "#fdd794",
+          marginBottom: 1,
+          label: "At Risk"
         },
         {
           value: outcomes["Injured"],
           color: "#ef4444",
-          marginBottom: 1
+          gradientColor: "#eca1a1",
+          marginBottom: 1,
+          label: "Injured"
         }
       ],
       label: dayLabel
@@ -77,34 +83,61 @@ export default function BarChartComponent({ data }) {
     );
   };
 
+  const screenWidth = Dimensions.get("window").width
+  const totalHorizontalPadding = 30;
+
+  const numberOfBars = Math.max(barData.length, 1)
+  const calculatedSpacing = (screenWidth - totalHorizontalPadding) / numberOfBars
+
   return (
     <View
       style={{
         alignItems: "center",
-        width: "100%",
-        flex: 1
+        width: "100%"
       }}
     >
       {renderLegendComponent()}
-      <BarChart
-        rotateLabel
-        initialSpacing={2}
-        xAxisColor={"#6b7280"}
-        yAxisColor={"#6b7280"}
-        yAxisTextStyle={{ fontFamily: "Rubik", color: "#6b7280" }}
-        xAxisTextStyle={{ fontFamily: "Rubik", color: "#6b7280" }}
-        hideRules
-        labelsDistanceFromXaxis={10}
-        stackBorderRadius={5}
-        barBorderRadius={8}
-        barWidth={25}
-        spacing={45}
-        width={Dimensions.get("window").width - 150}
-        height={280}
-        xAxisThickness={1}
-        disablePress
-        stackData={barData}
-      />
+      <View style={{
+        paddingVertical: 10,
+        paddingRight: 20,
+        alignItems: "center",
+      }}
+      >
+        <BarChart
+          rotateLabel
+          initialSpacing={calculatedSpacing / 3}
+          xAxisColor={"#6b7280"}
+          yAxisColor={"#6b7280"}
+          yAxisTextStyle={{ fontFamily: "Rubik", color: "#6b7280" }}
+          xAxisLabelTextStyle={{ fontFamily: "Rubik", color: "#6b7280" }}
+          labelsDistanceFromXaxis={10}
+          stackBorderRadius={0}
+          barBorderRadius={0}
+          barWidth={20}
+          spacing={calculatedSpacing * 0.3}
+          height={280}
+          xAxisThickness={0}
+          showGradient
+          yAxisThickness={0}
+          stackData={barData}
+          renderTooltip={(item, index) => {
+            return (
+              <View style={{
+                marginBottom: 10,
+                backgroundColor: "#e0e0e0",
+                paddingHorizontal: 6,
+                paddingVertical: 4,
+                borderRadius: 4
+              }}>
+                {item.stacks.map((stack, i) => (
+                  <Text key={i}>{stack.label}: {stack.value}</Text>
+                ))}
+              </View>
+            )
+          }}
+          leftShiftForLastIndexTooltip={40}
+        />
+      </View>
     </View>
   );
 }

@@ -289,10 +289,10 @@ const styles = StyleSheet.create({
   },
   submissionPercentageText: {
     fontFamily: "Rubik",
-    fontSize: 13,
+    fontSize: 11,
     color: "#fff",
     alignSelf: "flex-end",
-    marginRight: 15,
+    marginRight: 3,
     fontWeight: "bold"
   },
   submissionProgressLegend: {
@@ -302,14 +302,13 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   barChartContainer: {
-    padding: 15,
+    paddingVertical: 15,
     paddingBottom: 40,
     borderRadius: 15,
     backgroundColor: '#fff',
     marginTop: 25,
     marginBottom: 25,
     alignItems: "center",
-    width: "100%",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,

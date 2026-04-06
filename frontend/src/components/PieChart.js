@@ -1,7 +1,13 @@
 import { PieChart } from "react-native-gifted-charts";
 import { View, Text, StyleSheet } from "react-native";
+import { useState } from "react";
 
 export default function PieChartComponent({ data, centerLabel, centerValue, numItems }) {
+  const [activeItem, setActiveItem] = useState({
+    label: centerLabel, 
+    value: centerValue
+  })
+
   const getPercentage = (value) => {
     if (numItems === 0) return 0;
     return Math.round((value / numItems) * 100);
@@ -46,8 +52,17 @@ export default function PieChartComponent({ data, centerLabel, centerValue, numI
 
   const pieData = Object.values(data).map((obj, index) => ({
     value: getPercentage(obj.value),
-    color: obj.color
+    color: obj.color,
+    label: obj.label,
+    focused: activeItem.label === obj.label
   }));
+
+  const handleItemPress = (item, index) => {
+    setActiveItem({
+      label: item.label,
+      value: item.value
+    })
+  }
 
   return (
     <View
@@ -60,15 +75,16 @@ export default function PieChartComponent({ data, centerLabel, centerValue, numI
       <PieChart
         data={pieData}
         donut
-        sectionAutoFocus
         isAnimated
+        focusOnPress
+        onPress={handleItemPress}
         radius={100}
         innerRadius={55}
         centerLabelComponent={() => {
           return (
             <View style={{ justifyContent: "center", alignItems: "center" }}>
-              <Text style={styles.focusPercentage}>{centerValue}%</Text>
-              <Text style={styles.focusLabel}>{centerLabel}</Text>
+              <Text style={styles.focusPercentage}>{activeItem.value}%</Text>
+              <Text style={styles.focusLabel}>{activeItem.label}</Text>
             </View>
           );
         }}
