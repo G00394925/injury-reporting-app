@@ -109,7 +109,35 @@ export default function CoachDashScreen() {
             color: "#bb000077"
           };
         });
-        setEvents(formattedEvents);
+
+        formattedEvents.sort((a, b) => new Date(a.start.dateTime) - new Date(b.start.dateTime))
+
+        // Merge overlapping events to show general (un)availability periods
+        const mergedEvents = []
+        for (const event of formattedEvents) {
+          if (mergedEvents.length === 0) {
+            mergedEvents.push({ ...event });
+            continue;
+          }
+
+          const lastEvent = mergedEvents[mergedEvents.length - 1]
+          const lastEventEnd = new Date(lastEvent.end.dateTime);
+          const currentEventStart = new Date(event.start.dateTime);
+          const currentEventEnd = new Date(event.end.dateTime);
+
+          // If the current event overlaps or touches the last merged event
+          if (currentEventStart <= lastEventEnd) {
+            // Extend the end time if the current event finishes later
+            if (currentEventEnd > lastEventEnd) {
+              lastEvent.end.dateTime = event.end.dateTime;
+            }
+          } else {
+            // Otherwise it's a new unavailability block
+            mergedEvents.push({ ...event, id: `block-${mergedEvents.length}`})
+          }
+        }
+
+        setEvents(mergedEvents);
 
       } else {
         console.log("No events data received");
@@ -318,6 +346,9 @@ export default function CoachDashScreen() {
                   allowPinchToZoom={true}
                   scrollByDay={false}
                   events={events}
+                  overlapType="overlap"
+                  overlapEventsSpacing={0}
+                  
                 >
                   <CalendarHeader />
                   <CalendarBody renderEvent={renderEvent} />
