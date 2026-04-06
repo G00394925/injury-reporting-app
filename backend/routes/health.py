@@ -172,6 +172,7 @@ def health_report():
                 "timeloss": report_data['answers'].get('timeloss'),
                 "injury_side": side,
                 "injury_onset": report_data['answers'].get('injury_onset'),
+                "new_availability": proposed_status,
                 "consulted": report_data['answers'].get('consulted'),
                 "comments": report_data['answers'].get('comments'),
             }

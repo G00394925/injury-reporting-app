@@ -97,7 +97,8 @@ export default function BarChartComponent({ data }) {
         labelsDistanceFromXaxis={10}
         stackBorderRadius={5}
         barBorderRadius={8}
-        barWidth={15}
+        barWidth={25}
+        spacing={45}
         width={Dimensions.get("window").width - 150}
         height={280}
         xAxisThickness={1}
