@@ -88,6 +88,11 @@ export const globalStyles = StyleSheet.create({
     fontFamily: "Rubik",
     color: "#333"
   },
+  modalLabel: {
+    fontFamily: "Rubik",
+    fontSize: 16,
+    color: "#333"
+  },
   modalFooter: {
     flexDirection: "row",
     justifyContent: "space-between",

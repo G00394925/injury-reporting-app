@@ -31,6 +31,7 @@ def create_event():
         response = db_service.insert("events", data={
             "athlete_id": new_event.get("athlete_id"),
             "title": new_event.get("title"),
+            "sport": new_event.get("sport"),
             "event_date": new_event.get("event_date"),
             "start_time": new_event.get("start_time"),
             "end_time": new_event.get("end_time"),
@@ -78,6 +79,7 @@ def get_events(athlete_id):
                 events.append({
                     "event_id": event.get("id"),
                     "title": event.get("title"),
+                    "sport": event.get("sport"),
                     "event_date": event.get("event_date"),
                     "start_time": event.get("start_time"),
                     "end_time": event.get("end_time"),
@@ -201,6 +203,7 @@ def get_team_events(team_id):
                         events.append({
                             "event_id": event.get("id"),
                             "title": event.get("title"),
+                            "sport": event.get("sport"),
                             "event_date": event.get("event_date"),
                             "start_time": event.get("start_time"),
                             "end_time": event.get("end_time"),

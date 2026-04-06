@@ -12,11 +12,14 @@ import axios from "axios";
 
 export default function ManageScheduleScreen() {
   const { uuid, session } = useAuth();
-  const [modalVisible, setModalVisible] = useState(false);
+  const [createModalVisible, setCreateModalVisible] = useState(false);
+  const [viewModalVisible, setViewModalVisible] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null); // Add this
   const [eventType, setEventType] = useState("");
   const [eventTitle, setEventTitle] = useState("");
   const [eventDate, setEventDate] = useState(new Date());
   const [eventStartTime, setEventStartTime] = useState(new Date());
+  const [eventSport, setEventSport] = useState("")
   const [eventEndTime, setEventEndTime] = useState(new Date());
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isStartTimePickerVisible, setIsStartTimePickerVisible] = useState(false);
@@ -43,15 +46,25 @@ export default function ManageScheduleScreen() {
     });
   };
 
-  // Modal handlers for event creation
-  const openModal = () => {
-    setEventType(isTraining ? "Training" : "Match");
-    setModalVisible(true);
+  // Modal handlers for event creation and viewing
+  const openViewModal = (event) => {
+    setSelectedEvent(event);
+    setViewModalVisible(true);
   };
 
-  const closeModal = () => {
-    setModalVisible(false);
+  const closeViewModal = () => {
+    setViewModalVisible(false);
+    setSelectedEvent(null);
+  };
+
+  const openCreateModal = () => {
+    setCreateModalVisible(true);
+  };
+
+  const closeCreateModal = () => {
+    setCreateModalVisible(false);
     setEventTitle("");
+    setEventSport("");
     setEventDate(new Date());
     setEventStartTime(new Date());
     setEventEndTime(new Date());
@@ -104,10 +117,12 @@ export default function ManageScheduleScreen() {
       const formattedDate = eventDate.toISOString().split("T")[0]; // YYYY-MM-DD
       const formattedStartTime = formatTime(eventStartTime);
       const formattedEndTime = formatTime(eventEndTime);
+      setEventType(isTraining ? "Training" : "Match")
 
       console.log("Submitting event:", {
         athlete_id: uuid,
         title: eventTitle,
+        sport: eventSport,
         event_date: formattedDate,
         start_time: formattedStartTime,
         end_time: formattedEndTime,
@@ -117,6 +132,7 @@ export default function ManageScheduleScreen() {
       const response = await axios.post(`${API_BASE_URL}/api/events/new`, {
         athlete_id: uuid,
         title: eventTitle,
+        sport: eventSport,
         event_date: formattedDate,
         start_time: formattedStartTime,
         end_time: formattedEndTime,
@@ -125,7 +141,7 @@ export default function ManageScheduleScreen() {
       });
 
       console.log("Event created successfully: ", response.data);
-      closeModal();
+      closeCreateModal();
       fetchEvents(); // Refresh the calendar
     } catch (error) {
       console.error("Error creating event:", error);
@@ -162,6 +178,7 @@ export default function ManageScheduleScreen() {
           return {
             id: event.event_id.toString(),
             title: event.title,
+            sport: event.sport,
             start: { dateTime: startDate.toISOString() },
             end: { dateTime: endDate.toISOString() },
             color: event.type === "Training" ? "#2038be7f" : "#28a74679",
@@ -200,12 +217,21 @@ export default function ManageScheduleScreen() {
         <Text
           style={{
             color: "white",
-            fontSize: 12,
+            fontSize: 13,
             fontWeight: "bold",
             fontFamily: "Rubik"
           }}
         >
           {event.title}
+        </Text>
+        <Text
+          style={{
+            color: "white",
+            fontSize: 12,
+            fontFamily: "Rubik"
+          }}
+        >
+          {event.sport}
         </Text>
       </View>
     ),
@@ -228,14 +254,17 @@ export default function ManageScheduleScreen() {
             end={1380}
             initialTimeIntervalHeight={60}
             allowPinchToZoom={true}
-            scrollByDay
             scrollToNow={false}
             events={events}
+            onPressEvent={(event) => {
+              console.log("Event pressed: ", event)
+              openViewModal(event)
+            }}
           >
             <CalendarHeader
               LeftAreaComponent={
                 <TouchableOpacity
-                  onPress={() => openModal()}
+                  onPress={() => openCreateModal()}
                   style={styles.addButton}
                 >
                   <MaterialIcons name="add-circle" size={37} color={'#4d4d4d'} />
@@ -249,8 +278,8 @@ export default function ManageScheduleScreen() {
       <Modal
         animationType="slide"
         transparent={true}
-        visible={modalVisible}
-        onRequestClose={closeModal}
+        visible={createModalVisible}
+        onRequestClose={closeCreateModal}
         statusBarTranslucent={true}
         navigationBarTranslucent={true}
       >
@@ -260,7 +289,7 @@ export default function ManageScheduleScreen() {
               <Text style={globalStyles.modalTitle}>
                 Add Event
               </Text>
-              <TouchableOpacity onPress={closeModal}>
+              <TouchableOpacity onPress={closeCreateModal}>
                 <Ionicons name="close" size={28} color="#333" />
               </TouchableOpacity>
             </View>
@@ -282,11 +311,20 @@ export default function ManageScheduleScreen() {
               <TextInput
                 style={globalStyles.modalInput}
                 placeholder="Enter event name"
+                placeholderTextColor={'#c7c7c7'}
                 value={eventTitle}
                 onChangeText={setEventTitle}
               />
 
               {/* TODO: Add input to get associated team  */}
+              <Text style={globalStyles.modalInputLabel}>Sport</Text>
+              <TextInput
+                style={globalStyles.modalInput}
+                placeholder="Enter sport"
+                placeholderTextColor={'#c7c7c7'}
+                value={eventSport}
+                onChangeText={setEventSport}
+              />
 
               <Text style={globalStyles.modalInputLabel}>Date</Text>
               <TouchableOpacity onPress={showDatePicker} style={globalStyles.modalInput}>
@@ -346,7 +384,7 @@ export default function ManageScheduleScreen() {
             <View style={globalStyles.modalFooter}>
               <TouchableOpacity
                 style={styles.cancelButton}
-                onPress={closeModal}
+                onPress={closeCreateModal}
               >
                 <Text style={styles.cancelButtonText}>Cancel</Text>
               </TouchableOpacity>
@@ -356,6 +394,49 @@ export default function ManageScheduleScreen() {
               >
                 <Text style={styles.submitButtonText}>Add Event</Text>
               </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Event Viewer Modal */}
+      <Modal 
+        animationType="fade"
+        transparent={true}
+        visible={viewModalVisible}
+        onRequestClose={closeViewModal}
+        statusBarTranslucent={true}
+        navigationBarTranslucent={true}
+      >
+        <View style={globalStyles.modalOverlay}>
+          <View style={globalStyles.modalContent}>
+            <View style={globalStyles.modalHeader}>
+              <Text style={globalStyles.modalTitle}>View Event</Text>
+              <TouchableOpacity onPress={() => { setViewModalVisible(false); }}>
+                <Ionicons name="close" size={28} color="#333" />
+              </TouchableOpacity>
+            </View>
+            <View style={[globalStyles.modalBody, {gap: 15}]}>
+
+              <View style={{flexDirection: "row", alignItems: "center"}}>
+                <Text style={[globalStyles.modalLabel, {fontWeight: 'bold'}]}>Title: </Text> 
+                <Text style={globalStyles.modalLabel}>{selectedEvent?.title}</Text>
+              </View>
+              
+              <View style={{flexDirection: "row", alignItems: "center"}}>
+                <Text style={[globalStyles.modalLabel, {fontWeight: 'bold'}]}>Sport: </Text> 
+                <Text style={globalStyles.modalLabel}>{selectedEvent?.sport}</Text>
+              </View>
+
+              <View style={{flexDirection: "row", alignItems: "center"}}>
+                <Text style={[globalStyles.modalLabel, {fontWeight: 'bold'}]}>Date: </Text> 
+                <Text style={globalStyles.modalLabel}>{selectedEvent?.start?.dateTime?.split("T")[0]}</Text>
+              </View>
+
+              <View style={{flexDirection: "row", alignItems: "center"}}>
+                <Text style={[globalStyles.modalLabel, {fontWeight: 'bold'}]}>Time: </Text> 
+                <Text style={globalStyles.modalLabel}>{selectedEvent?.start?.dateTime?.substring(11, 16)} - {selectedEvent?.end?.dateTime?.substring(11, 16)}</Text>
+              </View>
             </View>
           </View>
         </View>
