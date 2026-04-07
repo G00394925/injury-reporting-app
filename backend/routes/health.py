@@ -51,7 +51,7 @@ def health_report():
         side = "N/A"
 
         # Acquire injury location and type, generate injury code
-        if report_data['answers'].get('injured'):
+        if report_data['answers'].get('injured') or report_data['answers'].get('ill'):
             if report_data['answers'].get('expected_outage'):
 
                 # Extract days from string
@@ -118,69 +118,68 @@ def health_report():
             if report_data['answers'].get('ill'):
                 injury_code = 'M'
 
-            # Update athlete's health status based on report data
-            update_data = {
-                "status": proposed_status.value,
-                "report_due": False
-            }
+        # Update athlete's health status based on report data
+        update_data = {
+            "status": proposed_status.value,
+            "report_due": False
+        }
 
-            if proposed_status in [HealthStatus.AMBER, HealthStatus.RED]:
-                update_data["injury_date"] = datetime.now().isoformat()
-                if estimated_recovery_date:
-                    update_data["estimated_recovery_date"] = estimated_recovery_date
+        if proposed_status in [HealthStatus.AMBER, HealthStatus.RED]:
+            update_data["injury_date"] = datetime.now().isoformat()
+            if estimated_recovery_date:
+                update_data["estimated_recovery_date"] = estimated_recovery_date
 
-            else:
-                # Clear injury data if status is green
-                update_data["estimated_recovery_date"] = None
+        else:
+            # Clear injury data if status is green
+            update_data["estimated_recovery_date"] = None
 
-            try:
-                # Update athlete's health status in the database
-                db_service.update(
-                    table="athletes", 
-                    data=update_data, 
-                    filters={"id": report_data['user']})
+        try:
+            # Update athlete's health status in the database
+            db_service.update(
+                table="athletes", 
+                data=update_data, 
+                filters={"id": report_data['user']})
                 
-                logger.info(
-                    f"Updated athlete's status: Recovery date: {estimated_recovery_date}, Proposed status: {proposed_status.value}")
+            logger.info(
+                f"Updated athlete's status: Recovery date: {estimated_recovery_date}, Proposed status: {proposed_status.value}")
 
-            except Exception as e:
-                logger.error(f"Error updating athlete's health status: {e}")
-                return jsonify(error="Failed to update health status"), 500
+        except Exception as e:
+            logger.error(f"Error updating athlete's health status: {e}")
+            return jsonify(error="Failed to update health status"), 500
 
-            try:
-                # Log to session events
-                session = report_data.get('session')
-                session_service.log_event(
-                    session_id=session,
-                    event_type="report_submission",
-                    event_data={
-                        "athlete_id": report_data['user'],
-                    },
-                    endpoint="/health/report",
-                )
-                logger.info(
-                    f"Logged report submission event for session {session}")
-            except Exception as e:
-                logger.error(f"Error logging session event: {e}")
+        try:
+            # Log to session events
+            session = report_data.get('session')
+            session_service.log_event(
+                session_id=session,
+                event_type="report_submission",
+                event_data={
+                    "athlete_id": report_data['user'],
+                },
+                endpoint="/health/report",
+            )
+            logger.info(
+                f"Logged report submission event for session {session}")
+        except Exception as e:
+            logger.error(f"Error logging session event: {e}")
 
-            # Insert health report into database
-            submission_data = {
-                "athlete_id": report_data['user'],
-                "injured": report_data['answers'].get('injured'),
-                "rpe": report_data['answers'].get('rpe'),
-                "ill": report_data['answers'].get('ill'),
-                "injury_code": injury_code,
-                "timeloss": report_data['answers'].get('timeloss'),
-                "injury_side": side,
-                "injury_onset": report_data['answers'].get('injury_onset'),
-                "new_availability": proposed_status,
-                "consulted": report_data['answers'].get('consulted'),
-                "comments": report_data['answers'].get('comments'),
-            }
-            db_service.insert("reports", data=submission_data)
-
-            logger.info("Inserted new report to database")
-            return jsonify(message="Health report submitted successfully"), 201
+        # Insert health report into database
+        submission_data = {
+            "athlete_id": report_data['user'],
+            "injured": report_data['answers'].get('injured'),
+            "rpe": report_data['answers'].get('rpe'),
+            "ill": report_data['answers'].get('ill'),
+            "injury_code": injury_code,
+            "timeloss": report_data['answers'].get('timeloss'),
+            "injury_side": side,
+            "injury_onset": report_data['answers'].get('injury_onset'),
+            "new_availability": proposed_status,
+            "consulted": report_data['answers'].get('consulted'),
+            "comments": report_data['answers'].get('comments'),
+        }
+        db_service.insert("reports", data=submission_data)
+        logger.info("Inserted new report to database")
+        return jsonify(message="Health report submitted successfully"), 201
 
     except Exception as e:
         logger.error(f"Error submitting health report: {e}")
