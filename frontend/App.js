@@ -27,6 +27,7 @@ import ResetPasswordScreen from "./src/screens/ResetPassword";
 import ConfirmRegistrationScreen from "./src/screens/ConfirmRegistration";
 import { usePushNotifications } from "./src/hooks/usePushNotifications";
 import AdminDashScreen from "./src/screens/administrator/AdminDashboard";
+import AdminReportHistoryScreen from "./src/screens/administrator/AdminReportHistory";
 import { API_BASE_URL } from "./src/config/apiConfig";
 
 
@@ -123,7 +124,7 @@ function AdminTabNavigator() {
       })}
     >
       <Tab.Screen name="Dashboard" component={AdminDashScreen} />
-      <Tab.Screen name="Question Builder" component={AdminDashScreen} />
+      <Tab.Screen name="Report History" component={AdminReportHistoryScreen} />
       <Tab.Screen name="Account" component={AccountScreen} />
     </Tab.Navigator>
   );
@@ -203,12 +204,14 @@ function AppNavigator() {
         ) : userType === "Admin" ? (
           <>
             <Stack.Screen name="Admin" component={AdminTabNavigator} />
+            <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
           </>
         ) : userType === "Coach" ? (
           <>
             <Stack.Screen name="MainApp" component={CoachTabNavigator} />
             <Stack.Screen name="TeamViewer" component={TeamViewerScreen} />
             <Stack.Screen name="AthleteViewer" component={AthleteViewerScreen} />
+            <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
           </>
         ) : (
           <>

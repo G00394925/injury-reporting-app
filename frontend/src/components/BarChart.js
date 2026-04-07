@@ -31,7 +31,8 @@ export default function BarChartComponent({ data }) {
           label: "Injured"
         }
       ],
-      label: dayLabel
+      label: dayLabel,
+      leftShiftForTooltip: 30
     };
   });
 
@@ -105,7 +106,7 @@ export default function BarChartComponent({ data }) {
       >
         <BarChart
           rotateLabel
-          initialSpacing={calculatedSpacing / 3}
+          initialSpacing={calculatedSpacing / 3.5}
           xAxisColor={"#6b7280"}
           yAxisColor={"#6b7280"}
           yAxisTextStyle={{ fontFamily: "Rubik", color: "#6b7280" }}
@@ -135,7 +136,7 @@ export default function BarChartComponent({ data }) {
               </View>
             )
           }}
-          leftShiftForLastIndexTooltip={40}
+          leftShiftForLastIndexTooltip={60}
         />
       </View>
     </View>
