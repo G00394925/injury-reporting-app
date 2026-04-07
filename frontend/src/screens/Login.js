@@ -166,11 +166,6 @@ export default function LoginScreen() {
           handleLogin();
         }}
       />
-
-      <Button
-        title="DEBUG: Admin Interface"
-        onPress={() => navigation.navigate("Admin")}
-      />
     </View>
   );
 }

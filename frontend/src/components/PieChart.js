@@ -77,6 +77,7 @@ export default function PieChartComponent({ data, centerLabel, centerValue, numI
         donut
         isAnimated
         focusOnPress
+        sectionAutoFocus
         onPress={handleItemPress}
         radius={100}
         innerRadius={55}

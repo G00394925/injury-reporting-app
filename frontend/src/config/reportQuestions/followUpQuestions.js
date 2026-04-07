@@ -33,7 +33,7 @@ export const getFollowUpQuestions = (
       <RpeSlider
         value={answers.rpe}
         onValueChange={(value) => updateAnswer("rpe", value)}
-        title="Rate your current feeling."
+        title="Rate your current discomfort."
         labels={["Very Low", "Low", "Moderate", "High", "Very High"]}
       />
     ),

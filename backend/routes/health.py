@@ -167,6 +167,7 @@ def health_report():
             submission_data = {
                 "athlete_id": report_data['user'],
                 "injured": report_data['answers'].get('injured'),
+                "rpe": report_data['answers'].get('rpe'),
                 "ill": report_data['answers'].get('ill'),
                 "injury_code": injury_code,
                 "timeloss": report_data['answers'].get('timeloss'),
@@ -258,6 +259,7 @@ def followup_report():
         submission_data = {
             "report_id": original_report.data[0].get("report_id") if original_report.data else None,
             "athlete_id": report_data["user"],
+            "rpe": report_data['answers'].get('rpe'),
             "recovery_progress": report_data['answers'].get('recovery_progress'),
             "practitioner_contact": report_data['answers'].get('practitioner_contact'),
             "new_availability": report_data['answers'].get('availability'),
