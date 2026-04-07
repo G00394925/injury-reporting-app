@@ -10,6 +10,7 @@ import { BarChart } from "react-native-gifted-charts";
 import PieChartComponent from "../../components/PieChart";
 import BarChartComponent from "../../components/BarChart";
 import LineChartComponent from "../../components/LineChart";
+import SkeletonText from "../../components/skeleton/SkeletonText";
 
 export default function AdminDashScreen() {
   const [reports, setReports] = useState({});
@@ -17,6 +18,7 @@ export default function AdminDashScreen() {
   const [athletes, setAthletes] = useState(0);
   const [coaches, setCoaches] = useState(0);
   const [teams, setTeams] = useState([]);
+  const [loading, setLoading] = useState(true);
   
   // Health status data for pie chart 
   const [healthData, setHealthData] = useState({
@@ -98,6 +100,8 @@ export default function AdminDashScreen() {
 
     } catch (error) {
       console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -117,103 +121,122 @@ export default function AdminDashScreen() {
         style={globalStyles.contentContainer}
         contentContainerStyle={{ paddingBottom: 100 }}
       >
-        <View style={styles.dataContainer}>
-          <Text style={styles.dataHeader}>Health Summary</Text>
-          <PieChartComponent
-            data={healthData}
-            centerLabel={"Healthy"}
-            centerValue={getPercentage(healthData.healthy.value)}
-            numItems={athletes}
-          />
-        </View>
-        <View style={styles.smallDataContainer}>
-          <View style={styles.dataContainer}>
-            <MaterialCommunityIcons
-              name={"crowd"}
-              size={42}
-              color={"#3ca1ff"}
-              style={{ marginBottom: 8 }}
-            />
-            <Text style={styles.dataValueSmall}>{athletes}</Text>
-            <Text style={styles.dataLabelSmall}>Athletes</Text>
-          </View>
-          <View style={styles.dataContainer}>
-            <MaterialCommunityIcons
-              name={"whistle"}
-              size={42}
-              color={"#ff7272"}
-              style={{ marginBottom: 8 }}
-            />
-            <Text style={styles.dataValueSmall}>{coaches}</Text>
-            <Text style={styles.dataLabelSmall}>Coaches</Text>
-          </View>
-        </View>
-        <View style={styles.submissionProgressContainer}>
-          <Text style={styles.dataHeader}>Today's Submissions</Text>
-          <View style={styles.submissionProgressLegend}>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <View
-                style={{
-                  height: 10,
-                  width: 10,
-                  borderRadius: 5,
-                  backgroundColor: '#3b82f6',
-                  marginRight: 5
-              }}
-              />
-              <Text style={styles.dataLabelSmall}>Submitted</Text>
-            </View>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <View
-                style={{
-                  height: 10,
-                  width: 10,
-                  borderRadius: 5,
-                  backgroundColor: '#c2c2c2',
-                  marginRight: 5
-                }}
-              />
-              <Text style={styles.dataLabelSmall}>Due</Text>
-            </View>
-          </View>
-          <View style={styles.barsContainer}>
-            <View
-              style={{
-                width: submittedPercentage + "%",
-                backgroundColor: "#3b82f6",
-                borderRadius: 35,
-                height: 25,
-                overflow: "hidden",
-                marginBottom: 15,
-                position: "absolute",
-                zIndex: 1,
-                justifyContent: "center"
-              }}
-            >
-              <Text style={styles.submissionPercentageText}>{submittedPercentage}%</Text>
-            </View>
-            <View
-              style={{
-                width: "100%",
-                backgroundColor: "#c2c2c2",
-                borderRadius: 35,
-                height: 25,
-                overflow: "hidden",
-                marginBottom: 15
-              }}
-            />
-          </View>
-        </View>
+        {loading ? (
+          <>
+            <SkeletonText height={275} borderRadius={15} />
 
-        <View style={styles.barChartContainer}>
-          <Text style={styles.dataHeader}>Report Outcome Summary</Text>
-          <BarChartComponent data={reportsData} />
-        </View>
+            <View style={{flexDirection: 'row', marginTop: 25, alignItems: "center", justifyContent: "center", gap: 20}}>
+              <SkeletonText height={150} width="45%" borderRadius={15} />
+              <SkeletonText height={150} width="45%" borderRadius={15} />
+            </View>
 
-        <View style={styles.dataContainer}>
-          <Text style={styles.dataHeader}>Activity</Text>
-          <LineChartComponent data={activityData} />
-        </View>
+            <View style={{flexdirection: 'column', marginTop: 25, gap: 25}}>
+              <SkeletonText height={150} borderRadius={15} />
+              <SkeletonText height={350} borderRadius={15} />
+              <SkeletonText height={280} borderRadius={15} />
+            </View>
+          </>
+        ) : (
+          <>
+            <View style={styles.dataContainer}>
+              <Text style={styles.dataHeader}>Health Summary</Text>
+              <PieChartComponent
+                data={healthData}
+                centerLabel={"Healthy"}
+                centerValue={getPercentage(healthData.healthy.value)}
+                numItems={athletes}
+              />
+            </View>
+            <View style={styles.smallDataContainer}>
+              <View style={styles.dataContainer}>
+                <MaterialCommunityIcons
+                  name={"crowd"}
+                  size={42}
+                  color={"#3ca1ff"}
+                  style={{ marginBottom: 8 }}
+                />
+                <Text style={styles.dataValueSmall}>{athletes}</Text>
+                <Text style={styles.dataLabelSmall}>Athletes</Text>
+              </View>
+              <View style={styles.dataContainer}>
+                <MaterialCommunityIcons
+                  name={"whistle"}
+                  size={42}
+                  color={"#ff7272"}
+                  style={{ marginBottom: 8 }}
+                />
+                <Text style={styles.dataValueSmall}>{coaches}</Text>
+                <Text style={styles.dataLabelSmall}>Coaches</Text>
+              </View>
+            </View>
+            <View style={styles.submissionProgressContainer}>
+              <Text style={styles.dataHeader}>Today's Submissions</Text>
+              <View style={styles.submissionProgressLegend}>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <View
+                    style={{
+                      height: 10,
+                      width: 10,
+                      borderRadius: 5,
+                      backgroundColor: '#3b82f6',
+                      marginRight: 5
+                  }}
+                  />
+                  <Text style={styles.dataLabelSmall}>Submitted</Text>
+                </View>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <View
+                    style={{
+                      height: 10,
+                      width: 10,
+                      borderRadius: 5,
+                      backgroundColor: '#c2c2c2',
+                      marginRight: 5
+                    }}
+                  />
+                  <Text style={styles.dataLabelSmall}>Due</Text>
+                </View>
+              </View>
+              <View style={styles.barsContainer}>
+                <View
+                  style={{
+                    width: submittedPercentage + "%",
+                    backgroundColor: "#3b82f6",
+                    borderRadius: 35,
+                    height: 25,
+                    overflow: "hidden",
+                    marginBottom: 15,
+                    position: "absolute",
+                    zIndex: 1,
+                    justifyContent: "center"
+                  }}
+                >
+                  <Text style={styles.submissionPercentageText}>{submittedPercentage}%</Text>
+                </View>
+                <View
+                  style={{
+                    width: "100%",
+                    backgroundColor: "#c2c2c2",
+                    borderRadius: 35,
+                    height: 25,
+                    overflow: "hidden",
+                    marginBottom: 15
+                  }}
+                />
+              </View>
+            </View>
+
+            <View style={styles.barChartContainer}>
+              <Text style={styles.dataHeader}>Report Outcome Summary</Text>
+              <BarChartComponent data={reportsData} />
+            </View>
+
+            <View style={styles.dataContainer}>
+              <Text style={styles.dataHeader}>Activity</Text>
+              <LineChartComponent data={activityData} />
+            </View>
+          </>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
