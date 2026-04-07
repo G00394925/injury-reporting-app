@@ -35,9 +35,11 @@ export default function AthleteViewerScreen({ route }) {
           return {
             id: event.event_id.toString(),
             title: event.title,
+            sport: event.sport,
             start: { dateTime: startDate.toISOString() },
             end: { dateTime: endDate.toISOString() },
-            color: event.type === "Training" ? "#2038be" : "#28a745"
+            color: event.type === "Training" ? "#2038be7f" : "#28a74679",
+            borderColor: event.type === "Training" ? "#223392" : "#308a45"          
           };
         });
         setAthleteEvents(formattedEvents);
@@ -59,17 +61,27 @@ export default function AthleteViewerScreen({ route }) {
         height: "100%",
         padding: 5,
         backgroundColor: event.color,
+        borderLeftColor: event.borderColor,
+        borderLeftWidth: 5,
         borderRadius: 4
       }}
       >
         <Text style={{
           color: "#ffffff",
-          fontSize: 12,
-          fontWeight: "500",
+          fontSize: 13,
+          fontWeight: "bold",
           fontFamily: "Rubik"
         }}
         >
           {event.title}
+        </Text>
+        <Text style={{
+          color: "#fff",
+          fontSize: 12,
+          fontFamily: "Rubik"
+        }}
+        >
+          {event.sport}
         </Text>
       </View>
     ), []
@@ -112,7 +124,7 @@ export default function AthleteViewerScreen({ route }) {
 
 const styles = StyleSheet.create({
   calendarView: {
-    height: 650,
+    height: 630,
     marginTop: 0,
     justifyContent: "center",
     overflow: "hidden",

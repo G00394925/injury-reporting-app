@@ -91,8 +91,6 @@ export default function CoachDashScreen() {
         `${API_BASE_URL}/api/events/team_events/${team}`
       );
       if (eventsResponse && eventsResponse.data) {
-        console.log("Team events:", eventsResponse.data);
-
         const formattedEvents = eventsResponse.data.team_events.map(event => {
           const eventDate = new Date(event.event_date);
           const [startHour, startMinute] = event.start_time.split(":");
