@@ -8,7 +8,7 @@ const ReportCard = ({ report, isFollowUp = false }) => {
   const formatDate = (dateString) => {
     if (!dateString) return "Unknown date";
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
+    return date.toLocaleDateString('en-GB', { 
       month: 'short', 
       day: 'numeric', 
       year: 'numeric'
@@ -17,7 +17,7 @@ const ReportCard = ({ report, isFollowUp = false }) => {
 
   const formatTime = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', { 
+    return date.toLocaleTimeString('en-GB', { 
       hour: '2-digit', 
       minute: '2-digit' 
     });
