@@ -1,8 +1,11 @@
 from flask import Blueprint, request, jsonify
 from services.database_service import DatabaseService
+from services.scheduler_service import SchedulerService
 from health_status import HealthStatus
 import logging
 from datetime import datetime, timedelta
+import os
+
 
 admin_bp  = Blueprint('admin', __name__)
 db_service = DatabaseService()
@@ -15,6 +18,34 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+@admin_bp.route('/trigger_reminders', methods=['POST'])
+def trigger_reminders():
+	"""
+	An endpoint to be triggered by GitHub Actions, sending reminder notifications
+	to athletes who have not submitted their daily report.
+	"""
+
+	# Get secret from request headers 
+	auth_header = request.headers.get('Authorization')
+	secret = os.environ.get('SCHEDULER_SECRET')
+
+	# Assert the secret exists and matches the expected value
+	if not auth_header or auth_header != f"Bearer {secret}":
+		logger.warning("Unauthorized access to trigger_reminders endpoint")
+		return jsonify(error="Unauthorized"), 401
+
+	try:
+		logger.info("Triggering scheduler to send daily reminders")
+		# Invoke scheduler to send notifications
+		scheduler_service = SchedulerService()
+		scheduler_service._send_daily_reminders()
+
+		logger.info("Daily reminders triggered successfully")
+		return jsonify(message="Daily reminders triggered successfully"), 200
+	except Exception as e:
+		logger.error(f"Error triggering daily reminders: {e}")
+		return jsonify(error=str(e)), 500
+
 @admin_bp.route('/all_athletes', methods=['GET'])
 def get_all_athletes():
 	"""Fetches all athlete data from database for admin interface"""
@@ -22,6 +53,7 @@ def get_all_athletes():
 		response = db_service.fetch(
 			table="athletes"
 		)
+
 
 		if response and response.data:
 			logger.info("Fetched athlete data for admin")
@@ -211,3 +243,4 @@ def export_reports():
 	except Exception as e:
 		logger.error(f"Error retrieving reports for export: {e}")
 		return jsonify(error=str(e)), 500
+

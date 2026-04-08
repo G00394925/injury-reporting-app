@@ -87,7 +87,7 @@ class NotificationService:
         """Send a daily report submission reminder."""
         title = "Submission Due"
         body = (
-            "It's time to submit your daily health report"
+            "Don't forget to submit your daily health report"
         )
         data = {
             "timestamp": datetime.now().isoformat()
