@@ -65,13 +65,18 @@ export default function AdminReportHistoryScreen() {
 
       // Filter by health status
       if (["Healthy", "At Risk", "Injured"].includes(activeFilter)) {
-        const statusMap = {
-          "Healthy": "Fully available",
-          "At Risk": "No competing",
-          "Injured": "No training or competing"
-        };
-        const targetStatus = statusMap[activeFilter];
-        filtered = filtered.filter((r) => r.new_availability === targetStatus);
+        if (activeFilter === "Healthy") {
+          filtered = filtered.filter((r) => 
+            r.new_availability === "Healthy" || 
+            r.new_availability === "Fully available");
+        } else {
+          const statusMap = {
+            "At Risk": "No competing",
+            "Injured": "No training or competing"
+          };
+          const targetStatus = statusMap[activeFilter];
+          filtered = filtered.filter((r) => r.new_availability === targetStatus);
+        }
       }
 
       // Filter by report type

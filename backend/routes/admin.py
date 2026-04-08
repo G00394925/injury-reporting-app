@@ -106,7 +106,7 @@ def get_all_reports():
 			# For each of the past number of days...
 			for i in range(0, days):
 				day = (now - timedelta(days=i)).strftime("%Y-%m-%d")  # Start from today, proceed backwards
-				reports_summary[day] = {"Fully Available": 0, "At Risk": 0, "Injured": 0}
+				reports_summary[day] = {"Healthy": 0, "At Risk": 0, "Injured": 0}
 				
 				# Acquire all reports created on that day
 				reports = [r for r in response.data if r['created_at'].startswith(day)]
@@ -118,7 +118,7 @@ def get_all_reports():
 					elif report.get('new_availability') == HealthStatus.RED:
 						reports_summary[day]["Injured"] += 1
 					else:
-						reports_summary[day]["Fully Available"] += 1
+						reports_summary[day]["Healthy"] += 1
 
 			return jsonify({
 				"num_reports": len(response.data),
