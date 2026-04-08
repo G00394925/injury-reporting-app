@@ -29,6 +29,13 @@
     },
     "plugins": [
       "expo-secure-store",
+      [
+        "expo-file-system",
+        {
+          "enableFileSharing": false
+          
+        }
+      ],
       "expo-notifications",
       [
         "expo-font",

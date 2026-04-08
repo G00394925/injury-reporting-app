@@ -46,6 +46,7 @@ def trigger_reminders():
 		logger.error(f"Error triggering daily reminders: {e}")
 		return jsonify(error=str(e)), 500
 
+
 @admin_bp.route('/all_athletes', methods=['GET'])
 def get_all_athletes():
 	"""Fetches all athlete data from database for admin interface"""
@@ -53,8 +54,6 @@ def get_all_athletes():
 		response = db_service.fetch(
 			table="athletes"
 		)
-
-
 		if response and response.data:
 			logger.info("Fetched athlete data for admin")
 			healthy = 0
@@ -63,6 +62,7 @@ def get_all_athletes():
 			reports_due = 0
 			reports_submitted = 0
 
+			# Summarise athlete health status and report submission stats
 			for athlete in response.data:
 				if athlete.get('status') == HealthStatus.GREEN:
 					healthy += 1
@@ -193,7 +193,7 @@ def get_all_followups():
 			return jsonify(message="No follow-up report data found"), 200
 	except Exception as e:
 		logger.error(f"Error fetching follow-up reports: {e}")
-		return jsonify(error=str(e))
+		return jsonify(error=str(e)), 500
 
 
 @admin_bp.route('/activity_data', methods=['GET'])
@@ -204,6 +204,7 @@ def get_activity_data():
 	weekly_activity = {}
 
 	try: 
+		# Fetch session events of type 'app_open_daily' from the past week
 		response = db_service.fetch(
 			table="session_events",
 			filters={"event_type": "app_open_daily", "timestamp": f"gte.{threshold}"},
@@ -230,6 +231,7 @@ def get_activity_data():
 def export_reports():
 	"""Triggers export of report data to CSV for admin interface"""
 	try:
+		# Fetch all reports as well as associated athlete names
 		response = db_service.fetch(
 			table="reports",
 			select="*,athletes(users(name))"

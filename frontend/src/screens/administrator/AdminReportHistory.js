@@ -4,8 +4,9 @@ import { globalStyles } from "../../styles/globalStyles";
 import { API_BASE_URL } from "../../config/apiConfig";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import ReportCard from "../../components/ReportCard";
+import { exportToCSV } from "../../utils/exportToCSV";
 
 export default function AdminReportHistoryScreen() {
   const [reportData, setReportData] = useState([]);
@@ -90,119 +91,131 @@ export default function AdminReportHistoryScreen() {
     }
   };
 
+  const exportData = async () => {
+    // Get the data to export
+    const response = await axios.get(`${API_BASE_URL}/api/admin/export_reports`)
+    if (response && response.data) {
+      console.log("Exporting data...")
+      const exportData = response.data.reports;
+      
+      // Export data to CSV
+      exportToCSV(exportData)
+    } else {
+      console.error("No data to export")
+    }
+  }
+
   return (
     <SafeAreaView style={globalStyles.container} edges={["top"]}>
       <View style={globalStyles.header}>
         <Text style={globalStyles.headerText}>Reports</Text>
       </View>
       <View style={globalStyles.contentContainer}>
-        <ScrollView
-          style={styles.filtersContainer}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingRight: 20
-          }}
-        >
+        <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 10 }}>
           <TouchableOpacity
             style={styles.clearFilterButton}
             onPress={() => setActiveFilter("")}
           >
             <Ionicons name="close" size={20} color={"#6b7280"} />
           </TouchableOpacity>
-
-          <Text style={styles.filterCategoryText}>Outcome</Text>
-
-          <TouchableOpacity
-            style={[
-              styles.filterButton,
-              activeFilter === "Healthy" && styles.filterButtonActive,
-              { marginLeft: 15 }
-            ]}
-            onPress={() => setActiveFilter("Healthy")}
+          
+          {/* Filter buttons */}
+          <ScrollView
+            style={styles.filtersContainer}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingRight: 20
+            }}
           >
-            <Text
+            <TouchableOpacity
               style={[
-                styles.filterButtonText,
-                activeFilter === "Healthy" && styles.filterButtonTextActive
+                styles.filterButton,
+                activeFilter === "Healthy" && styles.filterButtonActive
               ]}
+              onPress={() => setActiveFilter("Healthy")}
             >
-              Healthy
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={[
+                  styles.filterButtonText,
+                  activeFilter === "Healthy" && styles.filterButtonTextActive
+                ]}
+              >
+                Healthy
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[
-              styles.filterButton,
-              activeFilter === "At Risk" && styles.filterButtonActive
-            ]}
-            onPress={() => setActiveFilter("At Risk")}
-          >
-            <Text
+            <TouchableOpacity
               style={[
-                styles.filterButtonText,
-                activeFilter === "At Risk" && styles.filterButtonTextActive
+                styles.filterButton,
+                activeFilter === "At Risk" && styles.filterButtonActive
               ]}
+              onPress={() => setActiveFilter("At Risk")}
             >
-              At Risk
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={[
+                  styles.filterButtonText,
+                  activeFilter === "At Risk" && styles.filterButtonTextActive
+                ]}
+              >
+                At Risk
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[
-              styles.filterButton,
-              activeFilter === "Injured" && styles.filterButtonActive
-            ]}
-            onPress={() => setActiveFilter("Injured")}
-          >
-            <Text
+            <TouchableOpacity
               style={[
-                styles.filterButtonText,
-                activeFilter === "Injured" && styles.filterButtonTextActive
+                styles.filterButton,
+                activeFilter === "Injured" && styles.filterButtonActive
               ]}
+              onPress={() => setActiveFilter("Injured")}
             >
-              Injured
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={[
+                  styles.filterButtonText,
+                  activeFilter === "Injured" && styles.filterButtonTextActive
+                ]}
+              >
+                Injured
+              </Text>
+            </TouchableOpacity>
 
-          <Text style={styles.filterCategoryText}>Type</Text>
-
-          <TouchableOpacity
-            style={[
-              styles.filterButton,
-              activeFilter === "Initial" && styles.filterButtonActive,
-              { marginLeft: 15 }
-            ]}
-            onPress={() => setActiveFilter("Initial")}
-          >
-            <Text
+            <TouchableOpacity
               style={[
-                styles.filterButtonText,
-                activeFilter === "Initial" && styles.filterButtonTextActive
+                styles.filterButton,
+                activeFilter === "Initial" && styles.filterButtonActive,
               ]}
+              onPress={() => setActiveFilter("Initial")}
             >
-              Initial
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={[
+                  styles.filterButtonText,
+                  activeFilter === "Initial" && styles.filterButtonTextActive
+                ]}
+              >
+                Initial
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[
-              styles.filterButton,
-              activeFilter === "Follow Up" && styles.filterButtonActive
-            ]}
-            onPress={() => setActiveFilter("Follow Up")}
-          >
-            <Text
+            <TouchableOpacity
               style={[
-                styles.filterButtonText,
-                activeFilter === "Follow Up" && styles.filterButtonTextActive
+                styles.filterButton,
+                activeFilter === "Follow Up" && styles.filterButtonActive
               ]}
+              onPress={() => setActiveFilter("Follow Up")}
             >
-              Follow Up
-            </Text>
-          </TouchableOpacity>
-        </ScrollView>
+              <Text
+                style={[
+                  styles.filterButtonText,
+                  activeFilter === "Follow Up" && styles.filterButtonTextActive
+                ]}
+              >
+                Follow Up
+              </Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
 
+        {/* List of reports with applied filters */}
         <FlatList
           data={filteredReports}
           renderItem={({ item }) => (
@@ -224,6 +237,17 @@ export default function AdminReportHistoryScreen() {
             borderColor: "#e5e7eb"
           }}
         />
+
+        {/* Export button fixed at bottom of page */}
+        <TouchableOpacity
+          style={styles.exportButton}
+          onPress={() => exportData()}
+        >
+          <MaterialIcons name="save-alt" size={20} color={"#fff"} />
+          <Text style={{ color: "#fff", marginLeft: 8, fontFamily: "Rubik", fontWeight: "bold" }}>
+            Export
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -232,11 +256,13 @@ export default function AdminReportHistoryScreen() {
 const styles = StyleSheet.create({
   filtersContainer: {
     flexDirection: "row",
-    paddingHorizontal: 10,
+    paddingHorizontal: 5,
     backgroundColor: "#fff",
     flex: 0,
     maxHeight: 43,
-    paddingBottom: 5
+    paddingBottom: 5,
+    borderLeftWidth: 1,
+    borderColor: "#e5e7eb"
   },
   filterCategoryText: {
     fontFamily: "Rubik",
@@ -305,5 +331,24 @@ const styles = StyleSheet.create({
     fontFamily: "Rubik",
     fontSize: 16,
     color: "#9ca3af"
+  },
+  exportButton: {
+    position: "absolute",
+    bottom: 30,
+    right: 25,
+    backgroundColor: "#001a79",
+    paddingHorizontal: 15,
+    alignItems: "center",
+    paddingVertical: 12,
+    borderRadius: 30,
+    flexDirection: "row",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5
   }
 });

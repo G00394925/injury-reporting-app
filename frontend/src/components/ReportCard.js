@@ -139,7 +139,6 @@ const DetailRow = ({ label, value }) => (
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fcfcfc",
-    marginHorizontal: 10,
     marginVertical: 8,
     borderRadius: 12,
     overflow: "hidden",
