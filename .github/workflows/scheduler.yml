@@ -8,10 +8,10 @@ on:
 jobs:
   trigger-tasks:
     runs-on: ubuntu-latest
-    steps:
+    steps: 
       - name: Call scheduler endpoint
-      run: |
-        curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.SCHEDULER_SECRET }}" \
-            -H "Content-Type: application/json" \
-            "${{ secrets.RENDER_APP_URL }}/api/admin/trigger_reminders"
+        run: |
+          curl -X POST \
+              -H "Authorization: Bearer ${{ secrets.SCHEDULER_SECRET }}" \
+              -H "Content-Type: application/json" \
+              "${{ secrets.RENDER_APP_URL }}/api/admin/trigger_reminders"
