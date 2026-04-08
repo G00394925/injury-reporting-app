@@ -192,3 +192,22 @@ def get_activity_data():
 	except Exception as e:
 		logger.error(f"Error retrieving activity data: {e}")
 		return jsonify(error=str(e)), 500
+
+
+@admin_bp.route('/export_reports', methods=['GET'])
+def export_reports():
+	"""Triggers export of report data to CSV for admin interface"""
+	try:
+		response = db_service.fetch(
+			table="reports",
+			select="*,athletes(users(name))"
+		)
+		if response and response.data:
+			logger.info("Fetched reports for export")
+			return jsonify({"reports": response.data}), 200
+		else:
+			logger.warning("No report data found for export")
+			return jsonify(message="No report data found for export"), 200
+	except Exception as e:
+		logger.error(f"Error retrieving reports for export: {e}")
+		return jsonify(error=str(e)), 500
