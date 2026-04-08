@@ -84,11 +84,12 @@ export default function BarChartComponent({ data }) {
     );
   };
 
-  const screenWidth = Dimensions.get("window").width
+  const screenWidth = Dimensions.get("window").width;
   const totalHorizontalPadding = 30;
 
-  const numberOfBars = Math.max(barData.length, 1)
-  const calculatedSpacing = (screenWidth - totalHorizontalPadding) / numberOfBars
+  const numberOfBars = Math.max(barData.length, 1);
+  const calculatedSpacing =
+    (screenWidth - totalHorizontalPadding) / numberOfBars;
 
   return (
     <View
@@ -98,11 +99,12 @@ export default function BarChartComponent({ data }) {
       }}
     >
       {renderLegendComponent()}
-      <View style={{
-        paddingVertical: 10,
-        paddingRight: 20,
-        alignItems: "center",
-      }}
+      <View
+        style={{
+          paddingVertical: 10,
+          paddingRight: 20,
+          alignItems: "center"
+        }}
       >
         <BarChart
           rotateLabel
@@ -123,18 +125,22 @@ export default function BarChartComponent({ data }) {
           stackData={barData}
           renderTooltip={(item, index) => {
             return (
-              <View style={{
-                marginBottom: 10,
-                backgroundColor: "#e0e0e0",
-                paddingHorizontal: 6,
-                paddingVertical: 4,
-                borderRadius: 4
-              }}>
+              <View
+                style={{
+                  marginBottom: 10,
+                  backgroundColor: "#e0e0e0",
+                  paddingHorizontal: 6,
+                  paddingVertical: 4,
+                  borderRadius: 4
+                }}
+              >
                 {item.stacks.map((stack, i) => (
-                  <Text key={i}>{stack.label}: {stack.value}</Text>
+                  <Text key={i}>
+                    {stack.label}: {stack.value}
+                  </Text>
                 ))}
               </View>
-            )
+            );
           }}
           leftShiftForLastIndexTooltip={60}
         />

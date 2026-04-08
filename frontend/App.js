@@ -113,11 +113,15 @@ function AdminTabNavigator() {
 
           if (route.name === "Dashboard") {
             iconName = "view-dashboard";
-          } else if (route.name ==="Question Builder") {
-            iconName = "view-dashboard"; 
+          } else if (route.name ==="Report History") {
+            iconName = "clipboard-list"; 
           } else if (route.name === "Account") {
             iconName = "account-circle"
           }
+
+          return (
+            <MaterialCommunityIcons name={iconName} size={size} color={color} />
+          )
         },
         tabBarActiveTintColor: "#001a79",
         tabBarInactiveTintColor: "gray"

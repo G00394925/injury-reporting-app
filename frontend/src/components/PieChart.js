@@ -2,11 +2,16 @@ import { PieChart } from "react-native-gifted-charts";
 import { View, Text, StyleSheet } from "react-native";
 import { useState } from "react";
 
-export default function PieChartComponent({ data, centerLabel, centerValue, numItems }) {
+export default function PieChartComponent({
+  data,
+  centerLabel,
+  centerValue,
+  numItems
+}) {
   const [activeItem, setActiveItem] = useState({
-    label: centerLabel, 
+    label: centerLabel,
     value: centerValue
-  })
+  });
 
   const getPercentage = (value) => {
     if (numItems === 0) return 0;
@@ -61,8 +66,8 @@ export default function PieChartComponent({ data, centerLabel, centerValue, numI
     setActiveItem({
       label: item.label,
       value: item.value
-    })
-  }
+    });
+  };
 
   return (
     <View
@@ -90,7 +95,7 @@ export default function PieChartComponent({ data, centerLabel, centerValue, numI
           );
         }}
       />
-      <View style={{alignSelf: "flex-start", marginLeft: -20}}>
+      <View style={{ alignSelf: "flex-start", marginLeft: -20 }}>
         {renderLegendComponent()}
       </View>
     </View>

@@ -8,26 +8,38 @@ import { Ionicons } from "@expo/vector-icons";
 import ReportCard from "../../components/ReportCard";
 
 export default function AdminReportHistoryScreen() {
-  const [reportData, setReportData] = useState([])
-  const [activeFilter, setActiveFilter] = useState("")
-  const [filteredReports, setFilteredReports] = useState([])
+  const [reportData, setReportData] = useState([]);
+  const [activeFilter, setActiveFilter] = useState("");
+  const [filteredReports, setFilteredReports] = useState([]);
 
   const getReports = async () => {
     try {
-      const reportsResponse = await axios.get(`${API_BASE_URL}/api/admin/all_reports/?days=30`)
-      const followupResponse = await axios.get(`${API_BASE_URL}/api/admin/all_followup_reports/?days=30`)
-  
+      const reportsResponse = await axios.get(
+        `${API_BASE_URL}/api/admin/all_reports/?days=30`
+      );
+      const followupResponse = await axios.get(
+        `${API_BASE_URL}/api/admin/all_followup_reports/?days=30`
+      );
+
       if (reportsResponse && followupResponse) {
         const normalReports = reportsResponse.data.reports || [];
         const followupReports = followupResponse.data.followups || [];
-        
+
         // Add type flag for filtering
-        const reportsWithType = normalReports.map(r => ({ ...r, report_type: "normal" }));
-        const followupsWithType = followupReports.map(r => ({ ...r, report_type: "followup" }));
-        
+        const reportsWithType = normalReports.map((r) => ({
+          ...r,
+          report_type: "normal"
+        }));
+        const followupsWithType = followupReports.map((r) => ({
+          ...r,
+          report_type: "followup"
+        }));
+
         const allReports = [...reportsWithType, ...followupsWithType];
 
-        allReports.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        allReports.sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        );
 
         setReportData(allReports);
         setFilteredReports(allReports);
@@ -39,11 +51,11 @@ export default function AdminReportHistoryScreen() {
 
   useEffect(() => {
     getReports();
-  }, [])
+  }, []);
 
   useEffect(() => {
     applyFilter();
-  }, [activeFilter])
+  }, [activeFilter]);
 
   const applyFilter = () => {
     if (activeFilter === "") {
@@ -54,19 +66,19 @@ export default function AdminReportHistoryScreen() {
       // Filter by health status
       if (["Healthy", "At Risk", "Injured"].includes(activeFilter)) {
         const statusMap = {
-          "Healthy": "Healthy",
+          "Healthy": "Fully available",
           "At Risk": "No competing",
           "Injured": "No training or competing"
         };
         const targetStatus = statusMap[activeFilter];
-        filtered = filtered.filter(r => r.new_availability === targetStatus);
+        filtered = filtered.filter((r) => r.new_availability === targetStatus);
       }
 
       // Filter by report type
       if (activeFilter === "Initial") {
-        filtered = filtered.filter(r => r.report_type === "normal");
+        filtered = filtered.filter((r) => r.report_type === "normal");
       } else if (activeFilter === "Follow Up") {
-        filtered = filtered.filter(r => r.report_type === "followup");
+        filtered = filtered.filter((r) => r.report_type === "followup");
       }
 
       setFilteredReports(filtered);
@@ -79,26 +91,32 @@ export default function AdminReportHistoryScreen() {
         <Text style={globalStyles.headerText}>Reports</Text>
       </View>
       <View style={globalStyles.contentContainer}>
-
-        <ScrollView style={styles.filtersContainer} horizontal={true} showsHorizontalScrollIndicator={false}>
+        <ScrollView
+          style={styles.filtersContainer}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingRight: 20
+          }}
+        >
           <TouchableOpacity
             style={styles.clearFilterButton}
             onPress={() => setActiveFilter("")}
-            >
-            <Ionicons name="close" size={20} color={'#6b7280'} />
+          >
+            <Ionicons name="close" size={20} color={"#6b7280"} />
           </TouchableOpacity>
 
           <Text style={styles.filterCategoryText}>Outcome</Text>
-          
+
           <TouchableOpacity
             style={[
               styles.filterButton,
               activeFilter === "Healthy" && styles.filterButtonActive,
-              {marginLeft: 15}
+              { marginLeft: 15 }
             ]}
             onPress={() => setActiveFilter("Healthy")}
           >
-            <Text 
+            <Text
               style={[
                 styles.filterButtonText,
                 activeFilter === "Healthy" && styles.filterButtonTextActive
@@ -115,7 +133,7 @@ export default function AdminReportHistoryScreen() {
             ]}
             onPress={() => setActiveFilter("At Risk")}
           >
-            <Text 
+            <Text
               style={[
                 styles.filterButtonText,
                 activeFilter === "At Risk" && styles.filterButtonTextActive
@@ -132,7 +150,7 @@ export default function AdminReportHistoryScreen() {
             ]}
             onPress={() => setActiveFilter("Injured")}
           >
-            <Text 
+            <Text
               style={[
                 styles.filterButtonText,
                 activeFilter === "Injured" && styles.filterButtonTextActive
@@ -141,18 +159,18 @@ export default function AdminReportHistoryScreen() {
               Injured
             </Text>
           </TouchableOpacity>
-          
-          <Text style={[styles.filterCategoryText, {marginLeft: 20}]}>Type</Text>
+
+          <Text style={styles.filterCategoryText}>Type</Text>
 
           <TouchableOpacity
             style={[
               styles.filterButton,
               activeFilter === "Initial" && styles.filterButtonActive,
-              {marginLeft: 15}
+              { marginLeft: 15 }
             ]}
             onPress={() => setActiveFilter("Initial")}
           >
-            <Text 
+            <Text
               style={[
                 styles.filterButtonText,
                 activeFilter === "Initial" && styles.filterButtonTextActive
@@ -169,7 +187,7 @@ export default function AdminReportHistoryScreen() {
             ]}
             onPress={() => setActiveFilter("Follow Up")}
           >
-            <Text 
+            <Text
               style={[
                 styles.filterButtonText,
                 activeFilter === "Follow Up" && styles.filterButtonTextActive
@@ -183,7 +201,7 @@ export default function AdminReportHistoryScreen() {
         <FlatList
           data={filteredReports}
           renderItem={({ item }) => (
-            <ReportCard 
+            <ReportCard
               report={item}
               isFollowUp={item.report_type === "followup"}
             />
@@ -195,22 +213,25 @@ export default function AdminReportHistoryScreen() {
               <Text style={styles.emptyText}>No reports found</Text>
             </View>
           }
+          style={{
+            marginTop: 10,
+            borderTopWidth: 1,
+            borderColor: "#e5e7eb"
+          }}
         />
       </View>
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   filtersContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     paddingHorizontal: 10,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-    paddingBottom: 45,
+    backgroundColor: "#fff",
     flex: 0,
-    maxHeight: 46,
+    maxHeight: 43,
+    paddingBottom: 5
   },
   filterCategoryText: {
     fontFamily: "Rubik",
@@ -218,52 +239,50 @@ const styles = StyleSheet.create({
     textAlign: "center",
     alignSelf: "center",
     color: "#6b7280",
-    marginTop: 35,
     borderRightWidth: 1,
+    marginLeft: 15,
     paddingRight: 10,
-    paddingVertical: 10,
     borderColor: "#e5e7eb"
-  },
-  verticalLine: {
-    width: 1,
-    backgroundColor: "#6b7280"
   },
   clearFilterButton: {
     paddingHorizontal: 10,
     borderWidth: 1,
     borderRadius: 30,
     marginRight: 8,
-    borderColor:'#c2c2c2',
+    borderColor: "#c2c2c2",
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 38
+    minHeight: 38,
+    maxHeight: 38
   },
   filterButton: {
-    padding: 10,
+    paddingHorizontal: 10,
     borderWidth: 1,
     marginHorizontal: 5,
     borderRadius: 25,
-    borderColor: '#c2c2c2',
+    borderColor: "#c2c2c2",
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 38
+    minHeight: 38,
+    maxHeight: 38
   },
   filterButtonActive: {
-    padding: 10,
+    paddingHorizontal: 10,
     borderWidth: 1,
     marginHorizontal: 5,
     borderRadius: 25,
-    borderColor: '#ffffff',
-    backgroundColor: '#001a79',
+    borderColor: "#ffffff",
+    backgroundColor: "#001a79",
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 38
+    minHeight: 38,
+    maxHeight: 38
   },
   filterButtonText: {
     textAlign: "center",
     fontFamily: "Rubik",
     fontWeight: "bold",
-    color: '#6b7280'
+    color: "#6b7280"
   },
   filterButtonTextActive: {
     textAlign: "center",
@@ -273,13 +292,13 @@ const styles = StyleSheet.create({
   },
   emptyContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingVertical: 50
   },
   emptyText: {
     fontFamily: "Rubik",
     fontSize: 16,
-    color: '#9ca3af'
+    color: "#9ca3af"
   }
-})
+});

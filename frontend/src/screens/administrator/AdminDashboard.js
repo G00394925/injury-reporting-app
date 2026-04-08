@@ -1,26 +1,21 @@
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { globalStyles } from "../../styles/globalStyles";
-import { Text, View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { Text, View, StyleSheet, ScrollView } from "react-native";
 import { API_BASE_URL } from "../../config/apiConfig";
 import axios from "axios";
-import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { BarChart } from "react-native-gifted-charts";
 import PieChartComponent from "../../components/PieChart";
 import BarChartComponent from "../../components/BarChart";
 import LineChartComponent from "../../components/LineChart";
 import SkeletonText from "../../components/skeleton/SkeletonText";
 
 export default function AdminDashScreen() {
-  const [reports, setReports] = useState({});
-  const [reportsDue, setReportsDue] = useState(0);
   const [athletes, setAthletes] = useState(0);
   const [coaches, setCoaches] = useState(0);
-  const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
-  
-  // Health status data for pie chart 
+
+  // Health status data for pie chart
   const [healthData, setHealthData] = useState({
     healthy: { value: 0, color: "#10b981", label: "Healthy" },
     atRisk: { value: 0, color: "#f59e0b", label: "At Risk" },
@@ -32,9 +27,9 @@ export default function AdminDashScreen() {
     due: { value: 0, color: "#a3a3a3", label: "Due" },
     submitted: { value: 0, color: "#3b82f6", label: "Submitted" }
   });
-  
-  const [reportsData, setReportsData] = useState({})
-  const [activityData, setActivityData] = useState({})
+
+  const [reportsData, setReportsData] = useState({});
+  const [activityData, setActivityData] = useState({});
 
   useEffect(() => {
     getData();
@@ -67,7 +62,10 @@ export default function AdminDashScreen() {
         // Set submission progress data
         setSubmissionData({
           ...submissionData,
-          due: { ...submissionData.due, value: athletesResponse.data.reports_due },
+          due: {
+            ...submissionData.due,
+            value: athletesResponse.data.reports_due
+          },
           submitted: {
             ...submissionData.submitted,
             value: athletesResponse.data.reports_submitted
@@ -85,23 +83,23 @@ export default function AdminDashScreen() {
 
       // Get report outcome summary data
       const reportsResponse = await axios.get(
-        `${API_BASE_URL}/api/admin/all_reports/?days=7`,
+        `${API_BASE_URL}/api/admin/all_reports/?days=7`
       );
 
       if (reportsResponse) {
-        setReports(reportsResponse.data.reports)
-        setReportsData(reportsResponse.data.reports_summary)
+        setReportsData(reportsResponse.data.reports_summary);
       }
 
-      const activityResponse = await axios.get(`${API_BASE_URL}/api/admin/activity_data`)
+      const activityResponse = await axios.get(
+        `${API_BASE_URL}/api/admin/activity_data`
+      );
       if (activityResponse) {
-        setActivityData(activityResponse.data.weekly_activity)
+        setActivityData(activityResponse.data.weekly_activity);
       }
-
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -125,12 +123,20 @@ export default function AdminDashScreen() {
           <>
             <SkeletonText height={275} borderRadius={15} />
 
-            <View style={{flexDirection: 'row', marginTop: 25, alignItems: "center", justifyContent: "center", gap: 20}}>
+            <View
+              style={{
+                flexDirection: "row",
+                marginTop: 25,
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 20
+              }}
+            >
               <SkeletonText height={150} width="45%" borderRadius={15} />
               <SkeletonText height={150} width="45%" borderRadius={15} />
             </View>
 
-            <View style={{flexdirection: 'column', marginTop: 25, gap: 25}}>
+            <View style={{ flexdirection: "column", marginTop: 25, gap: 25 }}>
               <SkeletonText height={150} borderRadius={15} />
               <SkeletonText height={350} borderRadius={15} />
               <SkeletonText height={280} borderRadius={15} />
@@ -178,9 +184,9 @@ export default function AdminDashScreen() {
                       height: 10,
                       width: 10,
                       borderRadius: 5,
-                      backgroundColor: '#3b82f6',
+                      backgroundColor: "#3b82f6",
                       marginRight: 5
-                  }}
+                    }}
                   />
                   <Text style={styles.dataLabelSmall}>Submitted</Text>
                 </View>
@@ -190,7 +196,7 @@ export default function AdminDashScreen() {
                       height: 10,
                       width: 10,
                       borderRadius: 5,
-                      backgroundColor: '#c2c2c2',
+                      backgroundColor: "#c2c2c2",
                       marginRight: 5
                     }}
                   />
@@ -211,7 +217,9 @@ export default function AdminDashScreen() {
                     justifyContent: "center"
                   }}
                 >
-                  <Text style={styles.submissionPercentageText}>{submittedPercentage}%</Text>
+                  <Text style={styles.submissionPercentageText}>
+                    {submittedPercentage}%
+                  </Text>
                 </View>
                 <View
                   style={{
@@ -258,7 +266,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
     borderWidth: 1,
-    borderColor: "#f3f4f6",
+    borderColor: "#f3f4f6"
   },
   smallDataContainer: {
     flexDirection: "row",
@@ -291,7 +299,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 15,
     borderRadius: 15,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -328,7 +336,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingBottom: 40,
     borderRadius: 15,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     marginTop: 25,
     marginBottom: 25,
     alignItems: "center",
@@ -341,6 +349,6 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 3,
     borderWidth: 1,
-    borderColor: "#f3f4f6",
+    borderColor: "#f3f4f6"
   }
 });
