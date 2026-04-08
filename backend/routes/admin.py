@@ -81,14 +81,16 @@ def get_all_coaches():
 		return jsonify(error=str(e)), 500
 	
 
-@admin_bp.route('/all_reports', methods=['GET'])
+@admin_bp.route('/all_reports/', methods=['GET'])
 def get_all_reports():
 	"""
 	Fetches all report data from database for admin interface, 
 	providing a summary of report outcomes over the past week
 	"""
+	days = request.args.get('days', default=7, type=int)
+
 	now = datetime.now()
-	threshold = now - timedelta(days=7)
+	threshold = now - timedelta(days=days)
 	reports_summary = {}
 
 	try:
@@ -96,12 +98,13 @@ def get_all_reports():
 			table="reports",
 			filters={"created_at": f"gte.{threshold}"},
 			modifiers={"order": {"column": "created_at", "desc": True}},
+			select="*,athletes(users(name))"
 		)
 
 		if response and response.data:
 			logger.info("Fetched reports for admin")
-			# For each of the past 7 days...
-			for i in range(0, 7):
+			# For each of the past number of days...
+			for i in range(0, days):
 				day = (now - timedelta(days=i)).strftime("%Y-%m-%d")  # Start from today, proceed backwards
 				reports_summary[day] = {"Healthy": 0, "At Risk": 0, "Injured": 0}
 				
@@ -131,6 +134,35 @@ def get_all_reports():
 		logger.error(f"Error fetching reports from database: {e}")
 		return jsonify(error=str(e)), 500
 	
+
+@admin_bp.route('/all_followup_reports/', methods=['GET'])
+def get_all_followups():
+	"""Fetches follow-up report submissions for admin interface."""
+	days = request.args.get('days', default=60, type=int)
+	now = datetime.now()
+	threshold = now - timedelta(days=days)
+
+	try:
+		response = db_service.fetch(
+			table='followup_reports',
+			filters={'created_at': f"gte.{threshold}"},
+			modifiers={'order': {"column": "created_at", "desc": True}},
+			select="*,athletes(users(name))"
+		)
+		if response and response.data:
+			logger.info("Fetched follow-up reports for admin")
+
+			return jsonify({
+				"num_followups": len(response.data),
+				"followups": response.data
+			}), 200
+		else:
+			logger.warning("No follow-up report data found")
+			return jsonify(message="No follow-up report data found"), 200
+	except Exception as e:
+		logger.error(f"Error fetching follow-up reports: {e}")
+		return jsonify(error=str(e))
+
 
 @admin_bp.route('/activity_data', methods=['GET'])
 def get_activity_data():

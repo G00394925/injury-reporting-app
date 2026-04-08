@@ -85,7 +85,7 @@ export default function AdminDashScreen() {
 
       // Get report outcome summary data
       const reportsResponse = await axios.get(
-        `${API_BASE_URL}/api/admin/all_reports`
+        `${API_BASE_URL}/api/admin/all_reports/?days=7`,
       );
 
       if (reportsResponse) {
