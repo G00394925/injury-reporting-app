@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#e5e7eb',
     paddingBottom: 45,
     flex: 0,
-    maxHeight: 60,
+    maxHeight: 46,
   },
   filterCategoryText: {
     fontFamily: "Rubik",
@@ -249,10 +249,15 @@ const styles = StyleSheet.create({
     minHeight: 38
   },
   filterButtonActive: {
-    paddingHorizontal: 10,
+    padding: 10,
     borderWidth: 1,
-    borderColor: '#fff',
-    backgroundColor: '#001a79'
+    marginHorizontal: 5,
+    borderRadius: 25,
+    borderColor: '#ffffff',
+    backgroundColor: '#001a79',
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 38
   },
   filterButtonText: {
     textAlign: "center",

@@ -15,6 +15,14 @@ const ReportCard = ({ report, isFollowUp = false }) => {
     });
   };
 
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  }
+
   const getStatusColor = (status) => {
     switch (status) {
       case "Healthy":
@@ -38,7 +46,7 @@ const ReportCard = ({ report, isFollowUp = false }) => {
       <View style={styles.cardHeader}>
         <View style={styles.headerLeft}>
           <Text style={styles.athleteName}>{report.athletes.users.name}</Text>
-          <Text style={styles.date}>{formatDate(report.created_at)}</Text>
+          <Text style={styles.date}>{formatDate(report.created_at)} - {formatTime(report.created_at)}</Text>
         </View>
         
         <View style={styles.headerRight}>
