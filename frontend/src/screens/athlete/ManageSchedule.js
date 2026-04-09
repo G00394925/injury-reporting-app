@@ -114,7 +114,7 @@ export default function ManageScheduleScreen() {
   const handleSubmit = async () => {
     try {
       // Format dates and times for database
-      const formattedDate = eventDate.toLocaleString("en-US").split("T")[0]; // YYYY-MM-DD
+      const formattedDate = eventDate.toISOString().split("T")[0]; // YYYY-MM-DD
       const formattedStartTime = formatTime(eventStartTime);
       const formattedEndTime = formatTime(eventEndTime);
       const type = isTraining ? "Training" : "Match";
