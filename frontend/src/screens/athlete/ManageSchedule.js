@@ -114,10 +114,10 @@ export default function ManageScheduleScreen() {
   const handleSubmit = async () => {
     try {
       // Format dates and times for database
-      const formattedDate = eventDate.toISOString().split("T")[0]; // YYYY-MM-DD
+      const formattedDate = eventDate.toLocaleString("en-US").split("T")[0]; // YYYY-MM-DD
       const formattedStartTime = formatTime(eventStartTime);
       const formattedEndTime = formatTime(eventEndTime);
-      setEventType(isTraining ? "Training" : "Match")
+      const type = isTraining ? "Training" : "Match";
 
       console.log("Submitting event:", {
         athlete_id: uuid,
@@ -126,7 +126,7 @@ export default function ManageScheduleScreen() {
         event_date: formattedDate,
         start_time: formattedStartTime,
         end_time: formattedEndTime,
-        type: eventType
+        type: type
       });
 
       const response = await axios.post(`${API_BASE_URL}/api/events/new`, {
@@ -136,7 +136,7 @@ export default function ManageScheduleScreen() {
         event_date: formattedDate,
         start_time: formattedStartTime,
         end_time: formattedEndTime,
-        type: eventType,
+        type: type,
         session: session
       });
 

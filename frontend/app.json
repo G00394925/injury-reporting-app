@@ -4,11 +4,11 @@
     "slug": "injury-reporting-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/surveillance-doc-icon.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/surveillance-doc-splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

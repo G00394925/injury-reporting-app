@@ -116,46 +116,66 @@ def get_next_event(athlete_id):
             modifiers={"order": "event_date"})
 
         if response and response.data:
-            total_count = len(response.data)
-            event = response.data[0]
-            logger.info(f"Fetching most recent event")
+            current_time = datetime.now()
 
-            date = (event.get("event_date"))
-            time = (event.get("start_time"))
+            # Filter out events that have already passed
+            upcoming_events = []
+            for event in response.data:
+                event_date = event.get("event_date")
+                end_time = event.get("end_time")
 
-            # Remove timezone offset
-            time = time.split('+')[0]
+                # Parse the event end time
+                end_time_str = end_time.split('+')[0]
+                event_datetime = datetime.strptime(f"{event_date}T{end_time_str}", "%Y-%m-%dT%H:%M:%S")
 
-            if date and time:
-                # Convert into datetime objects
-                date_obj = datetime.strptime(date, '%Y-%m-%d')
-                time_obj = datetime.strptime(time, '%H:%M:%S')
+                # Only include events that haven't ended
+                if event_datetime > current_time:
+                    upcoming_events.append(event)
+            
+            if upcoming_events:
+                total_count = len(response.data)
+                event = upcoming_events[0]
+                logger.info(f"Fetching most recent event")
 
-                # Format date objects and return
+                date = (event.get("event_date"))
+                time = (event.get("start_time"))
+
+                # Remove timezone offset
+                time = time.split('+')[0]
+
+                if date and time:
+                    # Convert into datetime objects
+                    date_obj = datetime.strptime(date, '%Y-%m-%d')
+                    time_obj = datetime.strptime(time, '%H:%M:%S')
+
+                    # Format date objects and return
+                    next_event = {
+                        "title": event.get("title"),
+                        "date": date_obj.strftime("%d %B"),
+                        "time": time_obj.strftime("%H:%M"),
+                        "total_future_events": total_count
+                    }
+
+                    logger.info(f"Next event for user {athlete_id}: {next_event}")
+                    return jsonify(next_event), 200
+                else:
+                    logger.info(f"No event found with given time and date")
+                    return jsonify(message="No event found with given date and time"), 200
+
+            else:
+                # No upcoming events
                 next_event = {
-                    "title": event.get("title"),
-                    "date": date_obj.strftime("%d %B"),
-                    "time": time_obj.strftime("%H:%M"),
-                    "total_future_events": total_count
+                    "title": "No upcoming events",
+                    "date": None,
+                    "time": None,
+                    "total_future_events": 0
                 }
 
-                logger.info(f"Next event for user {athlete_id}: {next_event}")
+                logger.info("No upcoming events")
                 return jsonify(next_event), 200
-            else:
-                logger.info(f"No event found with given time and date")
-                return jsonify(message="No event found with given date and time")
-
         else:
-            next_event = {
-                "title": "No upcoming events",
-                "date": None,
-                "time": None,
-                "total_future_events": 0
-            }
-
-            logger.info("No upcoming events")
-            return jsonify(next_event), 200
-
+            logger.warning(f"No events found for user {athlete_id}")
+            return jsonify(message="No events found"), 200
     except Exception as e:
         logger.error(
             f"Error fetching most recent event for user {athlete_id}: {e}")
