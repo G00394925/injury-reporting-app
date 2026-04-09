@@ -1,12 +1,11 @@
-import {
-  StyleSheet, Text, View, TextInput, TouchableOpacity, Platform, Alert } from "react-native";
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Platform, Alert } from "react-native";
 import { Button } from "@rneui/themed";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { KeyboardAvoidingView } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import { API_BASE_URL } from "../config/apiConfig";
+import apiClient from "../config/apiConfig";
 import { useAuth } from "../context/AuthContext";
 
 export default function RegisterScreen() {
@@ -93,7 +92,7 @@ export default function RegisterScreen() {
       )}`;
 
       // Send registration data to backend
-      const response = await axios.post(`${API_BASE_URL}/api/auth/register`, {
+      const response = await apiClient.post('/api/auth/register', {
         name: name,
         email: email,
         password: password,

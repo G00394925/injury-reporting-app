@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { API_BASE_URL } from "../../config/apiConfig";
+import apiClient from "../../config/apiConfig";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import AthleteInfoSkeleton from "../../components/skeleton/AthleteInfoSkeleton";
@@ -21,8 +21,8 @@ export default function TeamViewerScreen({ route }) {
     const fetchAthletes = async () => {
       try {
         console.log("Fetching athletes for team:", team.team_id);
-        const response = await axios.get(
-          `${API_BASE_URL}/api/teams/get_athletes/${team.team_id}`
+        const response = await apiClient.get(
+          `/api/teams/get_athletes/${team.team_id}`
         );
         console.log("Fetched athletes successfully");
 
@@ -30,8 +30,8 @@ export default function TeamViewerScreen({ route }) {
         const athleteLastReport = await Promise.all(
           response.data.athletes.map(async (athlete) => {
             try {
-              const timeResponse = await axios.get(
-                `${API_BASE_URL}/api/health/get_recent_report/${athlete.athlete_id}`
+              const timeResponse = await apiClient.get(
+                `/api/health/get_recent_report/${athlete.athlete_id}`
               );
               return {
                 ...athlete,

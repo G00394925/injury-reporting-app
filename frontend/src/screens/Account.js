@@ -6,8 +6,7 @@ import { globalStyles } from "../styles/globalStyles";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
-import axios from 'axios';
-import { API_BASE_URL } from "../config/apiConfig";
+import apiClient from "../config/apiConfig";
 
 
 export default function AccountScreen() {
@@ -36,7 +35,7 @@ export default function AccountScreen() {
 
   const deleteAccount = async () => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/auth/delete_account`, {
+      const response = await apiClient.post('/api/auth/delete_account', {
         uuid: uuid
       });
 
@@ -45,7 +44,7 @@ export default function AccountScreen() {
         setShowDeleteConfirmation(false);
         logout();
       }
-    } catch {
+    } catch (error) {
       console.error("Account deletion failed: ", error);
     }
   };

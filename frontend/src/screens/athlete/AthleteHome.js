@@ -3,8 +3,7 @@ import { Card } from "@rneui/themed";
 import { useCallback, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import axios from "axios";
-import { API_BASE_URL } from "../../config/apiConfig";
+import apiClient from "../../config/apiConfig";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { globalStyles } from "../../styles/globalStyles";
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
@@ -35,9 +34,7 @@ export default function AthleteDashScreen() {
 
         try {
           // Fetch health status
-          const statusResponse = await axios.get(
-            `${API_BASE_URL}/api/health/status/${uuid}`
-          );
+          const statusResponse = await apiClient.get(`/api/health/status/${uuid}`);
           if (statusResponse) {
             setHealthStatus(statusResponse.data.health_status);
             setInjuryDate(statusResponse.data.injury_date);
@@ -50,8 +47,8 @@ export default function AthleteDashScreen() {
           }
 
           // Fetch events and check if any have passed
-          const eventsResponse = await axios.get(
-            `${API_BASE_URL}/api/events/get/${uuid}`
+          const eventsResponse = await apiClient.get(
+            `/api/events/get/${uuid}`
           );
           if (eventsResponse.data && eventsResponse.data.length > 0) {
             const now = new Date();
@@ -64,8 +61,8 @@ export default function AthleteDashScreen() {
             setHasRecentEvent(hasPastEvent);
           }
 
-          const nextEventResponse = await axios.get(
-            `${API_BASE_URL}/api/events/get_next/${uuid}`
+          const nextEventResponse = await apiClient.get(
+            `/api/events/get_next/${uuid}`
           );
           if (nextEventResponse.data) {
             setFutureEvents(nextEventResponse.data["total_future_events"]);
@@ -79,8 +76,8 @@ export default function AthleteDashScreen() {
           // Check if a new report is due, thereby enabling the report button if true.
           try {
             console.log("Checking if report is due...");
-            const reportDueResponse = await axios.get(
-              `${API_BASE_URL}/api/health/check_due/${uuid}`
+            const reportDueResponse = await apiClient.get(
+              `/api/health/check_due/${uuid}`
             );
             console.log("Report due:", reportDueResponse.data);
             setReportDue(reportDueResponse.data);

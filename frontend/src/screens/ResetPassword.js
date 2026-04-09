@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
-import { API_BASE_URL } from "../config/apiConfig";
+import apiClient from "../config/apiConfig";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 import { Button } from "@rneui/themed";
 
@@ -45,7 +45,7 @@ export default function ResetPasswordScreen() {
     setErrors({});
 
     try {
-      const url = `${API_BASE_URL}/api/auth/change_password`;
+      const url = '/api/auth/change_password';
 
       const payload = {
         email: userData.email,
@@ -54,12 +54,7 @@ export default function ResetPasswordScreen() {
         session: session
       };
 
-      const response = await axios.post(url, payload, {
-        timeout: 10000,
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
+      const response = await apiClient.post(url, payload)
 
       console.log("Password changed successfully");
       navigation.navigate("MainApp");

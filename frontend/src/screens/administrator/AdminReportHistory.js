@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { View, ScrollView, StyleSheet, Text, TouchableOpacity, FlatList } from "react-native";
 import { globalStyles } from "../../styles/globalStyles";
-import { API_BASE_URL } from "../../config/apiConfig";
+import apiClient from "../../config/apiConfig";
 import { SafeAreaView } from "react-native-safe-area-context";
-import axios from "axios";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import ReportCard from "../../components/ReportCard";
 import { exportToCSV } from "../../utils/exportToCSV";
@@ -15,11 +14,11 @@ export default function AdminReportHistoryScreen() {
 
   const getReports = async () => {
     try {
-      const reportsResponse = await axios.get(
-        `${API_BASE_URL}/api/admin/all_reports/?days=30`
+      const reportsResponse = await apiClient.get(
+        `/api/admin/all_reports/?days=30`
       );
-      const followupResponse = await axios.get(
-        `${API_BASE_URL}/api/admin/all_followup_reports/?days=30`
+      const followupResponse = await apiClient.get(
+        `/api/admin/all_followup_reports/?days=30`
       );
 
       if (reportsResponse && followupResponse) {
@@ -93,7 +92,7 @@ export default function AdminReportHistoryScreen() {
 
   const exportData = async () => {
     // Get the data to export
-    const response = await axios.get(`${API_BASE_URL}/api/admin/export_reports`)
+    const response = await apiClient.get(`/api/admin/export_reports`);
     if (response && response.data) {
       console.log("Exporting data...")
       const exportData = response.data.reports;

@@ -1,9 +1,8 @@
 import { registerForPushNotificationsAsync } from "../utils/registerForPushNotificationsAsync";
 import { useAuth } from "../context/AuthContext";
 import * as Notifications from "expo-notifications";
-import axios from "axios";
 import { useEffect } from "react";
-import { API_BASE_URL } from "../config/apiConfig";
+import apiClient from "../config/apiConfig";
 
 Notifications.setNotificationHandler({
 	handleNotification: async () => ({
@@ -21,7 +20,7 @@ export const usePushNotifications = () => {
 		if (!uuid || !token) return;
 
 		try {
-			await axios.post(`${API_BASE_URL}/api/notifications/register`, {
+			await apiClient.post(`/api/notifications/register`, {
 				user_id: uuid,
 				push_token: token,
 			});

@@ -5,8 +5,7 @@ import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { globalStyles } from "../styles/globalStyles";
 import { MaterialIcons } from "@expo/vector-icons";
-import { API_BASE_URL } from "../config/apiConfig";
-import axios from "axios";
+import apiClient from "../config/apiConfig";
 import { useAuth } from "../context/AuthContext";
 
 export default function ConfirmRegistrationScreen({ route }) {
@@ -20,7 +19,7 @@ export default function ConfirmRegistrationScreen({ route }) {
   const handleConfirm = async () => {
     setLoading(true)
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/auth/verify_otp`, {
+      const response = await apiClient.post('/api/auth/verify_otp', {
         email: email,
         token: code
       });
@@ -35,7 +34,7 @@ export default function ConfirmRegistrationScreen({ route }) {
   // Send additional One-Time Passcode if requested
   const handleSendOTP = async () => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/auth/send_otp`, {
+      const response = await apiClient.post('/api/auth/send_otp', {
         email: email
       })
       console.log("Sending OTP to ", email)

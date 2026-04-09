@@ -4,8 +4,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../context/AuthContext";
 import { useCallback, useState } from "react";
-import axios from "axios";
-import { API_BASE_URL } from "../../config/apiConfig";
+import apiClient from "../../config/apiConfig";
 import SkeletonText from "../../components/skeleton/SkeletonText";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
@@ -24,8 +23,8 @@ export default function AthleteTeamScreen() {
       const fetchTeamDetails = async () => {
         setLoading(true);
         try {
-          const response = await axios.get(
-            `${API_BASE_URL}/api/athletes/team/${uuid}`
+          const response = await apiClient.get(
+            `/api/athletes/team/${uuid}`
           );
 
           // Athlete is not in a team - redirect to club setup.
@@ -62,13 +61,11 @@ export default function AthleteTeamScreen() {
 
   const handleTeamLeave = async () => {
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/api/athletes/leave_team`, {
+      const response = await apiClient.post(`/api/athletes/leave_team`, {
         athlete_id: uuid,
         team_id: teamDetails.team_id,
         session: session
-      }
-      );
+      });
 
       if (response && response.data) {
         console.log("Athlete left team", response.data);

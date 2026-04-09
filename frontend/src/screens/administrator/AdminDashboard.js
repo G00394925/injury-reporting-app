@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { globalStyles } from "../../styles/globalStyles";
 import { Text, View, StyleSheet, ScrollView } from "react-native";
-import { API_BASE_URL } from "../../config/apiConfig";
-import axios from "axios";
+import apiClient from "../../config/apiConfig";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import PieChartComponent from "../../components/PieChart";
 import BarChartComponent from "../../components/BarChart";
@@ -38,8 +37,8 @@ export default function AdminDashScreen() {
   const getData = async () => {
     try {
       // Get health summary data
-      const athletesResponse = await axios.get(
-        `${API_BASE_URL}/api/admin/all_athletes`
+      const athletesResponse = await apiClient.get(
+        `/api/admin/all_athletes`
       );
       if (athletesResponse) {
         setAthletes(athletesResponse.data.num_athletes);
@@ -74,24 +73,24 @@ export default function AdminDashScreen() {
       }
 
       // Get number of coaches
-      const coachesResponse = await axios.get(
-        `${API_BASE_URL}/api/admin/all_coaches`
+      const coachesResponse = await apiClient.get(
+        `/api/admin/all_coaches`
       );
       if (coachesResponse) {
         setCoaches(coachesResponse.data.num_coaches);
       }
 
       // Get report outcome summary data
-      const reportsResponse = await axios.get(
-        `${API_BASE_URL}/api/admin/all_reports/?days=7`
+      const reportsResponse = await apiClient.get(
+        `/api/admin/all_reports/?days=7`
       );
 
       if (reportsResponse) {
         setReportsData(reportsResponse.data.reports_summary);
       }
 
-      const activityResponse = await axios.get(
-        `${API_BASE_URL}/api/admin/activity_data`
+      const activityResponse = await apiClient.get(
+        `/api/admin/activity_data`
       );
       if (activityResponse) {
         setActivityData(activityResponse.data.weekly_activity);

@@ -28,7 +28,7 @@ import ConfirmRegistrationScreen from "./src/screens/ConfirmRegistration";
 import { usePushNotifications } from "./src/hooks/usePushNotifications";
 import AdminDashScreen from "./src/screens/administrator/AdminDashboard";
 import AdminReportHistoryScreen from "./src/screens/administrator/AdminReportHistory";
-import { API_BASE_URL } from "./src/config/apiConfig";
+import apiClient from "./src/config/apiConfig";
 
 
 SplashScreen.preventAutoHideAsync();
@@ -158,7 +158,7 @@ function AppNavigator() {
         
         if (lastOpen !== today) {
           // First open of the day
-          await axios.post(`${API_BASE_URL}/api/session/log_event`, {
+          await apiClient.post('${API_BASE_URL}/api/session/log_event', {
             session_id: session,
             event_type: "app_open_daily",
             event_data: {"uuid": userData.id},

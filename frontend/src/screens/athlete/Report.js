@@ -2,8 +2,7 @@ import { StyleSheet, Text, View, TouchableOpacity, Modal } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { globalStyles } from "../../styles/globalStyles";
 import { useState } from "react";
-import axios from "axios";
-import { API_BASE_URL } from "../../config/apiConfig";
+import apiClient from "../../config/apiConfig";
 import { useAuth } from "../../context/AuthContext";
 import { ScrollView, TextInput } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -100,7 +99,7 @@ export default function ReportScreen({ route }) {
 
       if(healthStatus === "Healthy") {
         // Submit normal report
-        const response = await axios.post(`${API_BASE_URL}/api/health/report`, {
+        const response = await apiClient.post('/api/health/report', {
           user_id: uuid,
           user_data: userData,
           session: session,
@@ -110,7 +109,7 @@ export default function ReportScreen({ route }) {
 
       } else {
         // Submit follow-up report
-        const response = await axios.post(`${API_BASE_URL}/api/health/followup_report`, {
+        const response = await apiClient.post('/api/health/followup_report', {
           user_id: uuid,
           user_data: userData,
           session: session,

@@ -132,6 +132,7 @@ def login():
             return jsonify(
                 message="Login successful",
                 uuid=response.user.id,
+                access_token=response.session.access_token,
                 user={
                     "name": user_data.data[0].get('name'),
                     "email": email,
@@ -263,9 +264,9 @@ def delete_account():
     uuid = data.get('uuid')
 
     try:
-        response = auth_service.delete_account(uuid)
+        response = db_service.delete("users", {"id": uuid})
         if response:
-            db_service.delete("users", {"id": uuid})
+            auth_service.delete_account(uuid)
             logger.info("Account deleted by auth service")
             return jsonify(message="Account deleted by auth service"), 200
         else:

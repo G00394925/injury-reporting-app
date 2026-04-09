@@ -7,8 +7,7 @@ import calendarTheme from "../../styles/calendarTheme";
 import { globalStyles } from "../../styles/globalStyles";
 import { useState, useEffect, useCallback } from "react";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { API_BASE_URL } from "../../config/apiConfig";
-import axios from "axios";
+import apiClient from "../../config/apiConfig";
 
 export default function ManageScheduleScreen() {
   const { uuid, session } = useAuth();
@@ -129,7 +128,7 @@ export default function ManageScheduleScreen() {
         type: type
       });
 
-      const response = await axios.post(`${API_BASE_URL}/api/events/new`, {
+      const response = await apiClient.post('/api/events/new', {
         athlete_id: uuid,
         title: eventTitle,
         sport: eventSport,
@@ -156,8 +155,8 @@ export default function ManageScheduleScreen() {
   const fetchEvents = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        `${API_BASE_URL}/api/events/get/${uuid}`
+      const response = await apiClient.get(
+        `/api/events/get/${uuid}`
       );
 
       if (response.data) {

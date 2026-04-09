@@ -1,6 +1,6 @@
 import React, { useContext, createContext, useState } from "react";
 import axios from "axios";
-import { API_BASE_URL } from "../config/apiConfig";
+import apiClient from "../config/apiConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from 'expo-secure-store';
 
@@ -13,19 +13,20 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true)
 
-  const login = async (userId, user, session) => {
+  const login = async (userId, user, session, accessToken) => {
+    // Store session in AsyncStorage
+    await SecureStore.setItemAsync("uuid", String(userId));
+    await SecureStore.setItemAsync("session", String(session));
+    await SecureStore.setItemAsync("accessToken", accessToken)
+    await AsyncStorage.setItem("userData", JSON.stringify(user));
+    
     setUuid(userId);
     setUserData(user);
     setSession(session);
     setIsAuthenticated(true);
 
-    // Store session in AsyncStorage
-    await SecureStore.setItemAsync("uuid", String(userId));
-    await SecureStore.setItemAsync("session", String(session));
-    await AsyncStorage.setItem("userData", JSON.stringify(user));
-
-    const check = await SecureStore.getItemAsync("session");
-    console.log("Saved session: ", check);
+    const check = await SecureStore.getItemAsync("accessToken");
+    console.log("Saved access token:", check ? "✓ Success" : "✗ Failed");
   };
 
   const logout = async () => {
@@ -33,7 +34,7 @@ export const AuthProvider = ({ children }) => {
       // End session
       if (session) {
         console.log("Ending session");
-        await axios.post(`${API_BASE_URL}/api/auth/logout`, { session });
+        await apiClient.post('/api/auth/logout', { session });
       }
     } catch (error) {
       console.error("Error ending session:", error);
@@ -42,12 +43,13 @@ export const AuthProvider = ({ children }) => {
     // Clear from AsyncStorage/SecureStore
     await SecureStore.deleteItemAsync("uuid");
     await SecureStore.deleteItemAsync("session");
+    await SecureStore.deleteItemAsync("accessToken");
     await AsyncStorage.removeItem("userData");
 
+    setIsAuthenticated(false);
+    setSession(null);
     setUuid(null);
     setUserData(null);
-    setSession(null);
-    setIsAuthenticated(false);
   };
 
   const restoreSession = async () => {

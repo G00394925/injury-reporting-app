@@ -3,8 +3,7 @@ import { View, Text, TextInput, Alert, StyleSheet } from "react-native";
 import { Button } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../context/AuthContext";
-import axios from "axios";
-import { API_BASE_URL } from "../config/apiConfig";
+import apiClient from "../config/apiConfig";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -40,25 +39,19 @@ export default function LoginScreen() {
     setErrors({});
 
     try {
-      const url = `${API_BASE_URL}/api/auth/login`;
+      const url = '/api/auth/login';
       const payload = {
         email: email,
         password: password
       };
-      const response = await axios.post(url, payload, {
-        timeout: 10000,
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
+      const response = await apiClient.post(url, payload);
 
       if (!response.data.verified) {
         navigation.navigate("ConfirmRegistration", { email });
       } else {
         // Save user data to context
-        const { uuid, user, session_id } = response.data;
-        login(uuid, user, session_id);
-        console.log("Login context updated successfully");
+        const { uuid, user, session_id, access_token } = response.data;
+        login(uuid, user, session_id, access_token);
       }
 
     } catch (error) {

@@ -1,8 +1,7 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from "react-native";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { API_BASE_URL } from "../../config/apiConfig";
-import axios from "axios";
+import apiClient from "../../config/apiConfig";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { globalStyles } from "../../styles/globalStyles";
 import { useNavigation } from "@react-navigation/native";
@@ -21,10 +20,10 @@ export default function ClubSetup() {
   useEffect(() => {
     const fetchTeams = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/teams/get_teams`);
+        const response = await apiClient.get('/api/teams/get_teams');
         console.log("Teams data: ", response.data);
 
-        const alreadyJoined = await axios.get(`${API_BASE_URL}/api/athletes/team/${uuid}`);
+        const alreadyJoined = await apiClient.get(`/api/athletes/team/${uuid}`);
         console.log("Already joined team data: ", alreadyJoined.data);
 
         // Get IDs of teams athlete is already in
@@ -60,14 +59,11 @@ export default function ClubSetup() {
 
   const handleSave = async (team_id) => {
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/api/athletes/join_team`,
-        {
-          athlete_id: uuid,
-          team_id: team_id,
-          session: session
-        }
-      );
+      const response = await apiClient.post('/api/athletes/join_team', {
+        athlete_id: uuid,
+        team_id: team_id,
+        session: session
+      });
       console.log("Team joined successfully:", response.data);
       navigation.goBack();
     } catch (error) {

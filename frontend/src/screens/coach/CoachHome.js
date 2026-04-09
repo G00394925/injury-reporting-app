@@ -5,13 +5,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { CalendarContainer, CalendarHeader, CalendarBody } from "@howljs/calendar-kit";
 import calendarTheme from "../../styles/calendarTheme";
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import { API_BASE_URL } from "../../config/apiConfig";
+import apiClient from "../../config/apiConfig";
 import { useAuth } from "../../context/AuthContext";
-import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import SkeletonText from "../../components/skeleton/SkeletonText";
-import { Skeleton } from "@rneui/base";
 
 export default function CoachDashScreen() {
   const { uuid, userData } = useAuth();
@@ -33,8 +31,8 @@ export default function CoachDashScreen() {
         setLoading(true);
         try {
           // Acquire coach teams
-          const teamResponse = await axios.get(
-            `${API_BASE_URL}/api/teams/coach_teams/${uuid}`
+          const teamResponse = await apiClient.get(
+            `/api/teams/coach_teams/${uuid}`
           );
           if (
             teamResponse &&
@@ -64,8 +62,8 @@ export default function CoachDashScreen() {
         return;
       }
 
-      const athletesResponse = await axios.get(
-        `${API_BASE_URL}/api/teams/get_athletes/${teamsData[teamIndex].team_id}`
+      const athletesResponse = await apiClient.get(
+        `/api/teams/get_athletes/${teamsData[teamIndex].team_id}`
       );
       if (athletesResponse && athletesResponse.data) {
         setHealthy(athletesResponse.data.healthy_athletes);
@@ -87,8 +85,8 @@ export default function CoachDashScreen() {
 
   const getTeamEvents = async (team) => {
     try {
-      const eventsResponse = await axios.get(
-        `${API_BASE_URL}/api/events/team_events/${team}`
+      const eventsResponse = await apiClient.get(
+        `/api/events/team_events/${team}`
       );
       if (eventsResponse && eventsResponse.data) {
         const formattedEvents = eventsResponse.data.team_events.map(event => {

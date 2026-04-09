@@ -1,11 +1,10 @@
 import {useState, useEffect, useCallback } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import axios from "axios";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { CalendarContainer, CalendarBody, CalendarHeader } from "@howljs/calendar-kit";
 import calendarTheme from "../../styles/calendarTheme";
 import { globalStyles } from "../../styles/globalStyles";
-import { API_BASE_URL } from "../../config/apiConfig";
+import apiClient from "../../config/apiConfig";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
@@ -17,7 +16,7 @@ export default function AthleteViewerScreen({ route }) {
 
   const fetchAthleteEvents = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/events/get/${athlete.athlete_id}`)
+      const response = await apiClient.get(`/api/events/get/${athlete.athlete_id}`)
 
       if (response.data) {
         console.log("Fetched events for athlete " + athlete.athlete_id);

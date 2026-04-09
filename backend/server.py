@@ -1,7 +1,8 @@
-from flask import Flask
+from flask import Flask, request
 from flask_cors import CORS
-import logging
+from auth_middleware import require_auth, check_auth
 from services.scheduler_service import SchedulerService
+import logging
 import atexit
 
 # Flask Blueprints
@@ -32,6 +33,25 @@ CORS(
     methods=["GET", "PUT", "POST", "DELETE", "OPTIONS"],
     supports_credentials=True
 )
+
+
+@app.before_request
+def authenticate():
+    """Middleware to check authentication for protected routes. Public routes are defined and skipped."""
+    public_routes = [
+        '/api/auth/register',
+        '/api/auth/login',
+        '/api/auth/send_otp',
+        '/api/auth/verify_otp'
+    ]
+
+    # Skip auth check for public routes
+    if request.path in public_routes:
+        return
+    
+    # For all other routes, require authentication
+    if request.path.startswith('/api'):
+        return check_auth()
 
 # Register Blueprints
 app.register_blueprint(auth_bp, url_prefix='/api/auth')

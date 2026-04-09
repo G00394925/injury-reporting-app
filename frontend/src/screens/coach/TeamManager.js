@@ -2,10 +2,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, View, ScrollView, StyleSheet, TouchableOpacity, Modal } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { globalStyles } from "../../styles/globalStyles";
-import { API_BASE_URL } from "../../config/apiConfig";
+import apiClient from "../../config/apiConfig";
 import { useAuth } from "../../context/AuthContext";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import SkeletonText from "../../components/skeleton/SkeletonText";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { TextInput } from "react-native-gesture-handler";
@@ -22,8 +21,8 @@ export default function TeamManagerScreen() {
 
   const fetchTeams = async () => {
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/api/teams/coach_teams/${uuid}`
+      const response = await apiClient.get(
+        `/api/teams/coach_teams/${uuid}`
       );
       const teamsData = response.data.teams;
 
@@ -31,8 +30,8 @@ export default function TeamManagerScreen() {
       const teamsWithCounts = await Promise.all(
         teamsData.map(async (team) => {
           try {
-            const athleteResponse = await axios.get(
-              `${API_BASE_URL}/api/teams/get_athletes/${team.team_id}`
+            const athleteResponse = await apiClient.get(
+              `/api/teams/get_athletes/${team.team_id}`
             );
             return {
               ...team,
@@ -88,7 +87,7 @@ export default function TeamManagerScreen() {
 
   const handleCreateTeam = async () => {
     if (newTeamName && newSport) {
-      const response = await axios.post(`${API_BASE_URL}/api/teams/new`, {
+      const response = await apiClient.post('/api/teams/new', {
         team_name: newTeamName,
         sport: newSport,
         coach_id: uuid,
