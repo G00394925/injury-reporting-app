@@ -16,12 +16,18 @@
     "preview": {
       "distribution": "internal",
       "node": "22.14.0",
-      "environment": "preview"
+      "environment": "preview",
+      "env": {
+        "GOOGLE_SERVICES_JSON": "@GOOGLE_SERVICES_JSON"
+      }
     },
     "production": {
       "autoIncrement": true,
       "node": "22.14.0",
-      "environment": "production" 
+      "environment": "production",
+      "env": {
+        "GOOGLE_SERVICES_JSON": "@GOOGLE_SERVICES_JSON"
+      }
     }
   },
   "submit": {

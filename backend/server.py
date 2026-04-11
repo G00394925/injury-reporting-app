@@ -42,7 +42,8 @@ def authenticate():
         '/api/auth/register',
         '/api/auth/login',
         '/api/auth/send_otp',
-        '/api/auth/verify_otp'
+        '/api/auth/verify_otp',
+        '/api/admin/trigger_reminders'  # This endpoint is protected by a separate secret token, not user auth
     ]
 
     # Skip auth check for public routes

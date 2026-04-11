@@ -7,11 +7,6 @@
     "icon": "./assets/surveillance-doc-icon.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/icon-splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#001a79"
-    },
     "ios": {
       "supportsTablet": true
     },
@@ -34,7 +29,14 @@
         "expo-file-system",
         {
           "enableFileSharing": false
-          
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#001a79",
+          "image": "./assets/splash.png",
+          "imageWidth": 200
         }
       ],
       "expo-notifications",
