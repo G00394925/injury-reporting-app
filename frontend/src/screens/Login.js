@@ -50,8 +50,8 @@ export default function LoginScreen() {
         navigation.navigate("ConfirmRegistration", { email });
       } else {
         // Save user data to context
-        const { uuid, user, session_id, access_token } = response.data;
-        login(uuid, user, session_id, access_token);
+        const { uuid, user, session_id, access_token, refresh_token } = response.data;
+        login(uuid, user, session_id, access_token, refresh_token);
       }
 
     } catch (error) {

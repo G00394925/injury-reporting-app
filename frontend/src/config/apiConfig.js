@@ -52,14 +52,39 @@ apiClient.interceptors.response.use(
   (res) => {
     return res;
   },
-  (error) => {
-    if (error?.response?.status === 403) {
-      console.error("Forbidden access - token may be invalid or expired");
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error?.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshToken = await SecureStore.getItemAsync("refreshToken");
+
+        if (!refreshToken) {
+          throw new Error("No refresh token available");
+        }
+
+        const response = await axios.post(`${baseUrl}/api/auth/refresh_token`, {
+          refresh_token: refreshToken
+        });
+
+        await SecureStore.setItemAsync("accessToken", response.data.access_token);
+        await SecureStore.setItemAsync("refreshToken", response.data.refresh_token);
+
+        originalRequest.headers["Authorization"] = `Bearer ${response.data.access_token}`;
+        return apiClient(originalRequest);
+
+      } catch (refreshError) {
+        console.error("Token refresh failed:", refreshError);
+        // Token refresh failed, force logout
+        await SecureStore.deleteItemAsync("accessToken");
+        await SecureStore.deleteItemAsync("refreshToken");
+        throw refreshError;
+      }
     }
-    if (error?.response?.status === 401) {
-      console.error("Unauthorized - token may be missing or invalid");
-    }
-    throw error;
+
+    return Promise.reject(error);
   }
 );
 

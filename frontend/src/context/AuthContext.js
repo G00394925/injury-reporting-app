@@ -11,15 +11,16 @@ export const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [session, setSession] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
 
-  const login = async (userId, user, session, accessToken) => {
+  const login = async (userId, user, session, accessToken, refreshToken) => {
     // Store session in AsyncStorage
     await SecureStore.setItemAsync("uuid", String(userId));
     await SecureStore.setItemAsync("session", String(session));
-    await SecureStore.setItemAsync("accessToken", accessToken)
+    await SecureStore.setItemAsync("accessToken", accessToken);
+    await SecureStore.setItemAsync("refreshToken", refreshToken);
     await AsyncStorage.setItem("userData", JSON.stringify(user));
-    
+
     setUuid(userId);
     setUserData(user);
     setSession(session);
@@ -44,6 +45,7 @@ export const AuthProvider = ({ children }) => {
     await SecureStore.deleteItemAsync("uuid");
     await SecureStore.deleteItemAsync("session");
     await SecureStore.deleteItemAsync("accessToken");
+    await SecureStore.deleteItemAsync("refreshToken");
     await AsyncStorage.removeItem("userData");
 
     setIsAuthenticated(false);
@@ -67,11 +69,11 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
       }
     } catch (error) {
-      console.error("Error retoring session:", error)
+      console.error("Error retoring session:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <AuthContext.Provider
