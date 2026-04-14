@@ -113,15 +113,15 @@ function AdminTabNavigator() {
 
           if (route.name === "Dashboard") {
             iconName = "view-dashboard";
-          } else if (route.name ==="Report History") {
-            iconName = "clipboard-list"; 
+          } else if (route.name === "Report History") {
+            iconName = "clipboard-list";
           } else if (route.name === "Account") {
-            iconName = "account-circle"
+            iconName = "account-circle";
           }
 
           return (
             <MaterialCommunityIcons name={iconName} size={size} color={color} />
-          )
+          );
         },
         tabBarActiveTintColor: "#001a79",
         tabBarInactiveTintColor: "gray"
@@ -138,58 +138,58 @@ function AppNavigator() {
   usePushNotifications();
   const { isAuthenticated, userData, restoreSession, session, isLoading } = useAuth();
   const userType = userData?.user_type;
-  const appState = useRef(AppState.currentState)
-  
+  const appState = useRef(AppState.currentState);
+
   useEffect(() => {
     const initializeApp = async () => {
       await restoreSession();
     };
     initializeApp();
-    
-    const subscription = AppState.addEventListener("change", handleAppStateChange)
-    return () => subscription.remove()
-  }, [])
+
+    const subscription = AppState.addEventListener("change", handleAppStateChange);
+    return () => subscription.remove();
+  }, []);
 
   const logDailyOpen = useCallback(async () => {
     if (session) {
       try {
         const lastOpen = await AsyncStorage.getItem('lastAppOpen');
         const today = new Date().toISOString().split('T')[0];
-        
+
         if (lastOpen !== today) {
           // First open of the day
-          await apiClient.post('${API_BASE_URL}/api/session/log_event', {
+          await apiClient.post('/api/session/log_event', {
             session_id: session,
             event_type: "app_open_daily",
-            event_data: {"uuid": userData.id},
+            event_data: { "uuid": userData.id },
             endpoint: "app_state_change"
-          })
+          });
           // Store today's date
           await AsyncStorage.setItem('lastAppOpen', today);
         }
       } catch (error) {
-        console.error("Error logging app open event:", error)
+        console.error("Error logging app open event:", error);
       }
     }
-  }, [session])
-  
+  }, [session]);
+
   useEffect(() => {
     if (session) {
-      logDailyOpen()
+      logDailyOpen();
     }
-  }, [session])
+  }, [session]);
 
 
   const handleAppStateChange = async (nextAppState) => {
     // App moving from background/inactive to foreground
     if (appState.current.match(/inactive|background/) && nextAppState === "active") {
-      console.log("App has come to foreground")
+      console.log("App has come to foreground");
       await logDailyOpen();
     }
-    
+
     appState.current = nextAppState;
-  }
-  
+  };
+
   if (isLoading) return <Text>Loading...</Text>;
 
   return (

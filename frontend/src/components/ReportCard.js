@@ -46,10 +46,7 @@ const ReportCard = ({ report, isFollowUp = false }) => {
       {/* Summary Header */}
       <View style={styles.cardHeader}>
         <View style={styles.headerLeft}>
-          <Text style={styles.athleteName}>{report.athletes.users.name}</Text>
-          <Text style={styles.date}>
-            {formatDate(report.created_at)} - {formatTime(report.created_at)}
-          </Text>
+          <Text style={styles.reportDate}>{formatDate(report.created_at)} - {formatTime(report.created_at)}</Text>
         </View>
 
         <View style={styles.headerRight}>
@@ -77,6 +74,8 @@ const ReportCard = ({ report, isFollowUp = false }) => {
           {!isFollowUp ? (
             <>
               <DetailRow label="Status" value={report.new_availability} />
+              {report.athlete_age && <DetailRow label="Age" value={report.athlete_age} />}
+              {report.gender && <DetailRow label="Gender" value={report.gender} />}
               {report.injured && <DetailRow label="Injured" value="Yes" />}
               {report.ill && <DetailRow label="Ill" value="Yes" />}
               {report.rpe && (
@@ -155,7 +154,7 @@ const styles = StyleSheet.create({
   headerLeft: {
     flex: 1
   },
-  athleteName: {
+  reportDate: {
     fontFamily: "Rubik",
     fontWeight: "bold",
     fontSize: 16,
