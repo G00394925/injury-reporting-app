@@ -77,6 +77,7 @@ const ReportCard = ({ report, isFollowUp = false }) => {
               {report.athlete_age && <DetailRow label="Age" value={report.athlete_age} />}
               {report.gender && <DetailRow label="Gender" value={report.gender} />}
               {report.injured && <DetailRow label="Injured" value="Yes" />}
+              {report.sport && <DetailRow label="Sport" value={report.sport} />}
               {report.ill && <DetailRow label="Ill" value="Yes" />}
               {report.rpe && (
                 <DetailRow label="RPE" value={`${report.rpe}/10`} />

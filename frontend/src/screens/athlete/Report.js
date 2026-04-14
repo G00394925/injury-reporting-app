@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, TouchableOpacity, Modal } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { globalStyles } from "../../styles/globalStyles";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import apiClient from "../../config/apiConfig";
 import { useAuth } from "../../context/AuthContext";
 import { ScrollView, TextInput } from "react-native-gesture-handler";
@@ -18,6 +18,7 @@ export default function ReportScreen({ route }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
+  const [sports, setSports] = useState([]);
   const [injured, setInjured] = useState(false);
   const [ill, setIll] = useState(false);
   const [timeloss, setTimeLoss] = useState(false);
@@ -29,6 +30,7 @@ export default function ReportScreen({ route }) {
     trained: null,
     injured: null,
     ill: null,
+    sport: null,
     injury_type: null,
     timeloss: null,
     injury_onset: null,
@@ -44,6 +46,19 @@ export default function ReportScreen({ route }) {
     expected_return: null
   });
 
+  // Fetch sports 
+  useEffect(() => {
+    const getSports = async () => {
+      try {
+        const response = await apiClient.get(`api/athletes/team/${uuid}`);
+        setSports(response.data.teams);
+      } catch (error) {
+        console.error("Error fetching sports: ", error);
+      }
+    };
+    getSports();
+  }, [uuid]);
+
   const updateAnswer = (key, value) => {
     setAnswers((prev) => ({
       ...prev,
@@ -53,6 +68,7 @@ export default function ReportScreen({ route }) {
 
   const questions = getQuestions(
     healthStatus,
+    sports,
     updateAnswer,
     answers,
     setInjured,
@@ -97,7 +113,7 @@ export default function ReportScreen({ route }) {
         return;
       }
 
-      if(healthStatus === "Healthy") {
+      if (healthStatus === "Healthy") {
         // Submit normal report
         const response = await apiClient.post('/api/health/report', {
           user_id: uuid,
@@ -114,7 +130,7 @@ export default function ReportScreen({ route }) {
           user_data: userData,
           session: session,
           answers_list: formattedAnswers
-        })
+        });
         console.log("Health Report Response:", response.data);
       }
 
@@ -125,6 +141,7 @@ export default function ReportScreen({ route }) {
         trained: null,
         injured: null,
         ill: null,
+        sport: null,
         injury_type: null,
         timeloss: null,
         injury_onset: null,

@@ -221,11 +221,11 @@ export default function AdminReportHistoryScreen() {
         {/* List of reports with applied filters */}
         {loading ? (
           <View style={{ flexDirection: "column", gap: 15 }}>
-            <SkeletonText height={100} borderRadius={15} marginBottom={15} />
-            <SkeletonText height={100} borderRadius={15} marginBottom={15} />
-            <SkeletonText height={100} borderRadius={15} marginBottom={15} />
-            <SkeletonText height={100} borderRadius={15} marginBottom={15} />
-            <SkeletonText height={100} borderRadius={15} marginBottom={15} />
+            <SkeletonText height={70} borderRadius={15} marginBottom={15} />
+            <SkeletonText height={70} borderRadius={15} marginBottom={15} />
+            <SkeletonText height={70} borderRadius={15} marginBottom={15} />
+            <SkeletonText height={70} borderRadius={15} marginBottom={15} />
+            <SkeletonText height={70} borderRadius={15} marginBottom={15} />
           </View>
         ) : (
           <>
