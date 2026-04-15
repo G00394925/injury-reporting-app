@@ -2,7 +2,6 @@ import { StyleSheet, Text, View, Modal, TextInput, TouchableOpacity, Platform, A
 import { Button } from "@rneui/themed";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
 import { KeyboardAvoidingView } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import apiClient from "../config/apiConfig";
@@ -104,18 +103,11 @@ export default function RegisterScreen() {
         gender: gender,
         user_type: role
       });
-
-      console.log("Registration Response:", response.data);
-
       navigation.navigate("ConfirmRegistration", { email: email });
 
     } catch (error) {
       console.error("Registration Error:", error);
-      const errorMessage =
-        error.response?.data?.error ||
-        error.response?.data?.message ||
-        "Registration failed. Please try again.";
-      Alert.alert("Error", errorMessage);
+      Alert.alert("Registration Failed, try again later.");
     } finally {
       setLoading(false);
     }

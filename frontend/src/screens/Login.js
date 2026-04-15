@@ -28,11 +28,7 @@ export default function LoginScreen() {
   };
 
   const handleLogin = async () => {
-    console.log("=== LOGIN ATTEMPT START ===");
-    console.log("Email:", email);
-
     if (!validateForm()) {
-      console.log("ERROR: Missing email or password");
       return;
     }
     setLoading(true);
@@ -55,41 +51,10 @@ export default function LoginScreen() {
       }
 
     } catch (error) {
-      console.log("=== LOGIN ERROR ===");
-      console.error("Error type:", error.constructor.name);
-      console.error("Error message:", error.message);
-      console.error("Error code:", error.code);
-
-      if (error.response) {
-        // Server responded with error
-        console.error("Response status:", error.response.status);
-        console.error("Response data:", error.response.data);
-        console.error("Response headers:", error.response.headers);
-
-        if (error.response.data.error == "Invalid login credentials") {
-          console.log("ERROR: Invalid login credentials");
-          setErrors({ general: "Incorrect email or password" });
-        }
-      } else if (error.request) {
-        // Request made but no response
-        console.error("Request made but no response received");
-        console.error("Request:", error.request);
-      } else {
-        // Something else happened
-        console.error("Error setting up request:", error.message);
-      }
-
-      const errorMessage =
-        error.response?.data?.error ||
-        error.response?.data?.message ||
-        error.message ||
-        "Login failed. Please try again.";
-
-      console.log("Showing error alert:", errorMessage);
-      Alert.alert("Error", errorMessage);
+      console.error("Error logging in:", error);
+      Alert.alert("Error", error);
     } finally {
       setLoading(false);
-      console.log("=== LOGIN ATTEMPT END ===");
     }
   };
 
@@ -110,8 +75,8 @@ export default function LoginScreen() {
         keyboardType="email-address"
         autoCapitalize="none"
       />
-      {errors.confirmPassword && (
-        <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+      {errors.email && (
+        <Text style={styles.errorText}>{errors.email}</Text>
       )}
 
       <TextInput
@@ -122,8 +87,8 @@ export default function LoginScreen() {
         onChangeText={setPassword}
         secureTextEntry
       />
-      {errors.confirmPassword && (
-        <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+      {errors.password && (
+        <Text style={styles.errorText}>{errors.password}</Text>
       )}
 
       <Button

@@ -1,5 +1,4 @@
 import React, { useContext, createContext, useState } from "react";
-import axios from "axios";
 import apiClient from "../config/apiConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from 'expo-secure-store';
@@ -27,18 +26,17 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(true);
 
     const check = await SecureStore.getItemAsync("accessToken");
-    console.log("Saved access token:", check ? "✓ Success" : "✗ Failed");
   };
 
   const logout = async () => {
     try {
       // End session
       if (session) {
-        console.log("Ending session");
         await apiClient.post('/api/auth/logout', { session });
       }
     } catch (error) {
       console.error("Error ending session:", error);
+      throw error; // Re-throw to notify caller of logout failure
     }
 
     // Clear from AsyncStorage/SecureStore
@@ -69,7 +67,7 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
       }
     } catch (error) {
-      console.error("Error retoring session:", error);
+      console.error("Error restoring session:", error);
     } finally {
       setIsLoading(false);
     }

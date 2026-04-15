@@ -1,6 +1,6 @@
 from flask import Flask, request
 from flask_cors import CORS
-from auth_middleware import require_auth, check_auth
+from auth_middleware import check_auth
 from services.scheduler_service import SchedulerService
 import logging
 import atexit

@@ -93,7 +93,6 @@ export default function TeamManagerScreen() {
         coach_id: uuid,
         session: session
       });
-      console.log("Team created:", response.data);
 
       // Reset modal state and close
       setCreateModalVisible(false);

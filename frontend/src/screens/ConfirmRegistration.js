@@ -11,13 +11,13 @@ import { useAuth } from "../context/AuthContext";
 export default function ConfirmRegistrationScreen({ route }) {
   const navigation = useNavigation();
   const { email } = route.params;
-  const [code, setCode] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [errors, setErrors] = useState({})
+  const [code, setCode] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   // Check if code entered is valid
   const handleConfirm = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await apiClient.post('/api/auth/verify_otp', {
         email: email,
@@ -25,31 +25,30 @@ export default function ConfirmRegistrationScreen({ route }) {
       });
       navigation.navigate("Login");
     } catch (error) {
-      setErrors({ general: "Code was invalid. Please try again."})
+      setErrors({ general: "Code was invalid. Please try again." });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   // Send additional One-Time Passcode if requested
   const handleSendOTP = async () => {
     try {
       const response = await apiClient.post('/api/auth/send_otp', {
         email: email
-      })
-      console.log("Sending OTP to ", email)
+      });
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
-   return (
-    <SafeAreaView style={[globalStyles.container, {backgroundColor: "#ffffff"}]}>
+  return (
+    <SafeAreaView style={[globalStyles.container, { backgroundColor: "#ffffff" }]}>
       <View style={styles.container}>
         <View style={styles.content}>
           <View style={styles.dividerContainer}>
             <View style={styles.line} />
-            <MaterialIcons 
+            <MaterialIcons
               name="mail-outline"
               size={80}
               color={"#001a79"}
@@ -61,13 +60,13 @@ export default function ConfirmRegistrationScreen({ route }) {
           <View style={styles.instructionsContainer}>
             <Text style={styles.instructions}>Enter the code sent to your email to create your account</Text>
           </View>
-          
+
           <View style={styles.inputContainer}>
             {errors.general && (
               <Text style={styles.errorText}>{errors.general}</Text>
             )}
 
-            <TextInput 
+            <TextInput
               style={styles.input}
               placeholder="XXXXX"
               placeholderTextColor="#999"
@@ -83,19 +82,19 @@ export default function ConfirmRegistrationScreen({ route }) {
             onPress={handleConfirm}
             disabled={loading}
           >
-            <Text style={{color: "#fff", fontFamily: "Rubik", fontSize: 20}}>Confirm</Text>
+            <Text style={{ color: "#fff", fontFamily: "Rubik", fontSize: 20 }}>Confirm</Text>
           </TouchableOpacity>
-          
+
           <Button
             title="Not there? Send another code"
             type="clear"
             onPress={handleSendOTP}
-            containerStyle={{ marginTop: 15 }} 
+            containerStyle={{ marginTop: 15 }}
           />
         </View>
       </View>
     </SafeAreaView>
-   )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -180,4 +179,4 @@ const styles = StyleSheet.create({
     marginTop: 2,
     paddingLeft: 15
   }
-})
+});

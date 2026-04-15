@@ -20,11 +20,9 @@ export default function TeamViewerScreen({ route }) {
   useEffect(() => {
     const fetchAthletes = async () => {
       try {
-        console.log("Fetching athletes for team:", team.team_id);
         const response = await apiClient.get(
           `/api/teams/get_athletes/${team.team_id}`
         );
-        console.log("Fetched athletes successfully");
 
         // Fetch time since last report for each athlete
         const athleteLastReport = await Promise.all(

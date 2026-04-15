@@ -18,7 +18,7 @@ export default function ManageScheduleScreen() {
   const [eventTitle, setEventTitle] = useState("");
   const [eventDate, setEventDate] = useState(new Date());
   const [eventStartTime, setEventStartTime] = useState(new Date());
-  const [eventSport, setEventSport] = useState("")
+  const [eventSport, setEventSport] = useState("");
   const [eventEndTime, setEventEndTime] = useState(new Date());
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isStartTimePickerVisible, setIsStartTimePickerVisible] = useState(false);
@@ -118,16 +118,6 @@ export default function ManageScheduleScreen() {
       const formattedEndTime = formatTime(eventEndTime);
       const type = isTraining ? "Training" : "Match";
 
-      console.log("Submitting event:", {
-        athlete_id: uuid,
-        title: eventTitle,
-        sport: eventSport,
-        event_date: formattedDate,
-        start_time: formattedStartTime,
-        end_time: formattedEndTime,
-        type: type
-      });
-
       const response = await apiClient.post('/api/events/new', {
         athlete_id: uuid,
         title: eventTitle,
@@ -139,7 +129,6 @@ export default function ManageScheduleScreen() {
         session: session
       });
 
-      console.log("Event created successfully: ", response.data);
       closeCreateModal();
       fetchEvents(); // Refresh the calendar
     } catch (error) {
@@ -160,8 +149,6 @@ export default function ManageScheduleScreen() {
       );
 
       if (response.data) {
-        console.log("Fetched events: ", response.data);
-
         // Change events to use calendar format
         const formattedEvents = response.data.map((event) => {
           const eventDate = new Date(event.event_date);
@@ -185,8 +172,6 @@ export default function ManageScheduleScreen() {
 
           };
         });
-
-        console.log("Formatted events for calendar:", formattedEvents);
         setEvents(formattedEvents);
       }
     } catch (error) {
@@ -256,8 +241,8 @@ export default function ManageScheduleScreen() {
             scrollToNow={false}
             events={events}
             onPressEvent={(event) => {
-              console.log("Event pressed: ", event)
-              openViewModal(event)
+              console.log("Event pressed: ", event);
+              openViewModal(event);
             }}
           >
             <CalendarHeader
@@ -399,7 +384,7 @@ export default function ManageScheduleScreen() {
       </Modal>
 
       {/* Event Viewer Modal */}
-      <Modal 
+      <Modal
         animationType="fade"
         transparent={true}
         visible={viewModalVisible}
@@ -415,25 +400,25 @@ export default function ManageScheduleScreen() {
                 <Ionicons name="close" size={28} color="#333" />
               </TouchableOpacity>
             </View>
-            <View style={[globalStyles.modalBody, {gap: 15}]}>
+            <View style={[globalStyles.modalBody, { gap: 15 }]}>
 
-              <View style={{flexDirection: "row", alignItems: "center"}}>
-                <Text style={[globalStyles.modalLabel, {fontWeight: 'bold'}]}>Title: </Text> 
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={[globalStyles.modalLabel, { fontWeight: 'bold' }]}>Title: </Text>
                 <Text style={globalStyles.modalLabel}>{selectedEvent?.title}</Text>
               </View>
-              
-              <View style={{flexDirection: "row", alignItems: "center"}}>
-                <Text style={[globalStyles.modalLabel, {fontWeight: 'bold'}]}>Sport: </Text> 
+
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={[globalStyles.modalLabel, { fontWeight: 'bold' }]}>Sport: </Text>
                 <Text style={globalStyles.modalLabel}>{selectedEvent?.sport}</Text>
               </View>
 
-              <View style={{flexDirection: "row", alignItems: "center"}}>
-                <Text style={[globalStyles.modalLabel, {fontWeight: 'bold'}]}>Date: </Text> 
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={[globalStyles.modalLabel, { fontWeight: 'bold' }]}>Date: </Text>
                 <Text style={globalStyles.modalLabel}>{selectedEvent?.start?.dateTime?.split("T")[0]}</Text>
               </View>
 
-              <View style={{flexDirection: "row", alignItems: "center"}}>
-                <Text style={[globalStyles.modalLabel, {fontWeight: 'bold'}]}>Time: </Text> 
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={[globalStyles.modalLabel, { fontWeight: 'bold' }]}>Time: </Text>
                 <Text style={globalStyles.modalLabel}>{selectedEvent?.start?.dateTime?.substring(11, 16)} - {selectedEvent?.end?.dateTime?.substring(11, 16)}</Text>
               </View>
             </View>

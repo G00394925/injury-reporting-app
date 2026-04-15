@@ -106,10 +106,8 @@ export default function ReportScreen({ route }) {
     };
 
     try {
-      console.log("Submitting health report for user:", uuid);
-
       if (!uuid) {
-        console.error("No UUID exists for user");
+        Alert.alert("Error", "User session invalid. Please log in again.");
         return;
       }
 
@@ -121,7 +119,6 @@ export default function ReportScreen({ route }) {
           session: session,
           answers_list: formattedAnswers
         });
-        console.log("Health Report Response:", response.data);
 
       } else {
         // Submit follow-up report
@@ -131,7 +128,6 @@ export default function ReportScreen({ route }) {
           session: session,
           answers_list: formattedAnswers
         });
-        console.log("Health Report Response:", response.data);
       }
 
       // Reset form after submission

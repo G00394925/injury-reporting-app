@@ -41,7 +41,6 @@ export default function AccountScreen() {
       });
 
       if (response) {
-        console.log("Account deleted!");
         setShowDeleteConfirmation(false);
         logout();
       }

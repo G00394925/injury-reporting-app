@@ -58,7 +58,6 @@ export default function CoachDashScreen() {
     try {
       // Ensure team exists
       if (!teamsData || teamsData.length === 0 || !teamsData[teamIndex]) {
-        console.log("No team data available");
         return;
       }
 
@@ -75,8 +74,6 @@ export default function CoachDashScreen() {
         );
 
         getTeamEvents(teamsData[teamIndex].team_id);
-      } else {
-        console.log("No athlete data received");
       }
     } catch (error) {
       console.error("Error fetching athlete data for team:", error);
@@ -135,8 +132,6 @@ export default function CoachDashScreen() {
 
         setEvents(mergedEvents);
 
-      } else {
-        console.log("No events data received");
       }
     } catch (error) {
       console.error("Error fetching team events:", error);

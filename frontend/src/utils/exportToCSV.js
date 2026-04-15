@@ -48,8 +48,6 @@ export const exportToCSV = async (data) => {
       mimeType: "text/csv",
       dialogTitle: "Download Report Data"
     });
-    console.log("CSV file created and shared successfully: ", file.uri);
-
   } catch (error) {
     console.error("Error exporting to CSV: ", error);
   }
