@@ -83,7 +83,7 @@ export default function AthleteDashScreen() {
             setReportDue(reportDueResponse.data);
           } catch (reportError) {
             console.error("Error fetching report due status:", reportError);
-            setReportDue(false); // Default to false if request fails
+            setReportDue(false);  // Default to false if request fails
           }
         } catch (error) {
           console.error("Error fetching data:", error);

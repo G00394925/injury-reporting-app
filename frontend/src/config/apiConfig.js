@@ -55,12 +55,13 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // Unauthorised - Retry with new JWT 
     if (error?.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
         const refreshToken = await SecureStore.getItemAsync("refreshToken");
-
+        console.log("Attempting retry. Refresh token exists:", !!refreshToken);
         if (!refreshToken) {
           throw new Error("No refresh token available");
         }

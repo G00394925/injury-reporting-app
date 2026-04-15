@@ -374,7 +374,7 @@ export default function RegisterScreen() {
             titleStyle={{ color: "#ffffffff" }}
             buttonStyle={{
               ...styles.registerButton,
-              backgroundColor: "rgba(107, 107, 107, 1)",
+              backgroundColor: "#001a79",
               marginTop: 20
             }}
             containerStyle={{ width: "90%" }}

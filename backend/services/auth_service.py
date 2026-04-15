@@ -2,6 +2,8 @@ from flask import jsonify
 from services.supabase_service import SupabaseService
 import logging
 
+logger = logging.getLogger(__name__)
+
 
 class AuthService:
     """
@@ -11,13 +13,6 @@ class AuthService:
     """
 
     def __init__(self):
-        logging.basicConfig(
-            level=logging.INFO,
-            format='%(asctime)s - %(levelname)s - %(message)s',
-            datefmt='%Y-%m-%d %H:%M:%S'
-        )
-
-        self.logger = logging.getLogger(__name__)
         self.supabase = SupabaseService().get_client()
 
     def sign_up(self, email: str, password: str) -> dict:
@@ -39,10 +34,10 @@ class AuthService:
                 "email": email,
                 "password": password
             })
-            self.logger.info(f"User signed up successfully: {email}")
+            logger.info(f"User signed up successfully: {email}")
             return response
         except Exception as e:
-            self.logger.error(f"Error signing up user {email}: {e}")
+            logger.error(f"Error signing up user {email}: {e}")
             raise e
 
     def sign_in(self, email: str, password: str) -> dict:
@@ -60,15 +55,15 @@ class AuthService:
             Exception: If sign in fails
         """
         try:
-            self.logger.info(f"Login attempt for {email}")
+            logger.info(f"Login attempt for {email}")
             response = self.supabase.auth.sign_in_with_password({
                 "email": email,
                 "password": password
             })
-            self.logger.info(f"User signed in successfully: {email}")
+            logger.info(f"User signed in successfully: {email}")
             return response
         except Exception as e:
-            self.logger.error(f"Error signing in user {email}: {e}")
+            logger.error(f"Error signing in user {email}: {e}")
             raise e
 
     def update_password(self, email: str, new_password: str) -> dict:
@@ -86,15 +81,15 @@ class AuthService:
             Exception: If password update fails.
         """
         try:
-            self.logger.info(f"Password update attempt for {email}")
+            logger.info(f"Password update attempt for {email}")
             response = self.supabase.auth.update_user(
                 {"password": new_password}
             )
 
-            self.logger.info(f"Password updated successfully for {email}")
+            logger.info(f"Password updated successfully for {email}")
             return jsonify(message="Password updated successfully"), 200
         except Exception as e:
-            self.logger.error(f"Error updating password for {email}: {e}")
+            logger.error(f"Error updating password for {email}: {e}")
             raise e
 
     def send_otp(self, email: str) -> dict:
@@ -109,14 +104,14 @@ class AuthService:
         """
 
         try:
-            self.logger.info(f"Sending OTP to {email}")
+            logger.info(f"Sending OTP to {email}")
             response = self.supabase.auth.sign_in_with_otp({
                 "email": email
             })
-            self.logger.info(f"OTP sent successfully to {email}")
+            logger.info(f"OTP sent successfully to {email}")
             return response
         except Exception as e:
-            self.logger.error(f"Error sending OTP to {email}")
+            logger.error(f"Error sending OTP to {email}")
             raise e
 
     def verify_otp(self, email: str, token: str) -> dict:
@@ -130,29 +125,29 @@ class AuthService:
         """
 
         try:
-            self.logger.info(f"OTP verification attempt for {email}")
+            logger.info(f"OTP verification attempt for {email}")
             response = self.supabase.auth.verify_otp({
                 "email": email,
                 "token": token,
                 "type": "email"
             })
-            self.logger.info(f"OTP successfully verified for {email}")
+            logger.info(f"OTP successfully verified for {email}")
             return response
         except Exception as e:
-            self.logger.error(f"Error verifying OTP for {email} {e}")
+            logger.error(f"Error verifying OTP for {email} {e}")
             raise e
 
     def delete_account(self, uuid: str):
 
         try:
-            self.logger.info(
+            logger.info(
                 f"User {uuid} has requested the deletion of their account")
             response = self.supabase.auth.admin.delete_user(
                 uuid
             )
             if response:
-                self.logger.info("Account has been deleted.")
+                logger.info("Account has been deleted.")
                 return response
         except Exception as e:
-            self.logger.error(f"Error deleting account for user {uuid}: {e}")
+            logger.error(f"Error deleting account for user {uuid}: {e}")
             raise e

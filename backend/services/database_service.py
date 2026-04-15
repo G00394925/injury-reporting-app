@@ -1,6 +1,8 @@
 from services.supabase_service import SupabaseService
 import logging
 
+logger = logging.getLogger(__name__)
+
 
 class DatabaseService:
     """
@@ -8,13 +10,6 @@ class DatabaseService:
     """
 
     def __init__(self):
-        logging.basicConfig(
-            level=logging.INFO,
-            format='%(asctime)s - %(levelname)s - %(message)s',
-            datefmt='%Y-%m-%d %H:%M:%S'
-        )
-
-        self.logger = logging.getLogger(__name__)
         self.supabase = SupabaseService().get_client()
 
     def insert(self, table: str, data: dict) -> dict:
@@ -22,23 +17,23 @@ class DatabaseService:
         Insert data into a specified table.
 
         Args:
-            - table: Name of the table to insert into
-            - data: Dictionary containing the data to insert
+            table (str): Name of the table to insert into
+            data (dict): Dictionary containing the data to insert
 
         Returns:
-            - Response from the database operation
+            Response from the database operation
 
         Raises:
-            - Exception: If insert operation fails
+            Exception: If insert operation fails
         """
         try:
             response = self.supabase.table(table).insert(data).execute()
-            self.logger.info(f"Data inserted into {table}: {response}")
+            logger.info(f"Data inserted into {table}: {response}")
 
             return response
 
         except Exception as e:
-            self.logger.error(f"Error inserting data into {table}: {e}")
+            logger.error(f"Error inserting data into {table}: {e}")
             raise e
 
     def fetch(self, table: str, filters: dict = None, modifiers: dict = None, select: str = "*") -> dict:
@@ -78,6 +73,7 @@ class DatabaseService:
 
                         parts = value.split('.', 1)
                         if len(parts) == 2 and parts[0] in operator_map:
+                            # Get operators, values, and construct the query
                             operator = parts[0]
                             actual_value = parts[1]
                             method = getattr(query, operator, None)
@@ -102,16 +98,14 @@ class DatabaseService:
                         else:
                             query = method(value)
                     else:
-                        self.logger.warning(
-                            f"Method '{method_name}' not valid")
+                        logger.warning(f"Method '{method_name}' not valid")
 
             response = query.execute()
-            self.logger.info(
-                f"Data fetched from {table} with filters {filters}")
+            logger.info(f"Data fetched from {table} with filters {filters}")
             return response
 
         except Exception as e:
-            self.logger.error(
+            logger.error(
                 f"Error fetching data from {table} with filters {filters}: {e}")
             raise e
 
@@ -137,12 +131,12 @@ class DatabaseService:
                 query = query.eq(key, value)
 
             response = query.execute()
-            self.logger.info(f"Data updated in {table}: {response}")
+            logger.info(f"Data updated in {table}: {response}")
 
             return response
 
         except Exception as e:
-            self.logger.error(f"Error updating data in {table}: {e}")
+            logger.error(f"Error updating data in {table}: {e}")
             raise e
 
     def delete(self, table: str, filters: dict) -> dict:
@@ -166,8 +160,8 @@ class DatabaseService:
                 query = query.eq(key, value)
 
             response = query.execute()
-            self.logger.info(f"Data deleted from {table}: {response}")
+            logger.info(f"Data deleted from {table}: {response}")
             return response
         except Exception as e:
-            self.logger.error(f"Error deleting data from {table}: {e}")
+            logger.error(f"Error deleting data from {table}: {e}")
             raise e

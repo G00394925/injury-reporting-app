@@ -234,12 +234,12 @@ export default function AdminDashScreen() {
             </View>
 
             <View style={styles.barChartContainer}>
-              <Text style={styles.dataHeader}>Report Outcome Summary</Text>
+              <Text style={styles.dataHeader}>Weekly Report Summary</Text>
               <BarChartComponent data={reportsData} />
             </View>
 
             <View style={styles.dataContainer}>
-              <Text style={styles.dataHeader}>Activity</Text>
+              <Text style={styles.dataHeader}>Weekly Activity</Text>
               <LineChartComponent data={activityData} />
             </View>
           </>

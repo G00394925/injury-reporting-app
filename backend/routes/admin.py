@@ -6,15 +6,8 @@ import logging
 from datetime import datetime, timedelta
 import os
 
-
 admin_bp = Blueprint('admin', __name__)
 db_service = DatabaseService()
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
 logger = logging.getLogger(__name__)
 
 
@@ -228,10 +221,10 @@ def get_activity_data():
             for i in range(0, 7):
                 day = (now - timedelta(days=i)).strftime("%Y-%m-%d")
                 weekly_activity[day] = 0
-
                 items = [
                     i for i in response.data if i['timestamp'].startswith(day)]
                 weekly_activity[day] = len(items)
+
             logger.info(f"Weekly activity: {weekly_activity}")
             return jsonify(weekly_activity=weekly_activity), 200
         else:
@@ -246,11 +239,21 @@ def get_activity_data():
 def export_reports():
     """Triggers export of report data to CSV for admin interface"""
     try:
-        # Fetch all reports as well as associated athlete names
+        # Fetch all reports as well as associated athlete gender and age
         response = db_service.fetch(
             table="reports",
             select="*,athletes(users(dob,gender))"
         )
+
+        today = datetime.today()
+        for report in response.data:
+            dob = report.get('athletes').get('users').get('dob')
+            age = (today - datetime.strptime(dob, "%Y-%m-%d")).days // 365
+            report['athlete_age'] = age
+
+            report['gender'] = report.get(
+                'athletes').get('users').get('gender')
+
         if response and response.data:
             logger.info("Fetched reports for export")
             return jsonify({"reports": response.data}), 200

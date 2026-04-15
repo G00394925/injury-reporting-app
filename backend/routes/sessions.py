@@ -6,12 +6,6 @@ import logging
 session_bp = Blueprint('session', __name__)
 db_service = DatabaseService()
 session_service = SessionService()
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
 logger = logging.getLogger(__name__)
 
 

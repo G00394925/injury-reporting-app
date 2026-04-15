@@ -41,18 +41,21 @@ def authenticate():
     public_routes = [
         '/api/auth/register',
         '/api/auth/login',
+        '/api/auth/refresh_token',
         '/api/auth/send_otp',
         '/api/auth/verify_otp',
-        '/api/admin/trigger_reminders'  # This endpoint is protected by a separate secret token, not user auth
+        # This endpoint is protected by a separate secret token, not user auth
+        '/api/admin/trigger_reminders'
     ]
 
     # Skip auth check for public routes
     if request.path in public_routes:
         return
-    
+
     # For all other routes, require authentication
     if request.path.startswith('/api'):
         return check_auth()
+
 
 # Register Blueprints
 app.register_blueprint(auth_bp, url_prefix='/api/auth')

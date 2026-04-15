@@ -142,19 +142,19 @@ export const getHealthyQuestions = (updateAnswer, sports, answers, setInjured, s
     text: "Rate your discomfort.",
     subtext: null,
     component:
-      answers.injured === "Yes" ? (
-        <RpeSlider
-          value={answers.rpe}
-          onValueChange={(value) => updateAnswer("rpe", value)}
-          title="Rate your current pain level"
-          labels={["Very Light / None", "Light", "Moderate", "Intense", "Very Intense"]}
-        />
-      ) : (
+      answers.ill === "Yes" ? (
         <RpeSlider
           value={answers.rpe}
           onValueChange={(value) => updateAnswer("rpe", value)}
           title="Describe your illness"
           labels={["Light illness", "Manageable", "Moderate", "Quite ill", "Very ill"]}
+        />
+      ) : (
+        <RpeSlider
+          value={answers.rpe}
+          onValueChange={(value) => updateAnswer("rpe", value)}
+          title="Rate your current pain level"
+          labels={["Very Light / None", "Light", "Moderate", "Intense", "Very Intense"]}
         />
       ),
     validate: () => true

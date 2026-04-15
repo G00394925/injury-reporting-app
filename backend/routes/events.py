@@ -7,12 +7,6 @@ from datetime import datetime, timedelta
 db_service = DatabaseService()
 session_service = SessionService()
 events_bp = Blueprint('events', __name__)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
 logger = logging.getLogger(__name__)
 
 
@@ -126,12 +120,13 @@ def get_next_event(athlete_id):
 
                 # Parse the event end time
                 end_time_str = end_time.split('+')[0]
-                event_datetime = datetime.strptime(f"{event_date}T{end_time_str}", "%Y-%m-%dT%H:%M:%S")
+                event_datetime = datetime.strptime(
+                    f"{event_date}T{end_time_str}", "%Y-%m-%dT%H:%M:%S")
 
                 # Only include events that haven't ended
                 if event_datetime > current_time:
                     upcoming_events.append(event)
-            
+
             if upcoming_events:
                 total_count = len(response.data)
                 event = upcoming_events[0]
@@ -156,7 +151,8 @@ def get_next_event(athlete_id):
                         "total_future_events": total_count
                     }
 
-                    logger.info(f"Next event for user {athlete_id}: {next_event}")
+                    logger.info(
+                        f"Next event for user {athlete_id}: {next_event}")
                     return jsonify(next_event), 200
                 else:
                     logger.info(f"No event found with given time and date")

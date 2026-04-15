@@ -9,12 +9,6 @@ auth_bp = Blueprint('auth', __name__)
 auth_service = AuthService()
 db_service = DatabaseService()
 session_service = SessionService()
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
 logger = logging.getLogger(__name__)
 
 

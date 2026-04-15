@@ -136,28 +136,19 @@ export default function LoginScreen() {
 
       <Button
         title="Don't have an account? Register"
-        type="clear"
+        buttonStyle={{
+          ...styles.button,
+          backgroundColor: "#001a79",
+        }}
         onPress={() => navigation.navigate("Register")}
-        containerStyle={{ marginTop: 15 }}
+        containerStyle={{ width: "90%", marginTop: 20 }}
       />
 
-      {/* DEBUG ZONE */}
+      {/* TODO: Forgot Password functionality */}
       <Button
-        title="DEBUG: Sign in Athlete"
-        onPress={() => {
-          setEmail("nogegi1021@emaxasp.com");
-          setPassword("SuperAthlete!1");
-          handleLogin();
-        }}
-      />
-
-      <Button
-        title="DEBUG: Sign in Coach"
-        onPress={() => {
-          setEmail("peyij65076@dubokutv.com");
-          setPassword("SuperCoach!1");
-          handleLogin();
-        }}
+        title="Forgot password?"
+        type="clear"
+        containerStyle={{ width: "80%", marginTop: 20 }}
       />
     </View>
   );
@@ -173,7 +164,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: "bold",
-    marginBottom: 40
+    marginBottom: 40,
+    fontFamily: "Rubik"
   },
   input: {
     width: "90%",
@@ -184,7 +176,8 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: "#1d65ecff",
     fontSize: 16,
-    color: "#000000"
+    color: "#000000",
+    fontFamily: "Rubik"
   },
   button: {
     padding: 15,

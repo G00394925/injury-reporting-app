@@ -36,11 +36,14 @@ SplashScreen.preventAutoHideAsync();
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
+// Athlete screens
 function AthleteTabNavigator() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
+
+        // Set tab bar icons 
         tabBarIcon: ({ color, size }) => {
           let iconName;
 
@@ -72,6 +75,7 @@ function AthleteTabNavigator() {
   );
 }
 
+// Coach screens
 function CoachTabNavigator() {
   return (
     <Tab.Navigator
@@ -103,6 +107,7 @@ function CoachTabNavigator() {
   );
 }
 
+// Admin screens
 function AdminTabNavigator() {
   return (
     <Tab.Navigator
@@ -134,18 +139,21 @@ function AdminTabNavigator() {
   );
 }
 
+// Global app properties and config
 function AppNavigator() {
   usePushNotifications();
+
+  // Check authentication and user type
   const { isAuthenticated, userData, restoreSession, session, isLoading } = useAuth();
   const userType = userData?.user_type;
-  const appState = useRef(AppState.currentState);
-
+  const appState = useRef(AppState.currentState);  // App in foreground/background
   useEffect(() => {
     const initializeApp = async () => {
       await restoreSession();
     };
     initializeApp();
 
+    // Listen for whether app exits from foreground/returns from background
     const subscription = AppState.addEventListener("change", handleAppStateChange);
     return () => subscription.remove();
   }, []);
