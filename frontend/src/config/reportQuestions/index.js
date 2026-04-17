@@ -3,6 +3,7 @@ import { getHealthyQuestions } from "./healthyQuestions";
 
 export const getQuestions = (
   healthStatus,
+  sports,
   updateAnswer,
   answers,
   setInjured,
@@ -18,5 +19,5 @@ export const getQuestions = (
   }
 
   // Otherwise use healthy athlete questions
-  return getHealthyQuestions(updateAnswer, answers, setInjured, setIll, setConsulted, setTimeLoss, setTrained);
+  return getHealthyQuestions(updateAnswer, sports, answers, setInjured, setIll, setConsulted, setTimeLoss, setTrained);
 };

@@ -9,12 +9,6 @@ auth_bp = Blueprint('auth', __name__)
 auth_service = AuthService()
 db_service = DatabaseService()
 session_service = SessionService()
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
 logger = logging.getLogger(__name__)
 
 
@@ -111,13 +105,14 @@ def login():
         if response:
             # Create a new session for the user
             user_id = response.user.id
-            
+
             # Double-check user exists before creating session
             user_check = db_service.fetch("users", {"id": user_id})
             if not user_check.data or len(user_check.data) == 0:
-                logger.error(f"User ID {user_id} not found in database despite email match")
+                logger.error(
+                    f"User ID {user_id} not found in database despite email match")
                 return jsonify(error="User record mismatch"), 401
-            
+
             session_response = session_service.create_session(user_id=user_id)
             session_id = session_response.data[0]['session_id']
 
@@ -133,6 +128,7 @@ def login():
                 message="Login successful",
                 uuid=response.user.id,
                 access_token=response.session.access_token,
+                refresh_token=response.session.refresh_token,
                 user={
                     "name": user_data.data[0].get('name'),
                     "email": email,
@@ -274,3 +270,28 @@ def delete_account():
     except Exception as e:
         logger.error(f"Error deleting account: {e}")
         return jsonify(error=str(e)), 500
+
+
+@auth_bp.route('/refresh_token', methods=['POST'])
+def refresh_token():
+    try:
+        data = request.get_json()
+        refresh_token = data.get('refresh_token')
+
+        if not refresh_token:
+            return jsonify(error="Refresh token required"), 400
+
+        response = auth_service.supabase.refresh_session(refresh_token)
+
+        if response.session:
+            return jsonify(
+                access_token=response.session.access_token,
+                refresh_token=response.session.refresh_token,
+                expires_in=response.session.expires_in
+            ), 200
+        else:
+            return jsonify(error="Failed to refresh token"), 401
+
+    except Exception as e:
+        logger.error(f"Error refreshing token: {e}")
+        return jsonify(error="Invalid refresh token"), 401

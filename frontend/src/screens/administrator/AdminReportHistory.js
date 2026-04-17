@@ -6,11 +6,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import ReportCard from "../../components/ReportCard";
 import { exportToCSV } from "../../utils/exportToCSV";
+import SkeletonText from "../../components/skeleton/SkeletonText";
 
 export default function AdminReportHistoryScreen() {
   const [reportData, setReportData] = useState([]);
   const [activeFilter, setActiveFilter] = useState("");
   const [filteredReports, setFilteredReports] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const getReports = async () => {
     try {
@@ -46,6 +48,8 @@ export default function AdminReportHistoryScreen() {
       }
     } catch (error) {
       console.error("Error fetching report data: ", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,8 +70,8 @@ export default function AdminReportHistoryScreen() {
       // Filter by health status
       if (["Healthy", "At Risk", "Injured"].includes(activeFilter)) {
         if (activeFilter === "Healthy") {
-          filtered = filtered.filter((r) => 
-            r.new_availability === "Healthy" || 
+          filtered = filtered.filter((r) =>
+            r.new_availability === "Healthy" ||
             r.new_availability === "Fully available");
         } else {
           const statusMap = {
@@ -94,15 +98,15 @@ export default function AdminReportHistoryScreen() {
     // Get the data to export
     const response = await apiClient.get(`/api/admin/export_reports`);
     if (response && response.data) {
-      console.log("Exporting data...")
+      console.log("Exporting data...");
       const exportData = response.data.reports;
-      
+
       // Export data to CSV
-      exportToCSV(exportData)
+      exportToCSV(exportData);
     } else {
-      console.error("No data to export")
+      console.error("No data to export");
     }
-  }
+  };
 
   return (
     <SafeAreaView style={globalStyles.container} edges={["top"]}>
@@ -117,7 +121,7 @@ export default function AdminReportHistoryScreen() {
           >
             <Ionicons name="close" size={20} color={"#6b7280"} />
           </TouchableOpacity>
-          
+
           {/* Filter buttons */}
           <ScrollView
             style={styles.filtersContainer}
@@ -215,27 +219,39 @@ export default function AdminReportHistoryScreen() {
         </View>
 
         {/* List of reports with applied filters */}
-        <FlatList
-          data={filteredReports}
-          renderItem={({ item }) => (
-            <ReportCard
-              report={item}
-              isFollowUp={item.report_type === "followup"}
+        {loading ? (
+          <View style={{ flexDirection: "column", gap: 15 }}>
+            <SkeletonText height={70} borderRadius={15} marginBottom={15} />
+            <SkeletonText height={70} borderRadius={15} marginBottom={15} />
+            <SkeletonText height={70} borderRadius={15} marginBottom={15} />
+            <SkeletonText height={70} borderRadius={15} marginBottom={15} />
+            <SkeletonText height={70} borderRadius={15} marginBottom={15} />
+          </View>
+        ) : (
+          <>
+            <FlatList
+              data={filteredReports}
+              renderItem={({ item }) => (
+                <ReportCard
+                  report={item}
+                  isFollowUp={item.report_type === "followup"}
+                />
+              )}
+              keyExtractor={(item, index) => `${item.athlete_id}-${index}`}
+              contentContainerStyle={{ paddingBottom: 100 }}
+              ListEmptyComponent={
+                <View style={styles.emptyContainer}>
+                  <Text style={styles.emptyText}>No reports found</Text>
+                </View>
+              }
+              style={{
+                marginTop: 10,
+                borderTopWidth: 1,
+                borderColor: "#e5e7eb"
+              }}
             />
-          )}
-          keyExtractor={(item, index) => `${item.athlete_id}-${index}`}
-          contentContainerStyle={{ paddingBottom: 100 }}
-          ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>No reports found</Text>
-            </View>
-          }
-          style={{
-            marginTop: 10,
-            borderTopWidth: 1,
-            borderColor: "#e5e7eb"
-          }}
-        />
+          </>
+        )}
 
         {/* Export button fixed at bottom of page */}
         <TouchableOpacity

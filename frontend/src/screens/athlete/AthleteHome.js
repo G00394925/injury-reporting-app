@@ -43,7 +43,6 @@ export default function AthleteDashScreen() {
             );
             setConsecutiveReports(statusResponse.data.report_streak);
             setNumReports(statusResponse.data.reports_count);
-            console.log("Fetched injury data successfully.");
           }
 
           // Fetch events and check if any have passed
@@ -69,21 +68,17 @@ export default function AthleteDashScreen() {
             setNextEventTitle(nextEventResponse.data["title"]);
             setNextEventDate(nextEventResponse.data["date"]);
             setNextEventTime(nextEventResponse.data["time"]);
-          } else {
-            console.log(`No upcoming events for user ${uuid}`);
           }
 
           // Check if a new report is due, thereby enabling the report button if true.
           try {
-            console.log("Checking if report is due...");
             const reportDueResponse = await apiClient.get(
               `/api/health/check_due/${uuid}`
             );
-            console.log("Report due:", reportDueResponse.data);
             setReportDue(reportDueResponse.data);
           } catch (reportError) {
             console.error("Error fetching report due status:", reportError);
-            setReportDue(false); // Default to false if request fails
+            setReportDue(false);  // Default to false if request fails
           }
         } catch (error) {
           console.error("Error fetching data:", error);

@@ -11,14 +11,7 @@ from injury_codes import generate_code
 db_service = DatabaseService()
 session_service = SessionService()
 notification_service = NotificationService()
-
 health_bp = Blueprint('health', __name__)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
 logger = logging.getLogger(__name__)
 
 
@@ -79,14 +72,14 @@ def health_report():
                         if item.get('teams') and item['teams'].get('coach_id'):
                             coach_ids.add(item['teams']['coach_id'])
 
-                    # Fetch push tokens of each coach                    
+                    # Fetch push tokens of each coach
                     if coach_ids:
                         coach_response = db_service.fetch(
                             table="users",
                             modifiers={"in_": ("id", list(coach_ids))},
                             select="push_token"
                         )
-                        
+
                         # Notify coaches of athlete's injury
                         if coach_response and coach_response.data:
                             for coach in coach_response.data:
@@ -136,10 +129,10 @@ def health_report():
         try:
             # Update athlete's health status in the database
             db_service.update(
-                table="athletes", 
-                data=update_data, 
+                table="athletes",
+                data=update_data,
                 filters={"id": report_data['user']})
-                
+
             logger.info(
                 f"Updated athlete's status: Recovery date: {estimated_recovery_date}, Proposed status: {proposed_status.value}")
 
@@ -167,6 +160,7 @@ def health_report():
         submission_data = {
             "athlete_id": report_data['user'],
             "injured": report_data['answers'].get('injured'),
+            "sport": report_data['answers'].get('sport'),
             "rpe": report_data['answers'].get('rpe'),
             "ill": report_data['answers'].get('ill'),
             "injury_code": injury_code,

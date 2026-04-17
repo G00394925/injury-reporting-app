@@ -58,7 +58,6 @@ export default function CoachDashScreen() {
     try {
       // Ensure team exists
       if (!teamsData || teamsData.length === 0 || !teamsData[teamIndex]) {
-        console.log("No team data available");
         return;
       }
 
@@ -75,8 +74,6 @@ export default function CoachDashScreen() {
         );
 
         getTeamEvents(teamsData[teamIndex].team_id);
-      } else {
-        console.log("No athlete data received");
       }
     } catch (error) {
       console.error("Error fetching athlete data for team:", error);
@@ -106,17 +103,17 @@ export default function CoachDashScreen() {
           };
         });
 
-        formattedEvents.sort((a, b) => new Date(a.start.dateTime) - new Date(b.start.dateTime))
+        formattedEvents.sort((a, b) => new Date(a.start.dateTime) - new Date(b.start.dateTime));
 
         // Merge overlapping events to show general (un)availability periods
-        const mergedEvents = []
+        const mergedEvents = [];
         for (const event of formattedEvents) {
           if (mergedEvents.length === 0) {
             mergedEvents.push({ ...event });
             continue;
           }
 
-          const lastEvent = mergedEvents[mergedEvents.length - 1]
+          const lastEvent = mergedEvents[mergedEvents.length - 1];
           const lastEventEnd = new Date(lastEvent.end.dateTime);
           const currentEventStart = new Date(event.start.dateTime);
           const currentEventEnd = new Date(event.end.dateTime);
@@ -129,14 +126,12 @@ export default function CoachDashScreen() {
             }
           } else {
             // Otherwise it's a new unavailability block
-            mergedEvents.push({ ...event, id: `block-${mergedEvents.length}`})
+            mergedEvents.push({ ...event, id: `block-${mergedEvents.length}` });
           }
         }
 
         setEvents(mergedEvents);
 
-      } else {
-        console.log("No events data received");
       }
     } catch (error) {
       console.error("Error fetching team events:", error);
@@ -166,7 +161,7 @@ export default function CoachDashScreen() {
     <SafeAreaView style={globalStyles.container} edges={["top"]}>
       <View style={globalStyles.header}>
         <Text style={[globalStyles.headerText, { alignContent: "flex-start" }]}>
-          Hello Macdarach
+          Hello {userData?.name.split(' ')[0]}
         </Text>
       </View>
       <ScrollView style={globalStyles.contentContainer}>
@@ -344,7 +339,7 @@ export default function CoachDashScreen() {
                   events={events}
                   overlapType="overlap"
                   overlapEventsSpacing={0}
-                  
+
                 >
                   <CalendarHeader />
                   <CalendarBody renderEvent={renderEvent} />

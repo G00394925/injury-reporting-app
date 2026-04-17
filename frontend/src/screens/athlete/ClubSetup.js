@@ -21,10 +21,7 @@ export default function ClubSetup() {
     const fetchTeams = async () => {
       try {
         const response = await apiClient.get('/api/teams/get_teams');
-        console.log("Teams data: ", response.data);
-
         const alreadyJoined = await apiClient.get(`/api/athletes/team/${uuid}`);
-        console.log("Already joined team data: ", alreadyJoined.data);
 
         // Get IDs of teams athlete is already in
         const joinedTeamIds = alreadyJoined.data.teams.map(t => t.team_id);
@@ -64,7 +61,6 @@ export default function ClubSetup() {
         team_id: team_id,
         session: session
       });
-      console.log("Team joined successfully:", response.data);
       navigation.goBack();
     } catch (error) {
       console.error("Error joining team:", error);

@@ -4,21 +4,15 @@ from dotenv import load_dotenv
 import os
 import logging
 
+logger = logging.getLogger(__name__)
+
 
 class SupabaseService:
     """
     Singleton service to create a single instance of a Supabase client. 
     This client is used by AuthService and DatabaseService.
     """
-
     _instance = None
-
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
-    )
-    logger = logging.getLogger(__name__)
 
     def __new__(cls):
         if cls._instance is None:
@@ -37,11 +31,15 @@ class SupabaseService:
         try:
             assert self.url is not None, "SUPABASE_URL is not set in environment variables."
             assert self.key is not None, "SUPABASE_KEY is not set in environment variables."
+            logger.info("Supabase credentials loaded")
 
-            options = SyncClientOptions(auto_refresh_token=True, persist_session=False)
-            self.client: Client = create_client(self.url, self.key, options=options)
-
+            options = SyncClientOptions(
+                auto_refresh_token=True, persist_session=False)
+            self.client: Client = create_client(
+                self.url, self.key, options=options)
             self.admin_auth_client = self.client.auth.admin
+
+            logger.info("Supabase client created")
 
         except AssertionError as e:
             raise RuntimeError(f"Supabase initialization error: {e}")

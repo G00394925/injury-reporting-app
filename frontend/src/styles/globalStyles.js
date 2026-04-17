@@ -1,5 +1,8 @@
 import { StyleSheet } from "react-native";
 
+// Global styles to be used across most screens defining overall
+// app appearance such as container styles, header styles, modal
+// views, etc.
 export const globalStyles = StyleSheet.create({
   container: {
     flex: 1,

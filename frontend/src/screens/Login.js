@@ -28,11 +28,7 @@ export default function LoginScreen() {
   };
 
   const handleLogin = async () => {
-    console.log("=== LOGIN ATTEMPT START ===");
-    console.log("Email:", email);
-
     if (!validateForm()) {
-      console.log("ERROR: Missing email or password");
       return;
     }
     setLoading(true);
@@ -50,46 +46,15 @@ export default function LoginScreen() {
         navigation.navigate("ConfirmRegistration", { email });
       } else {
         // Save user data to context
-        const { uuid, user, session_id, access_token } = response.data;
-        login(uuid, user, session_id, access_token);
+        const { uuid, user, session_id, access_token, refresh_token } = response.data;
+        login(uuid, user, session_id, access_token, refresh_token);
       }
 
     } catch (error) {
-      console.log("=== LOGIN ERROR ===");
-      console.error("Error type:", error.constructor.name);
-      console.error("Error message:", error.message);
-      console.error("Error code:", error.code);
-
-      if (error.response) {
-        // Server responded with error
-        console.error("Response status:", error.response.status);
-        console.error("Response data:", error.response.data);
-        console.error("Response headers:", error.response.headers);
-
-        if (error.response.data.error == "Invalid login credentials") {
-          console.log("ERROR: Invalid login credentials");
-          setErrors({ general: "Incorrect email or password" });
-        }
-      } else if (error.request) {
-        // Request made but no response
-        console.error("Request made but no response received");
-        console.error("Request:", error.request);
-      } else {
-        // Something else happened
-        console.error("Error setting up request:", error.message);
-      }
-
-      const errorMessage =
-        error.response?.data?.error ||
-        error.response?.data?.message ||
-        error.message ||
-        "Login failed. Please try again.";
-
-      console.log("Showing error alert:", errorMessage);
-      Alert.alert("Error", errorMessage);
+      console.error("Error logging in:", error);
+      Alert.alert("Error", error);
     } finally {
       setLoading(false);
-      console.log("=== LOGIN ATTEMPT END ===");
     }
   };
 
@@ -110,8 +75,8 @@ export default function LoginScreen() {
         keyboardType="email-address"
         autoCapitalize="none"
       />
-      {errors.confirmPassword && (
-        <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+      {errors.email && (
+        <Text style={styles.errorText}>{errors.email}</Text>
       )}
 
       <TextInput
@@ -122,8 +87,8 @@ export default function LoginScreen() {
         onChangeText={setPassword}
         secureTextEntry
       />
-      {errors.confirmPassword && (
-        <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+      {errors.password && (
+        <Text style={styles.errorText}>{errors.password}</Text>
       )}
 
       <Button
@@ -136,28 +101,19 @@ export default function LoginScreen() {
 
       <Button
         title="Don't have an account? Register"
-        type="clear"
+        buttonStyle={{
+          ...styles.button,
+          backgroundColor: "#001a79",
+        }}
         onPress={() => navigation.navigate("Register")}
-        containerStyle={{ marginTop: 15 }}
+        containerStyle={{ width: "90%", marginTop: 20 }}
       />
 
-      {/* DEBUG ZONE */}
+      {/* TODO: Forgot Password functionality */}
       <Button
-        title="DEBUG: Sign in Athlete"
-        onPress={() => {
-          setEmail("nogegi1021@emaxasp.com");
-          setPassword("SuperAthlete!1");
-          handleLogin();
-        }}
-      />
-
-      <Button
-        title="DEBUG: Sign in Coach"
-        onPress={() => {
-          setEmail("peyij65076@dubokutv.com");
-          setPassword("SuperCoach!1");
-          handleLogin();
-        }}
+        title="Forgot password?"
+        type="clear"
+        containerStyle={{ width: "80%", marginTop: 20 }}
       />
     </View>
   );
@@ -173,7 +129,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: "bold",
-    marginBottom: 40
+    marginBottom: 40,
+    fontFamily: "Rubik"
   },
   input: {
     width: "90%",
@@ -184,7 +141,8 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: "#1d65ecff",
     fontSize: 16,
-    color: "#000000"
+    color: "#000000",
+    fontFamily: "Rubik"
   },
   button: {
     padding: 15,

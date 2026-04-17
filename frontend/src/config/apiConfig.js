@@ -8,30 +8,30 @@ const getBaseURL = () => {
   if (__DEV__) {
     // Dynamically get the IP address of the machine running the Expo server
     const debuggerHost = Constants.expoConfig?.hostUri;
-    
+
     if (debuggerHost) {
       const localhost = debuggerHost.split(":")[0];
       return `http://${localhost}:5000`;
     }
-    
+
     // Fallback for simulators/emulators if hostUri isn't available
     if (Platform.OS === "android") {
       return "http://10.0.2.2:5000"; // Android emulator localhost
     }
     return "http://localhost:5000"; // iOS simulator localhost
   }
-  return "https://injury-reporting-app.onrender.com"
+  return "https://injury-reporting-app.onrender.com";
 };
 
-const apiClient = axios.create({})
+const apiClient = axios.create({});
 const baseUrl = getBaseURL();
 
-apiClient.defaults.timeout = 30000;
+apiClient.defaults.timeout = 60000;
 apiClient.interceptors.request.use(
   async function (config) {
-    
+
     // Get access token from storage and attach to request headers
-    const token = await SecureStore.getItemAsync("accessToken")
+    const token = await SecureStore.getItemAsync("accessToken");
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
@@ -52,15 +52,41 @@ apiClient.interceptors.response.use(
   (res) => {
     return res;
   },
-  (error) => {
-    if (error?.response?.status === 403) {
-      console.error("Forbidden access - token may be invalid or expired");
-    } 
-    if (error?.response?.status === 401) {
-      console.error("Unauthorized - token may be missing or invalid");
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Unauthorised - Retry with new JWT 
+    if (error?.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshToken = await SecureStore.getItemAsync("refreshToken");
+        console.log("Attempting retry. Refresh token exists:", !!refreshToken);
+        if (!refreshToken) {
+          throw new Error("No refresh token available");
+        }
+
+        const response = await axios.post(`${baseUrl}/api/auth/refresh_token`, {
+          refresh_token: refreshToken
+        });
+
+        await SecureStore.setItemAsync("accessToken", response.data.access_token);
+        await SecureStore.setItemAsync("refreshToken", response.data.refresh_token);
+
+        originalRequest.headers["Authorization"] = `Bearer ${response.data.access_token}`;
+        return apiClient(originalRequest);
+
+      } catch (refreshError) {
+        console.error("Token refresh failed:", refreshError);
+        // Token refresh failed, force logout
+        await SecureStore.deleteItemAsync("accessToken");
+        await SecureStore.deleteItemAsync("refreshToken");
+        throw refreshError;
+      }
     }
-    throw error;
+
+    return Promise.reject(error);
   }
-)
+);
 
 export default apiClient;

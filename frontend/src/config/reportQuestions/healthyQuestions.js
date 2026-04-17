@@ -4,7 +4,7 @@ import BodyMap from "../../components/BodyMap";
 import DaysPicker from "../../components/DaysPicker";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 
-export const getHealthyQuestions = ( updateAnswer, answers, setInjured, setIll, setConsulted, setTimeLoss, setTrained ) => [
+export const getHealthyQuestions = (updateAnswer, sports, answers, setInjured, setIll, setConsulted, setTimeLoss, setTrained) => [
   // List of Questions for report
   {
     index: 0,
@@ -72,6 +72,20 @@ export const getHealthyQuestions = ( updateAnswer, answers, setInjured, setIll, 
   },
   {
     index: 1,
+    text: "What sport were you playing?",
+    component: (
+      <MultiChoice
+        options={sports.map((sport) => sport.sport)}
+        value={answers.sport}
+        onValueChange={(value) => updateAnswer("sport", value)}
+      />
+    ),
+    validate: (answers) => answers.sport !== null,
+    // Only show this question if the following condition is met
+    condition: () => answers.injured === "Yes"
+  },
+  {
+    index: 2,
     text: "Describe the injury onset",
     showButton: true,
     component: (
@@ -87,12 +101,10 @@ export const getHealthyQuestions = ( updateAnswer, answers, setInjured, setIll, 
       />
     ),
     validate: (answers) => answers.injury_onset !== null,
-
-    // Only show this question if the following condition is met
     condition: () => answers.injured === "Yes"
   },
   {
-    index: 2,
+    index: 3,
     text: "Where did you get injured?",
     subtext: "Tap the area on the body map.",
     component: (
@@ -105,50 +117,50 @@ export const getHealthyQuestions = ( updateAnswer, answers, setInjured, setIll, 
     condition: () => answers.injured === "Yes"
   },
   {
-    index: 3,
+    index: 4,
     text: "Can you describe the type of injury?",
     component: (
-        <MultiChoice
-          options={[
-            "Muscle Injury",
-            "Nerve Injury",
-            "Fracture",
-            "Joint Sprain",
-            "Abrasion",
-            "Laceration",
-            "Unknown"
-          ]}
-          value = {answers.injury_type}
-          onValueChange={(value) => {updateAnswer("injury_type", value)}}
-        />
+      <MultiChoice
+        options={[
+          "Muscle Injury",
+          "Nerve Injury",
+          "Fracture",
+          "Joint Sprain",
+          "Abrasion",
+          "Laceration",
+          "Unknown"
+        ]}
+        value={answers.injury_type}
+        onValueChange={(value) => { updateAnswer("injury_type", value); }}
+      />
     ),
     validate: (answers) => answers.injury_type !== null,
     condition: () => answers.injured === "Yes"
   },
   {
-    index: 4,
+    index: 5,
     text: "Rate your discomfort.",
     subtext: null,
-    component: 
-    answers.injured === "Yes" ? (
-      <RpeSlider
-        value={answers.rpe}
-        onValueChange={(value) => updateAnswer("rpe", value)}
-        title="Rate your current pain level"
-        labels={["Very Light / None", "Light", "Moderate", "Intense", "Very Intense"]}
-      />
-    ) : (
-      <RpeSlider
-        value={answers.rpe}
-        onValueChange={(value) => updateAnswer("rpe", value)}
-        title="Describe your illness"
-        labels={["Light illness", "Manageable", "Moderate", "Quite ill", "Very ill"]}
-      />
-    ),
+    component:
+      answers.ill === "Yes" ? (
+        <RpeSlider
+          value={answers.rpe}
+          onValueChange={(value) => updateAnswer("rpe", value)}
+          title="Describe your illness"
+          labels={["Light illness", "Manageable", "Moderate", "Quite ill", "Very ill"]}
+        />
+      ) : (
+        <RpeSlider
+          value={answers.rpe}
+          onValueChange={(value) => updateAnswer("rpe", value)}
+          title="Rate your current pain level"
+          labels={["Very Light / None", "Light", "Moderate", "Intense", "Very Intense"]}
+        />
+      ),
     validate: () => true
   },
   {
-    index: 5,
+    index: 6,
     component: (
       <View style={styles.compactContainer}>
         <View>
@@ -183,20 +195,20 @@ export const getHealthyQuestions = ( updateAnswer, answers, setInjured, setIll, 
         )}
 
         {answers.consulted === "No" && (
-            <View>
+          <View>
             <Text style={styles.compactQuestionText}>
-                Do you expect to miss any activities?
+              Do you expect to miss any activities?
             </Text>
             <MultiChoice
-                compact={true}
-                options={["Yes", "No"]}
-                value={answers.timeloss}
-                onValueChange={(value) => {
-                    updateAnswer("timeloss", value);
-                    setTimeLoss(value === "Yes");
-                }}
+              compact={true}
+              options={["Yes", "No"]}
+              value={answers.timeloss}
+              onValueChange={(value) => {
+                updateAnswer("timeloss", value);
+                setTimeLoss(value === "Yes");
+              }}
             />
-            </View>
+          </View>
         )}
 
         {answers.timeloss === "Yes" && (
@@ -239,14 +251,14 @@ export const getHealthyQuestions = ( updateAnswer, answers, setInjured, setIll, 
         answers.consulted &&
         answers.timeloss === "Yes" &&
         answers.expected_outage === null
-      ) 
-        return false;  
+      )
+        return false;
       return true;
     },
     condition: () => answers.injured === "Yes" || answers.ill === "Yes"
   },
   {
-    index: 6,
+    index: 7,
     text: "Have you any additional notes or comments?",
     component: (
       <View style={styles.commentBoxContainer}>

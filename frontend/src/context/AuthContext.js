@@ -1,5 +1,4 @@
 import React, { useContext, createContext, useState } from "react";
-import axios from "axios";
 import apiClient from "../config/apiConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from 'expo-secure-store';
@@ -11,39 +10,40 @@ export const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [session, setSession] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
 
-  const login = async (userId, user, session, accessToken) => {
+  const login = async (userId, user, session, accessToken, refreshToken) => {
     // Store session in AsyncStorage
     await SecureStore.setItemAsync("uuid", String(userId));
     await SecureStore.setItemAsync("session", String(session));
-    await SecureStore.setItemAsync("accessToken", accessToken)
+    await SecureStore.setItemAsync("accessToken", accessToken);
+    await SecureStore.setItemAsync("refreshToken", refreshToken);
     await AsyncStorage.setItem("userData", JSON.stringify(user));
-    
+
     setUuid(userId);
     setUserData(user);
     setSession(session);
     setIsAuthenticated(true);
 
     const check = await SecureStore.getItemAsync("accessToken");
-    console.log("Saved access token:", check ? "✓ Success" : "✗ Failed");
   };
 
   const logout = async () => {
     try {
       // End session
       if (session) {
-        console.log("Ending session");
         await apiClient.post('/api/auth/logout', { session });
       }
     } catch (error) {
       console.error("Error ending session:", error);
+      throw error; // Re-throw to notify caller of logout failure
     }
 
     // Clear from AsyncStorage/SecureStore
     await SecureStore.deleteItemAsync("uuid");
     await SecureStore.deleteItemAsync("session");
     await SecureStore.deleteItemAsync("accessToken");
+    await SecureStore.deleteItemAsync("refreshToken");
     await AsyncStorage.removeItem("userData");
 
     setIsAuthenticated(false);
@@ -67,11 +67,11 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
       }
     } catch (error) {
-      console.error("Error retoring session:", error)
+      console.error("Error restoring session:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <AuthContext.Provider

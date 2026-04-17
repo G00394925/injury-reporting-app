@@ -1,17 +1,19 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Platform, Alert } from "react-native";
+import { StyleSheet, Text, View, Modal, TextInput, TouchableOpacity, Platform, Alert } from "react-native";
 import { Button } from "@rneui/themed";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
 import { KeyboardAvoidingView } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import apiClient from "../config/apiConfig";
 import { useAuth } from "../context/AuthContext";
+import { globalStyles } from "../styles/globalStyles";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function RegisterScreen() {
   const [role, setRole] = useState("Athlete");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [gender, setGender] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [dobDay, setDobDay] = useState("");
@@ -23,6 +25,7 @@ export default function RegisterScreen() {
   const [errors, setErrors] = useState({});
 
   const { login } = useAuth();
+  const [infoModalVisible, setInfoModalVisible] = useState(false);
 
   // Validate registration form
   const validateForm = () => {
@@ -97,20 +100,14 @@ export default function RegisterScreen() {
         email: email,
         password: password,
         dob: dob,
+        gender: gender,
         user_type: role
       });
-
-      console.log("Registration Response:", response.data);
-
       navigation.navigate("ConfirmRegistration", { email: email });
 
     } catch (error) {
       console.error("Registration Error:", error);
-      const errorMessage =
-        error.response?.data?.error ||
-        error.response?.data?.message ||
-        "Registration failed. Please try again.";
-      Alert.alert("Error", errorMessage);
+      Alert.alert("Registration Failed, try again later.");
     } finally {
       setLoading(false);
     }
@@ -131,7 +128,7 @@ export default function RegisterScreen() {
         >
           <Text style={{ fontSize: 42, fontWeight: "bold" }}>Sign up</Text>
           <View style={styles.textBoxContainer}>
-            <Text style={styles.dobText}>I am a: </Text>
+            <Text style={styles.dobText}>I am: </Text>
             <View style={styles.typeContainer}>
               <TouchableOpacity
                 style={[
@@ -146,7 +143,7 @@ export default function RegisterScreen() {
                     role === "Athlete" && styles.typeTextActive
                   ]}
                 >
-                  Athlete
+                  An Athlete
                 </Text>
               </TouchableOpacity>
 
@@ -163,7 +160,7 @@ export default function RegisterScreen() {
                     role === "Coach" && styles.typeTextActive
                   ]}
                 >
-                  Coach
+                  A Coach
                 </Text>
               </TouchableOpacity>
             </View>
@@ -230,6 +227,72 @@ export default function RegisterScreen() {
             {errors.confirmPassword && (
               <Text style={styles.errorText}>{errors.confirmPassword}</Text>
             )}
+            <View style={styles.genderContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.genderButton,
+                  gender === "Male" && styles.typeActive
+                ]}
+                onPress={() => setGender("Male")}
+              >
+                <Text
+                  style={[
+                    styles.genderText,
+                    gender === "Male" && styles.typeTextActive
+                  ]}
+                >
+                  Male
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.genderButton,
+                  gender === "Female" && styles.typeActive
+                ]}
+                onPress={() => setGender("Female")}
+              >
+                <Text
+                  style={[
+                    styles.genderText,
+                    gender === "Female" && styles.typeTextActive
+                  ]}
+                >
+                  Female
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.genderButton,
+                  gender === "Other" && styles.typeActive
+                ]}
+                onPress={() => setGender("Other")}
+              >
+                <Text
+                  style={[
+                    styles.genderText,
+                    gender === "Other" && styles.typeTextActive
+                  ]}
+                >
+                  Other
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.genderButton,
+                  gender === "Rather not say" && styles.typeActive
+                ]}
+                onPress={() => setGender("Rather not say")}
+              >
+                <Text
+                  style={[
+                    styles.genderText,
+                    gender === "Rather not say" && styles.typeTextActive
+                  ]}
+                >
+                  Rather not say
+                </Text>
+              </TouchableOpacity>
+            </View>
 
             <Text style={styles.dobText}>Please enter your date of birth</Text>
             <View
@@ -303,13 +366,56 @@ export default function RegisterScreen() {
             titleStyle={{ color: "#ffffffff" }}
             buttonStyle={{
               ...styles.registerButton,
-              backgroundColor: "rgba(107, 107, 107, 1)",
+              backgroundColor: "#001a79",
               marginTop: 20
             }}
             containerStyle={{ width: "90%" }}
             onPress={() => navigation.navigate("Login")}
           />
+
+          <Button
+            title="How do we use this information?"
+            type="clear"
+            onPress={() => setInfoModalVisible(true)}
+            containerStyle={{ marginTop: 15 }}
+          />
         </ScrollView>
+        <Modal
+          visible={infoModalVisible}
+          animationType="fade"
+          transparent={true}
+          onRequestClose={() => setInfoModalVisible(false)}
+          statusBarTranslucent={true}
+          navigationBarTranslucent={true}
+        >
+          <View style={globalStyles.modalOverlay}>
+
+            <View style={globalStyles.modalContent}>
+              <View style={globalStyles.modalHeader}>
+                <Text style={globalStyles.modalTitle}>Your information</Text>
+                <TouchableOpacity onPress={() => setInfoModalVisible(false)}>
+                  <Ionicons name="close" size={28} color="#333" />
+                </TouchableOpacity>
+              </View>
+              <ScrollView style={globalStyles.modalBody}>
+                <Text style={{ fontFamily: "Rubik", fontSize: 16, color: "#333" }}>
+                  We ask for this information to better understand the information and context of any injury reports you submit.
+                  Your name and in-app timetable will be visible to your coaches, but your age, gender, and detailed injury information
+                  will be anonymous and confidential which will be used for no other purpose than to help us analyse injury trends
+                  and patterns across different demographics. We ask for your gender due to injury disparities that exist between
+                  men and women's sports, however you may choose not to disclose this information if you prefer.
+                </Text>
+                <Text style={{ fontFamily: "Rubik", fontSize: 16, color: "#333", marginTop: 15 }}>
+                  Your email is strictly used for account management and
+                  authentication purposes.
+
+                  All of your information will be automatically removed should you choose to delete your account.
+                  We will never share your information with any third party.
+                </Text>
+              </ScrollView>
+            </View>
+          </View>
+        </Modal>
       </KeyboardAvoidingView>
     </View>
   );
@@ -333,8 +439,9 @@ const styles = StyleSheet.create({
   textBox: {
     padding: 15,
     borderRadius: 30,
+    fontFamily: "Rubik",
     backgroundColor: "#ffffffff",
-    width: "90%",
+    width: "100%",
     marginBottom: 15,
     borderColor: "#1d65ecff",
     borderWidth: 0.5,
@@ -380,11 +487,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 15,
     fontSize: 16,
-    textAlign: "center"
+    textAlign: "center",
+    fontFamily: "Rubik"
   },
   typeContainer: {
     flexDirection: "row",
-    width: "90%",
+    width: "100%",
     marginBottom: 20,
     borderRadius: 30,
     borderColor: "#1d65ecff",
@@ -398,16 +506,40 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffffff",
     justifyContent: "center"
   },
+  genderContainer: {
+    flexDirection: "row",
+    width: "100%",
+    marginBottom: 20,
+    gap: 10
+  },
+  genderButton: {
+    flex: 1,
+    paddingVertical: 3,
+    borderRadius: 30,
+    borderColor: "#1d65ecff",
+    borderWidth: 0.5,
+    alignItems: "center",
+    backgroundColor: "#ffffffff",
+    justifyContent: "center"
+  },
   typeActive: {
     backgroundColor: "#1d65ecff"
   },
   typeText: {
     fontSize: 16,
-    color: "#1d65ecff"
+    color: "#1d65ecff",
+    fontFamily: "Rubik"
+  },
+  genderText: {
+    fontSize: 14,
+    textAlign: "center",
+    margin: 3,
+    color: "#1d65ecff",
+    fontFamily: "Rubik"
   },
   typeTextActive: {
     color: "#ffffffff",
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   registerButton: {
     padding: 15,

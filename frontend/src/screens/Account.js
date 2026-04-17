@@ -25,6 +25,7 @@ export default function AccountScreen() {
     logout();
   };
 
+  // Absolutely ensure that user wishes to delete their account
   const checkConfirmationText = (text) => {
     if (text === "DELETE") {
       setButtonDisabled(false);
@@ -40,7 +41,6 @@ export default function AccountScreen() {
       });
 
       if (response) {
-        console.log("Account deleted!");
         setShowDeleteConfirmation(false);
         logout();
       }

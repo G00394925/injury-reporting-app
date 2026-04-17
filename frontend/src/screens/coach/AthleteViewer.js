@@ -1,4 +1,4 @@
-import {useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { CalendarContainer, CalendarBody, CalendarHeader } from "@howljs/calendar-kit";
@@ -16,20 +16,19 @@ export default function AthleteViewerScreen({ route }) {
 
   const fetchAthleteEvents = async () => {
     try {
-      const response = await apiClient.get(`/api/events/get/${athlete.athlete_id}`)
+      const response = await apiClient.get(`/api/events/get/${athlete.athlete_id}`);
 
       if (response.data) {
-        console.log("Fetched events for athlete " + athlete.athlete_id);
         const formattedEvents = response.data.map(event => {
           const eventDate = new Date(event.event_date);
-          const [startHour, startMinute] = event.start_time.split(":")
-          const [endHour, endMinute] = event.end_time.split(":")
-          
+          const [startHour, startMinute] = event.start_time.split(":");
+          const [endHour, endMinute] = event.end_time.split(":");
+
           const startDate = new Date(eventDate);
-          startDate.setHours(parseInt(startHour), parseInt(startMinute), 0, 0)
+          startDate.setHours(parseInt(startHour), parseInt(startMinute), 0, 0);
 
           const endDate = new Date(eventDate);
-          endDate.setHours(parseInt(endHour), parseInt(endMinute), 0, 0)
+          endDate.setHours(parseInt(endHour), parseInt(endMinute), 0, 0);
 
           return {
             id: event.event_id.toString(),
@@ -38,15 +37,15 @@ export default function AthleteViewerScreen({ route }) {
             start: { dateTime: startDate.toISOString() },
             end: { dateTime: endDate.toISOString() },
             color: event.type === "Training" ? "#2038be7f" : "#28a74679",
-            borderColor: event.type === "Training" ? "#223392" : "#308a45"          
+            borderColor: event.type === "Training" ? "#223392" : "#308a45"
           };
         });
         setAthleteEvents(formattedEvents);
       }
     } catch (error) {
-      console.error("Error fetching events: ", error)
+      console.error("Error fetching events: ", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -55,42 +54,42 @@ export default function AthleteViewerScreen({ route }) {
   }, [athlete.athleteId]);
 
   const renderEvent = useCallback((event) => (
-      <View style={{
-        width: "100%",
-        height: "100%",
-        padding: 5,
-        backgroundColor: event.color,
-        borderLeftColor: event.borderColor,
-        borderLeftWidth: 5,
-        borderRadius: 4
+    <View style={{
+      width: "100%",
+      height: "100%",
+      padding: 5,
+      backgroundColor: event.color,
+      borderLeftColor: event.borderColor,
+      borderLeftWidth: 5,
+      borderRadius: 4
+    }}
+    >
+      <Text style={{
+        color: "#ffffff",
+        fontSize: 13,
+        fontWeight: "bold",
+        fontFamily: "Rubik"
       }}
       >
-        <Text style={{
-          color: "#ffffff",
-          fontSize: 13,
-          fontWeight: "bold",
-          fontFamily: "Rubik"
-        }}
-        >
-          {event.title}
-        </Text>
-        <Text style={{
-          color: "#fff",
-          fontSize: 12,
-          fontFamily: "Rubik"
-        }}
-        >
-          {event.sport}
-        </Text>
-      </View>
-    ), []
-  )
+        {event.title}
+      </Text>
+      <Text style={{
+        color: "#fff",
+        fontSize: 12,
+        fontFamily: "Rubik"
+      }}
+      >
+        {event.sport}
+      </Text>
+    </View>
+  ), []
+  );
 
   return (
     <SafeAreaView style={globalStyles.container} edges={["top"]}>
       <View style={globalStyles.header}>
         <TouchableOpacity
-          style={styles.backButton} 
+          style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
           <Ionicons name="arrow-back" size={28} color="white" />
@@ -99,7 +98,7 @@ export default function AthleteViewerScreen({ route }) {
       </View>
       <ScrollView style={styles.contentContainer}>
         <View style={styles.calendarView}>
-          <CalendarContainer 
+          <CalendarContainer
             theme={calendarTheme}
             numberOfDays={4}
             hourWidth={50}
@@ -118,7 +117,7 @@ export default function AthleteViewerScreen({ route }) {
         </View>
       </ScrollView>
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -143,4 +142,4 @@ const styles = StyleSheet.create({
     marginTop: -8,
     marginBottom: -10
   }
-})
+});

@@ -2,11 +2,12 @@ from services.database_service import DatabaseService
 from datetime import datetime
 import logging
 
+logger = logging.getLogger(__name__)
+
 
 class SessionService:
     def __init__(self):
         self.db_service = DatabaseService()
-        self.logger = logging.getLogger(__name__)
 
     def create_session(self, user_id: str) -> dict:
         """Create new session when a user logs in."""
@@ -15,10 +16,10 @@ class SessionService:
                 "user_id": user_id,
                 "session_start": datetime.now().isoformat()
             })
-            self.logger.info(f"Session created for user_id: {user_id}")
+            logger.info(f"Session created for user_id: {user_id}")
             return response
         except Exception as e:
-            self.logger.error(
+            logger.error(
                 f"Error creating session for user_id {user_id}: {e}")
             raise e
 
@@ -30,10 +31,10 @@ class SessionService:
                 data={"session_end": datetime.now().isoformat()},
                 filters={"session_id": session_id}
             )
-            self.logger.info(f"Session {session_id} ended.")
+            logger.info(f"Session {session_id} ended.")
             return response
         except Exception as e:
-            self.logger.error(f"Error ending session {session_id}: {e}")
+            logger.error(f"Error ending session {session_id}: {e}")
             raise e
 
     def log_event(self, session_id: str, event_type: str, event_data: dict = None, endpoint: str = None) -> dict:
@@ -46,10 +47,10 @@ class SessionService:
                 "endpoint": endpoint,
                 "timestamp": datetime.now().isoformat(),
             })
-            self.logger.info(
+            logger.info(
                 f"Event logged: {event_type} for session_id: {session_id}")
             return response
         except Exception as e:
-            self.logger.error(
+            logger.error(
                 f"Error logging event for session_id {session_id}: {e}")
             raise e
