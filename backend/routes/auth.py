@@ -281,7 +281,7 @@ def refresh_token():
         if not refresh_token:
             return jsonify(error="Refresh token required"), 400
 
-        response = auth_service.supabase.refresh_session(refresh_token)
+        response = auth_service.supabase.auth.refresh_session(refresh_token)
 
         if response.session:
             return jsonify(

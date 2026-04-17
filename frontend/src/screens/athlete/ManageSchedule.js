@@ -233,7 +233,7 @@ export default function ManageScheduleScreen() {
             theme={calendarTheme}
             numberOfDays={4}
             hourWidth={50}
-            timeInterval={60}
+            timeInterval={30}
             start={480}
             end={1380}
             initialTimeIntervalHeight={60}

@@ -2,6 +2,7 @@ import { Platform } from "react-native";
 import Constants from "expo-constants";
 import axios from "axios";
 import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const getBaseURL = () => {
   // Deployed backend URL for production
@@ -81,6 +82,9 @@ apiClient.interceptors.response.use(
         // Token refresh failed, force logout
         await SecureStore.deleteItemAsync("accessToken");
         await SecureStore.deleteItemAsync("refreshToken");
+        await SecureStore.deleteItemAsync("uuid");
+        await SecureStore.deleteItemAsync("session");
+        await AsyncStorage.removeItem("userData");
         throw refreshError;
       }
     }

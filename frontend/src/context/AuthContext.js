@@ -54,20 +54,24 @@ export const AuthProvider = ({ children }) => {
 
   const restoreSession = async () => {
     try {
-      const [storedUuid, storedSession, storedUserData] = await Promise.all([
+      const [storedUuid, storedSession, storedUserData, storedAccessToken] = await Promise.all([
         SecureStore.getItemAsync("uuid"),
         SecureStore.getItemAsync("session"),
-        AsyncStorage.getItem("userData")
+        AsyncStorage.getItem("userData"),
+        SecureStore.getItemAsync("accessToken")
       ]);
 
-      if (storedUuid && storedSession && storedUserData) {
+      if (storedUuid && storedSession && storedUserData && storedAccessToken) {
         setUuid(storedUuid);
         setSession(storedSession);
         setUserData(JSON.parse(storedUserData));
         setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
       }
     } catch (error) {
       console.error("Error restoring session:", error);
+      setIsAuthenticated(false);
     } finally {
       setIsLoading(false);
     }
