@@ -22,14 +22,14 @@ class DatabaseService:
         Insert data into a specified table.
 
         Args:
-            - table: Name of the table to insert into
-            - data: Dictionary containing the data to insert
+            table: Name of the table to insert into
+            data: Dictionary containing the data to insert
 
         Returns:
-            - Response from the database operation
+            Response from the database operation
 
         Raises:
-            - Exception: If insert operation fails
+            Exception: If insert operation fails
         """
         try:
             response = self.supabase.table(table).insert(data).execute()
