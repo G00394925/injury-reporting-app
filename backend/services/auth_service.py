@@ -138,7 +138,19 @@ class AuthService:
             raise e
 
     def delete_account(self, uuid: str):
+        """
+        Permanently delete a user's account at their request. All user data is removed
+        from the database and auth system. This action is irreversible.
 
+        Args:
+            uuid (str): The unique identifier of the user to delete.
+
+        Returns:
+            JSON response indicating success
+        
+        Raises:
+            Exception: If account deletion fails.
+        """
         try:
             logger.info(
                 f"User {uuid} has requested the deletion of their account")

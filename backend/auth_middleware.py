@@ -7,7 +7,15 @@ logger = logging.getLogger(__name__)
 
 
 def check_auth():
-    """Verify token and return None on success, or error response on failure"""
+    """
+    This method provides the authentication middle-ware that protects the Flask routes.
+    Checks for the presence of a JWT token in the request headers and verifies it with Supabase Auth.
+    Ensures that only authenticated users can access protected routes as well as their own data.
+
+    Returns:
+        None on success, or error response on failure
+    """
+    
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         logger.warning("Missing or invalid Authorization header")
