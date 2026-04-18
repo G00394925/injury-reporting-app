@@ -15,6 +15,7 @@ import { useFonts } from "expo-font";
 import { useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import { AuthProvider, useAuth } from "./src/context/AuthContext";
+import { setLogoutCallback } from "./src/config/apiConfig";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import AccountScreen from "./src/screens/Account";
 import ClubSetup from "./src/screens/athlete/ClubSetup";
@@ -144,7 +145,12 @@ function AppNavigator() {
   usePushNotifications();
 
   // Check authentication and user type
-  const { isAuthenticated, userData, restoreSession, session, isLoading } = useAuth();
+  const { isAuthenticated, userData, restoreSession, session, isLoading, logout } = useAuth();
+  
+  useEffect(() => {
+    setLogoutCallback(logout)
+  }, [logout]);
+  
   const userType = userData?.user_type;
   const appState = useRef(AppState.currentState);  // App in foreground/background
   useEffect(() => {

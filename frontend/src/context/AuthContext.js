@@ -29,17 +29,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    try {
-      // End session
-      if (session) {
+    // Try to end session on server, but don't fail if it can't
+    if (session) {
+      try {
         await apiClient.post('/api/auth/logout', { session });
+      } catch (error) {
+        console.warn("Could not end session on server (token may be invalid):", error);
+        // Continue to clear local storage anyway
       }
-    } catch (error) {
-      console.error("Error ending session:", error);
-      throw error; // Re-throw to notify caller of logout failure
     }
 
-    // Clear from AsyncStorage/SecureStore
+    // Always clear from AsyncStorage/SecureStore
     await SecureStore.deleteItemAsync("uuid");
     await SecureStore.deleteItemAsync("session");
     await SecureStore.deleteItemAsync("accessToken");
@@ -67,11 +67,11 @@ export const AuthProvider = ({ children }) => {
         setUserData(JSON.parse(storedUserData));
         setIsAuthenticated(true);
       } else {
-        setIsAuthenticated(false);
+        logout();
       }
     } catch (error) {
       console.error("Error restoring session:", error);
-      setIsAuthenticated(false);
+      logout();
     } finally {
       setIsLoading(false);
     }
