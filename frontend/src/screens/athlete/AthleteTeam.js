@@ -23,9 +23,7 @@ export default function AthleteTeamScreen() {
       const fetchTeamDetails = async () => {
         setLoading(true);
         try {
-          const response = await apiClient.get(
-            `/api/athletes/team/${uuid}`
-          );
+          const response = await apiClient.get('/api/athletes/team');
 
           // Athlete is not in a team - redirect to club setup.
           if (response.data == null) {
@@ -62,7 +60,6 @@ export default function AthleteTeamScreen() {
   const handleTeamLeave = async () => {
     try {
       const response = await apiClient.post(`/api/athletes/leave_team`, {
-        athlete_id: uuid,
         team_id: teamDetails.team_id,
         session: session
       });

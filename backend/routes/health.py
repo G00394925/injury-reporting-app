@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g
 from services.database_service import DatabaseService
 from services.notification_service import NotificationService
 from services.session_service import SessionService
@@ -29,7 +29,7 @@ def health_report():
     try:
         report = request.get_json()
         report_data = {
-            "user": report.get('user_id'),
+            "user": g.user_id,
             "user_data": report.get('user_data'),
             "session": report.get('session'),
             "answers": report.get('answers_list'),
@@ -62,7 +62,7 @@ def health_report():
                 # Fetch coaches associated with athlete's teams
                 athlete_response = db_service.fetch(
                     table="athlete_teams",
-                    filters={"athlete_id": report_data['user']},
+                    filters={"athlete_id": g.user_id},
                     select="teams(coach_id)"
                 )
 
@@ -131,7 +131,7 @@ def health_report():
             db_service.update(
                 table="athletes",
                 data=update_data,
-                filters={"id": report_data['user']})
+                filters={"id": g.user_id})
 
             logger.info(
                 f"Updated athlete's status: Recovery date: {estimated_recovery_date}, Proposed status: {proposed_status.value}")
@@ -147,7 +147,7 @@ def health_report():
                 session_id=session,
                 event_type="report_submission",
                 event_data={
-                    "athlete_id": report_data['user'],
+                    "athlete_id": g.user_id
                 },
                 endpoint="/health/report",
             )
@@ -158,7 +158,7 @@ def health_report():
 
         # Insert health report into database
         submission_data = {
-            "athlete_id": report_data['user'],
+            "athlete_id": g.user_id,
             "injured": report_data['answers'].get('injured'),
             "sport": report_data['answers'].get('sport'),
             "rpe": report_data['answers'].get('rpe'),
@@ -188,7 +188,7 @@ def followup_report():
     """
     report = request.get_json()
     report_data = {
-        "user": report.get('user_id'),
+        "user": g.user_id,
         "user_data": report.get('user_data'),
         "session": report.get('session'),
         "answers": report.get('answers_list'),
@@ -204,7 +204,7 @@ def followup_report():
             db_service.update(
                 table="athletes",
                 data=update_data,
-                filters={"id": report_data['user']})
+                filters={"id": g.user_id})
 
         # Otherwise get expected return date if provided
         else:
@@ -230,7 +230,7 @@ def followup_report():
             db_service.update(
                 table="athletes",
                 data=update_data,
-                filters={"id": report_data["user"]})
+                filters={"id": g.user_id})
 
     except Exception as e:
         logger.error(f"Error updating athlete data upon follow-up report: {e}")
@@ -240,18 +240,18 @@ def followup_report():
         # Get original report that notified of initial injury
         original_report = db_service.fetch(
             table="reports",
-            filters={"athlete_id": report_data['user'], "timeloss": True},
+            filters={"athlete_id": g.user_id, "timeloss": True},
             modifiers={
                 "order": {"column": "created_at", "desc": True},
                 "limit": 1
             },
-            select={"report_id"}
+            select="report_id"
         )
         logger.info(original_report)
 
         submission_data = {
             "report_id": original_report.data[0].get("report_id") if original_report.data else None,
-            "athlete_id": report_data["user"],
+            "athlete_id": g.user_id,
             "rpe": report_data['answers'].get('rpe'),
             "recovery_progress": report_data['answers'].get('recovery_progress'),
             "practitioner_contact": report_data['answers'].get('practitioner_contact'),
@@ -277,24 +277,21 @@ def followup_report():
         return jsonify(error=str(e)), 500
 
 
-@health_bp.route('/status/<user_id>', methods=['GET'])
-def get_status(user_id):
+@health_bp.route('/status', methods=['GET'])
+def get_status():
     """
     Retrieves the health status of an athlete from Supabase by user ID
-
-    Args:
-        user_id (str): The UUID of the athlete.
 
     Returns:
         JSON response with the athlete's health status or error message.
     """
     try:
-        user = db_service.fetch("athletes", filters={"id": user_id})
+        user = db_service.fetch("athletes", filters={"id": g.user_id})
 
         if user.data:
             reports = db_service.fetch(
                 table="reports",
-                filters={"athlete_id": user_id}
+                filters={"athlete_id": g.user_id}
             )
             health_status_value = user.data[0].get('status')
             injury_date = user.data[0].get('injury_date')
@@ -310,7 +307,7 @@ def get_status(user_id):
                     "%d %B")
 
             return jsonify(
-                user_id=user_id,
+                user_id=g.user_id,
                 reports_count=len(reports.data) if reports.data else 0,
                 health_status=health_status_value,
                 injury_date=injury_date,
@@ -319,16 +316,16 @@ def get_status(user_id):
             ), 200
 
         else:
-            logger.warning(f"User of ID {user_id} not found.")
+            logger.warning(f"User of ID {g.user_id} not found.")
             return jsonify(message="User not found"), 404
 
     except Exception as e:
-        logger.error(f"Error retrieving health status for user {user_id}: {e}")
+        logger.error(f"Error retrieving health status for user {g.user_id}: {e}")
         return jsonify(error=str(e)), 500
 
 
-@health_bp.route('/check_due/<user_id>', methods=['GET'])
-def check_report_due(user_id):
+@health_bp.route('/check_due', methods=['GET'])
+def check_report_due():
     """
     Checks database for a boolean value for whether a report by an athlete is 
     due. Value is recurringly updated by a cron job on Supabase at 7am daily.
@@ -341,20 +338,20 @@ def check_report_due(user_id):
     """
 
     try:
-        response = db_service.fetch("athletes", filters={"id": user_id})
+        response = db_service.fetch("athletes", filters={"id": g.user_id})
 
         if response and response.data:
             due = response.data[0].get('report_due')
 
-            logger.info(f"Report due status for user {user_id}: {due}")
+            logger.info(f"Report due status for user {g.user_id}: {due}")
             return jsonify(due), 200
         else:
-            logger.warning(f"User of ID {user_id} not found.")
+            logger.warning(f"User of ID {g.user_id} not found.")
             return jsonify(message="User not found"), 404
 
     except Exception as e:
         logger.error(
-            f"Error retrieving report_due value for user {user_id}: {e}")
+            f"Error retrieving report_due value for user {g.user_id}: {e}")
         return jsonify(error=str(e)), 500
 
 

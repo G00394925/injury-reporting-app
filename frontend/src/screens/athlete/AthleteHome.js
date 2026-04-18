@@ -9,23 +9,24 @@ import { globalStyles } from "../../styles/globalStyles";
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { ScrollView } from "react-native-gesture-handler";
 import SkeletonText from "../../components/skeleton/SkeletonText";
+import * as SecureStore from "expo-secure-store";
 
 export default function AthleteDashScreen() {
   const { uuid, userData } = useAuth();
   const [healthStatus, setHealthStatus] = useState(null);
-  const navigation = useNavigation();
-  const [loading, setLoading] = useState(false);
   const [numReports, setNumReports] = useState(0);
   const [consecutiveReports, setConsecutiveReports] = useState(0);
-  const [injuryDate, setInjuryDate] = useState(null);
   const [estimatedRecoveryDate, setEstimatedRecoveryDate] = useState(null);
-  const [hasRecentEvent, setHasRecentEvent] = useState(false);
   const [futureEvents, setFutureEvents] = useState(0);
   const [nextEventTitle, setNextEventTitle] = useState("No Upcoming Events");
   const [nextEventDate, setNextEventDate] = useState(null);
   const [nextEventTime, setNextEventTime] = useState(null);
   const [reportDue, setReportDue] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
+  const navigation = useNavigation();
 
+  // Fetch data whenever screen is focused
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
@@ -34,10 +35,9 @@ export default function AthleteDashScreen() {
 
         try {
           // Fetch health status
-          const statusResponse = await apiClient.get(`/api/health/status/${uuid}`);
+          const statusResponse = await apiClient.get('/api/health/status');
           if (statusResponse) {
             setHealthStatus(statusResponse.data.health_status);
-            setInjuryDate(statusResponse.data.injury_date);
             setEstimatedRecoveryDate(
               statusResponse.data.estimated_recovery_date
             );
@@ -46,9 +46,7 @@ export default function AthleteDashScreen() {
           }
 
           // Fetch events and check if any have passed
-          const eventsResponse = await apiClient.get(
-            `/api/events/get/${uuid}`
-          );
+          const eventsResponse = await apiClient.get(`/api/events/get/${uuid}`);
           if (eventsResponse.data && eventsResponse.data.length > 0) {
             const now = new Date();
             const hasPastEvent = eventsResponse.data.some((event) => {
@@ -57,12 +55,10 @@ export default function AthleteDashScreen() {
               );
               return eventDateTime < now;
             });
-            setHasRecentEvent(hasPastEvent);
           }
 
-          const nextEventResponse = await apiClient.get(
-            `/api/events/get_next/${uuid}`
-          );
+          // Fetch next event details
+          const nextEventResponse = await apiClient.get('/api/events/get_next');
           if (nextEventResponse.data) {
             setFutureEvents(nextEventResponse.data["total_future_events"]);
             setNextEventTitle(nextEventResponse.data["title"]);
@@ -72,9 +68,7 @@ export default function AthleteDashScreen() {
 
           // Check if a new report is due, thereby enabling the report button if true.
           try {
-            const reportDueResponse = await apiClient.get(
-              `/api/health/check_due/${uuid}`
-            );
+            const reportDueResponse = await apiClient.get('/api/health/check_due');
             setReportDue(reportDueResponse.data);
           } catch (reportError) {
             console.error("Error fetching report due status:", reportError);

@@ -50,7 +50,7 @@ export default function ReportScreen({ route }) {
   useEffect(() => {
     const getSports = async () => {
       try {
-        const response = await apiClient.get(`api/athletes/team/${uuid}`);
+        const response = await apiClient.get('api/athletes/team');
         setSports(response.data.teams);
       } catch (error) {
         console.error("Error fetching sports: ", error);
@@ -114,7 +114,6 @@ export default function ReportScreen({ route }) {
       if (healthStatus === "Healthy") {
         // Submit normal report
         const response = await apiClient.post('/api/health/report', {
-          user_id: uuid,
           user_data: userData,
           session: session,
           answers_list: formattedAnswers
@@ -123,7 +122,6 @@ export default function ReportScreen({ route }) {
       } else {
         // Submit follow-up report
         const response = await apiClient.post('/api/health/followup_report', {
-          user_id: uuid,
           user_data: userData,
           session: session,
           answers_list: formattedAnswers

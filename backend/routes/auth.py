@@ -1,9 +1,8 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g
 from services.auth_service import AuthService
 from services.database_service import DatabaseService
 from services.session_service import SessionService
 import logging
-from datetime import datetime
 
 auth_bp = Blueprint('auth', __name__)
 auth_service = AuthService()
@@ -154,7 +153,6 @@ def update_password():
         JSON response indicating success for failure.
     """
     credentials = request.get_json()
-    session = credentials.get('session')
     old_password = credentials.get('old_password')
     new_password = credentials.get('new_password')
 
@@ -222,10 +220,11 @@ def verify_otp():
     try:
         response = auth_service.verify_otp(email=email, token=token)
         if response:
-            db_service.update("users",
-                              data={"email_verified": True},
-                              filters={"email": email}
-                              )
+            db_service.update(
+                table="users",
+                data={"email_verified": True},
+                filters={"email": email}
+            )
         return jsonify(message="OTP verified successfully"), 200
     except Exception as e:
         logger.error(f"Error verifying OTP: {e}")
@@ -259,6 +258,10 @@ def delete_account():
     data = request.get_json()
     uuid = data.get('uuid')
 
+    if uuid != g.user_id:
+        logger.warning(f"Unauthorised account delete attempt by user {g.user_id} for account {uuid}!")
+        return jsonify(error="Unauthorized to delete this account"), 403
+
     try:
         response = db_service.delete("users", {"id": uuid})
         if response:
@@ -275,6 +278,7 @@ def delete_account():
 @auth_bp.route('/refresh_token', methods=['POST'])
 def refresh_token():
     try:
+        logger.info("Performing token refresh")
         data = request.get_json()
         refresh_token = data.get('refresh_token')
 

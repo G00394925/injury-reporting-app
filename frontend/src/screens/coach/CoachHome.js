@@ -31,9 +31,7 @@ export default function CoachDashScreen() {
         setLoading(true);
         try {
           // Acquire coach teams
-          const teamResponse = await apiClient.get(
-            `/api/teams/coach_teams/${uuid}`
-          );
+          const teamResponse = await apiClient.get('/api/teams/coach_teams');
           if (
             teamResponse &&
             teamResponse.data &&
@@ -129,9 +127,7 @@ export default function CoachDashScreen() {
             mergedEvents.push({ ...event, id: `block-${mergedEvents.length}` });
           }
         }
-
         setEvents(mergedEvents);
-
       }
     } catch (error) {
       console.error("Error fetching team events:", error);

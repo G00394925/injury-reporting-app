@@ -21,9 +21,7 @@ export default function TeamManagerScreen() {
 
   const fetchTeams = async () => {
     try {
-      const response = await apiClient.get(
-        `/api/teams/coach_teams/${uuid}`
-      );
+      const response = await apiClient.get('/api/teams/coach_teams');
       const teamsData = response.data.teams;
 
       // Fetch athlete counts for each team
@@ -90,7 +88,6 @@ export default function TeamManagerScreen() {
       const response = await apiClient.post('/api/teams/new', {
         team_name: newTeamName,
         sport: newSport,
-        coach_id: uuid,
         session: session
       });
 

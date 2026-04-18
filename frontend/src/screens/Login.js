@@ -52,7 +52,7 @@ export default function LoginScreen() {
 
     } catch (error) {
       console.error("Error logging in:", error);
-      setErrors({ general: `${error}` });
+      setErrors({ general: `${error.message}` });
     } finally {
       setLoading(false);
     }

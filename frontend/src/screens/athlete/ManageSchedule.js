@@ -119,7 +119,6 @@ export default function ManageScheduleScreen() {
       const type = isTraining ? "Training" : "Match";
 
       const response = await apiClient.post('/api/events/new', {
-        athlete_id: uuid,
         title: eventTitle,
         sport: eventSport,
         event_date: formattedDate,
@@ -144,9 +143,7 @@ export default function ManageScheduleScreen() {
   const fetchEvents = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get(
-        `/api/events/get/${uuid}`
-      );
+      const response = await apiClient.get(`/api/events/get/${uuid}`);
 
       if (response.data) {
         // Change events to use calendar format
@@ -300,7 +297,6 @@ export default function ManageScheduleScreen() {
                 onChangeText={setEventTitle}
               />
 
-              {/* TODO: Add input to get associated team  */}
               <Text style={globalStyles.modalInputLabel}>Sport</Text>
               <TextInput
                 style={globalStyles.modalInput}

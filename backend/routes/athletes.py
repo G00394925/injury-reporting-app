@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g
 from services.database_service import DatabaseService
 from services.session_service import SessionService
 import logging
@@ -9,8 +9,8 @@ session_service = SessionService()
 logger = logging.getLogger(__name__)
 
 
-@athletes_bp.route('/team/<athlete_id>', methods=['GET'])
-def get_team_details(athlete_id):
+@athletes_bp.route('/team', methods=['GET'])
+def get_team_details():
     """
     Fetches the team details for a specific athlete from Supabase.
 
@@ -24,13 +24,14 @@ def get_team_details(athlete_id):
     try:
         athlete_teams = db_service.fetch(
             table="athlete_teams",
-            filters={"athlete_id": athlete_id})
+            filters={"athlete_id": g.user_id})
 
         if not athlete_teams or not athlete_teams.data:
             return jsonify(
                 message="Athlete is not part of any team",
                 team_details=None
             ), 200
+
 
         # Fetch team details for all teams the athlete is in
         teams = []
@@ -51,14 +52,14 @@ def get_team_details(athlete_id):
                     })
 
         if teams:
-            logger.info(f"Fetched teams for athlete {athlete_id}")
+            logger.info(f"Fetched teams for athlete {g.user_id}")
             return jsonify(teams=teams), 200
         else:
             return jsonify(message="No teams found for the given athlete ID"), 404
 
     except Exception as e:
         logger.error(
-            f"Error fetching team details for athlete {athlete_id}: {e}")
+            f"Error fetching team details for athlete {g.user_id}: {e}")
         return jsonify(message="Error fetching team details"), 500
 
 
@@ -77,19 +78,18 @@ def join_team():
             table="athlete_teams",
             data={
                 "team_id": req.get("team_id"),
-                "athlete_id": req.get("athlete_id")
+                "athlete_id": g.user_id
             },
         )
 
         if response:
-            logger.info(
-                f"Athlete {req.get('athlete_id')} joined team {req.get('team_id')}")
+            logger.info(f"Athlete {g.user_id} joined team {req.get('team_id')}")
 
             session_service.log_event(
                 session_id=req.get("session"),
                 event_type="join_team",
                 event_data={
-                    "athlete_id": req.get("athlete_id"),
+                    "athlete_id": g.user_id,
                     "team_id": req.get("team_id")
                 },
                 endpoint="/athletes/join_team"
@@ -111,21 +111,20 @@ def leave_team():
     """
     try:
         athlete_request = request.get_json()
-        athlete_id = athlete_request.get("athlete_id")
         team_id = athlete_request.get("team_id")
         session = athlete_request.get("session")
 
         response = db_service.delete(
             table="athlete_teams",
-            filters={"athlete_id": athlete_id, "team_id": team_id}
+            filters={"athlete_id": g.user_id, "team_id": team_id}
         )
         if response:
-            logger.info(f"Athlete {athlete_id} has left their team.")
+            logger.info(f"Athlete {g.user_id} has left their team.")
             session_service.log_event(
                 session_id=session,
                 event_type="leave_team",
                 event_data={
-                    "athlete_id": athlete_id,
+                    "athlete_id": g.user_id,
                     "team_id": team_id
                 },
                 endpoint="/athletes/leave_team"
@@ -133,7 +132,7 @@ def leave_team():
             return jsonify(message="Athlete successfully left the team"), 200
         else:
             logger.warning(
-                f"Failed to update athlete {athlete_id} to leave their team.")
+                f"Failed to update athlete {g.user_id} to leave their team.")
             return jsonify(message="Failed to leave team"), 400
 
     except Exception as e:

@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g
 from services.database_service import DatabaseService
 import logging
 
@@ -20,7 +20,7 @@ def register_push_token():
     """
     try:
         data = request.get_json()
-        user_id = data.get('user_id')
+        user_id = g.user_id
         push_token = data.get('push_token')
 
         if not user_id or not push_token:

@@ -1,4 +1,4 @@
-import { File, Directory, Paths } from "expo-file-system";
+import { File, Paths } from "expo-file-system";
 import * as Sharing from "expo-sharing";
 
 export const exportToCSV = async (data) => {

@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g
 from health_status import HealthStatus
 from services.database_service import DatabaseService
 from services.session_service import SessionService
@@ -46,8 +46,8 @@ def get_teams():
         return jsonify(error=str(e)), 500
 
 
-@teams_bp.route('/coach_teams/<coach_id>', methods=['GET'])
-def fetch_coach_teams(coach_id):
+@teams_bp.route('/coach_teams', methods=['GET'])
+def fetch_coach_teams():
     """
     Fetches all teams associated with a specific coach from Supabase.
 
@@ -58,7 +58,7 @@ def fetch_coach_teams(coach_id):
         JSON response with a list of teams or error message.
     """
     try:
-        response = db_service.fetch("teams", filters={"coach_id": coach_id})
+        response = db_service.fetch("teams", filters={"coach_id": g.user_id})
 
         if response:
             teams = []
@@ -75,11 +75,11 @@ def fetch_coach_teams(coach_id):
                     "sport": team.get("sport"),
                     "players": len(players.data)
                 })
-            logger.info(f"Fetched teams for coach {coach_id} successfully.")
+            logger.info(f"Fetched teams for coach {g.user_id} successfully.")
             return jsonify(teams=teams), 200
 
     except Exception as e:
-        logger.error(f"Error fetching teams for coach {coach_id}: {e}")
+        logger.error(f"Error fetching teams for coach {g.user_id}: {e}")
         return jsonify(error=str(e)), 500
 
 
@@ -98,7 +98,7 @@ def create_team():
         response = db_service.insert("teams", {
             "team_name": new_team.get("team_name"),
             "sport": new_team.get("sport"),
-            "coach_id": new_team.get("coach_id"),
+            "coach_id": g.user_id
         })
 
         if response:

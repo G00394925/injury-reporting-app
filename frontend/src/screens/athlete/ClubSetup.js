@@ -21,7 +21,7 @@ export default function ClubSetup() {
     const fetchTeams = async () => {
       try {
         const response = await apiClient.get('/api/teams/get_teams');
-        const alreadyJoined = await apiClient.get(`/api/athletes/team/${uuid}`);
+        const alreadyJoined = await apiClient.get('/api/athletes/team');
 
         // Get IDs of teams athlete is already in
         const joinedTeamIds = alreadyJoined.data.teams.map(t => t.team_id);
@@ -57,7 +57,6 @@ export default function ClubSetup() {
   const handleSave = async (team_id) => {
     try {
       const response = await apiClient.post('/api/athletes/join_team', {
-        athlete_id: uuid,
         team_id: team_id,
         session: session
       });

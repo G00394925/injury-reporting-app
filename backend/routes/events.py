@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g
 from services.database_service import DatabaseService
 from services.session_service import SessionService
 import logging
@@ -23,7 +23,7 @@ def create_event():
 
     try:
         response = db_service.insert("events", data={
-            "athlete_id": new_event.get("athlete_id"),
+            "athlete_id": g.user_id,
             "title": new_event.get("title"),
             "sport": new_event.get("sport"),
             "event_date": new_event.get("event_date"),
@@ -55,9 +55,6 @@ def create_event():
 def get_events(athlete_id):
     """
     Fetches all event data associated with the given athlete_id.
-
-    Parameters:
-        athlete_id (uuid): Athlete's uuid used as a filter.
 
     Returns:
         events (json): Events data or message.
@@ -91,8 +88,8 @@ def get_events(athlete_id):
         return jsonify(error=str(e)), 500
 
 
-@events_bp.route('/get_next/<athlete_id>', methods=['GET'])
-def get_next_event(athlete_id):
+@events_bp.route('/get_next', methods=['GET'])
+def get_next_event():
     """
     Fetches the next upcoming event associated with the given athlete id.
 
@@ -106,7 +103,7 @@ def get_next_event(athlete_id):
         today = datetime.now().strftime('%Y-%m-%d')
         response = db_service.fetch(
             table="events",
-            filters={"athlete_id": athlete_id, "event_date": f"gte.{today}"},
+            filters={"athlete_id": g.user_id, "event_date": f"gte.{today}"},
             modifiers={"order": "event_date"})
 
         if response and response.data:
@@ -152,7 +149,7 @@ def get_next_event(athlete_id):
                     }
 
                     logger.info(
-                        f"Next event for user {athlete_id}: {next_event}")
+                        f"Next event for user {g.user_id}: {next_event}")
                     return jsonify(next_event), 200
                 else:
                     logger.info(f"No event found with given time and date")
@@ -170,11 +167,11 @@ def get_next_event(athlete_id):
                 logger.info("No upcoming events")
                 return jsonify(next_event), 200
         else:
-            logger.warning(f"No events found for user {athlete_id}")
+            logger.warning(f"No events found for user {g.user_id}")
             return jsonify(message="No events found"), 200
     except Exception as e:
         logger.error(
-            f"Error fetching most recent event for user {athlete_id}: {e}")
+            f"Error fetching most recent event for user {g.user_id}: {e}")
         return jsonify(error=str(e)), 500
 
 
