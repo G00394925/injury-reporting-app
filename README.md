@@ -7,7 +7,7 @@ This application is intended for recreational multi-sport settings, rather than 
 The system is built using a React-Native/Python-Flask tech stack, with React-Native allowing for the writing of JSX code and bridging to the device's native components, and Python utilising the Flask framework to create a RESTful API that facilitates CRUD authentication operations with the database.
 
 ## Demo
-A demo video can be found in this repository's **Wiki**, which features a narrated demonstration of the application's core features and the design and interface.
+A demo video can be found in this repository's **Wiki**, which features a narrated demonstration of the application's core features and the design and interface. The wiki can also be viewed at https://github.com/G00394925/injury-reporting-app/wiki.
 
 ## Installation
 ### Prerequisites
